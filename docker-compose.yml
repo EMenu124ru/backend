@@ -1,0 +1,69 @@
+version: '3'
+
+volumes:
+  emenu_local_postgres_data: {}
+  emenu_local_postgres_data_backups: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    image: emenu_local_django
+    container_name: emenu_local_django
+    platform: linux/x86_64
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - .:/app:z
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    ports:
+      - "8000:8000"
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: emenu_production_postgres
+    container_name: emenu_local_postgres
+    volumes:
+      - emenu_local_postgres_data:/var/lib/postgresql/data:Z
+      - emenu_local_postgres_data_backups:/backups:z
+    env_file:
+      - ./.envs/.local/.postgres
+
+  redis:
+    image: redis:6
+    container_name: emenu_local_redis
+
+  celeryworker:
+    <<: *django
+    image: emenu_local_celeryworker
+    container_name: emenu_local_celeryworker
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    image: emenu_local_celerybeat
+    container_name: emenu_local_celerybeat
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    image: emenu_local_flower
+    container_name: emenu_local_flower
+    ports:
+      - "5555:5555"
+    command: /start-flower
