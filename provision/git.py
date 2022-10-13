@@ -4,6 +4,13 @@ from . import common, linters
 
 
 @task
+def hooks(context):
+    """Install git hooks."""
+    common.success("Setting up GitHooks")
+    context.run("git config core.hooksPath .git-hooks")
+
+
+@task
 def pre_push(context):
     """Perform pre push check."""
     common.success("Perform pre-push check")

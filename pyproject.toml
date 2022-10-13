@@ -64,7 +64,6 @@ dev = [
     "flake8",
     "flake8-isort",
     "coverage",
-    "black",
     "pre-commit",
     "factory-boy",
     "django-extensions",
