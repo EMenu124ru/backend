@@ -1,6 +1,5 @@
 from invoke import task
 
-
 CONTAINERS = {
     "dev": "docker-compose",
     "prod": "docker-compose -f docker-compose.prod.yml",
@@ -11,7 +10,6 @@ CONTAINERS = {
 def build(context, compose="dev"):
     """Build project."""
     context.run(f"{CONTAINERS[compose]} build")
-
 
 
 @task
@@ -35,10 +33,15 @@ def clean_volumes(context, compose="dev"):
 @task
 def clear(context):
     """Stop and remove all containers defined in docker-compose."""
-    context.run(f"docker stop $(docker ps -a -q)")
-    context.run(f"docker system prune --volumes --all -f")
+    context.run("docker stop $(docker ps -a -q)")
+    context.run("docker system prune --volumes --all -f")
+
+
+def docker_compose_run(context, service, command, compose="dev"):
+    """Run ``exec`` using docker-compose."""
+    return context.run(f"{CONTAINERS[compose]} run --rm {service} {command}")
 
 
 def docker_compose_exec(context, service, command, compose="dev"):
     """Run ``exec`` using docker-compose."""
-    context.run(f"{CONTAINERS[compose]} exec {service} {command}")
+    return context.run(f"{CONTAINERS[compose]} exec {service} {command}")

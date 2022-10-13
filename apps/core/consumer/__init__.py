@@ -1,1 +1,1 @@
-from .base_consumer import BaseConsumer
+from .base_consumer import BaseConsumer  # noqa F401

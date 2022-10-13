@@ -1,2 +1,2 @@
-from .email import send_email
-from .pagination import PaginationObject
+from .email import send_email  # noqa F401
+from .pagination import PaginationObject  # noqa F401

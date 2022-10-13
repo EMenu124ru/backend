@@ -1,6 +1,6 @@
 from invoke import task
 
-from . import common, django, docker, git
+from . import common, django, docker
 
 
 @task
@@ -26,8 +26,6 @@ def fill_sample_data(context):
 def init(context):
     """Prepare env for working with project."""
     common.success("Setting up git config")
-    git.hooks(context)
-    git.gitmessage(context)
     common.success("Initial assembly of all dependencies")
     install_tools(context)
     install_requirements(context)

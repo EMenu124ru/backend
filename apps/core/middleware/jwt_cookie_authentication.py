@@ -11,7 +11,7 @@ from rest_framework_simplejwt.exceptions import (
     TokenError,
 )
 
-AUTH_COOKIE_KEY = 'authorization'
+AUTH_COOKIE_KEY = "authorization"
 
 
 class JWTCookieAuthMiddleware(BaseMiddleware):
@@ -19,6 +19,7 @@ class JWTCookieAuthMiddleware(BaseMiddleware):
     Class to get user from cookie.
     rest_framework_simplejwt is required.
     """
+
     @staticmethod
     @database_sync_to_async
     def get_user(token):
@@ -32,14 +33,16 @@ class JWTCookieAuthMiddleware(BaseMiddleware):
         return user
 
     async def __call__(self, scope: dict, receive, send):
-        scope['user'] = AnonymousUser()
-        headers: dict[bytes, bytes] = dict(scope.get('headers', {}))
+        scope["user"] = AnonymousUser()
+        headers: dict[bytes, bytes] = dict(scope.get("headers", {}))
 
-        if b'cookie' in headers:
-            cookies = headers[b'cookie'].decode()
-            if AUTH_COOKIE_KEY.encode() in headers[b'cookie']:
-                if token_key := re.search(f'{AUTH_COOKIE_KEY}=(.*)(; )?', cookies).group(1):
-                    scope['user'] = await self.get_user(token_key)
+        if b"cookie" in headers:
+            cookies = headers[b"cookie"].decode()
+            if AUTH_COOKIE_KEY.encode() in headers[b"cookie"]:
+                if token_key := re.search(
+                    f"{AUTH_COOKIE_KEY}=(.*)(; )?", cookies
+                ).group(1):
+                    scope["user"] = await self.get_user(token_key)
 
         return await super().__call__(scope, receive, send)
 
