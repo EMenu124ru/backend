@@ -1,6 +1,6 @@
 from invoke import Exit, UnexpectedExit, task
 
-from . import common, docker
+from . import common, docker, git
 
 DEFAULT_FOLDERS = "."
 
@@ -10,7 +10,7 @@ def isort(
     context,
     path=DEFAULT_FOLDERS,
     service="django",
-    params="--settings-file=./setup.cfg",
+    params="",
     compose="dev",
 ):
     """Command to fix imports formatting."""
