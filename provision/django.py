@@ -4,9 +4,9 @@ from . import common, docker
 
 
 @task
-def manage(context, service="server", command="", compose="dev"):
+def manage(context, service="django", command="", compose="dev"):
     """ase template for commands with python manage.py."""
-    docker.docker_compose_exec(context, service, f"python manage.py {command}", compose)
+    docker.docker_compose_run(context, service, f"python manage.py {command}", compose)
 
 
 @task

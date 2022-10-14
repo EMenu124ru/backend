@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "new_project"
+name = "emenu"
 version = "0.1.0"
 description = ""
 authors = ["Nazar <odddellarobea@gmail.com>"]
