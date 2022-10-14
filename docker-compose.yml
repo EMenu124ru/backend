@@ -60,10 +60,8 @@ services:
     ports: []
     command: /start-celerybeat
 
-  flower:
-    <<: *django
-    image: emenu_local_flower
-    container_name: emenu_local_flower
+  swagger-editor:
+    image: swaggerapi/swagger-editor
+    container_name: "swagger-editor"
     ports:
-      - "5555:5555"
-    command: /start-flower
+      - "80:8080"

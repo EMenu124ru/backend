@@ -42,8 +42,3 @@ services:
     <<: *django
     image: emenu_production_celerybeat
     command: /start-celerybeat
-
-  flower:
-    <<: *django
-    image: emenu_production_flower
-    command: /start-flower

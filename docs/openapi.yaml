@@ -1,0 +1,332 @@
+openapi: 3.0.2
+
+info:
+  title: EMenu
+  version: 0.1.0
+
+tags:
+  - name: auth
+    description: "Auth namespace"
+  - name: clients # регистрация, вход, создание заказа, создание отзыва,
+    description: "Client namespace"
+  - name: employees
+    description: "Employee namespace"
+  - name: orders # создание, отмена, редактирование, просмотр,
+    description: "Order namespace"
+  - name: dishes # создание, удаление, редактирование, просмотр
+    description: "Dish namespace"
+  - name: reviews
+    description: "Review namespace"
+  - name: restaurants
+    description: "Restaurant namespace"
+
+paths:
+  "/api/login/client/":
+    post:
+      tags:
+        - auth
+        - users
+        - clients
+      summary: "Login client"
+      requestBody:
+        $ref: "#/components/requestBodies/LoginRequestBodyClient"
+      responses:
+        "200":
+          $ref: "#/components/responses/TokenObtain200"
+        "400":
+          $ref: "#/components/responses/TokenObtain400"
+
+  "/api/signup/client/":
+    post:
+      tags:
+        - auth
+        - users
+        - clients
+      summary: "Sign up client"
+      requestBody:
+        $ref: "#/components/requestBodies/SignUpRequestBodyClient"
+      responses:
+        "200":
+          $ref: "#/components/responses/TokenObtain200"
+        "400":
+          $ref: "#/components/responses/TokenObtain400"
+
+  "/api/login/employee/":
+    post:
+      tags:
+        - auth
+        - users
+        - employees
+      summary: "Registration or login student"
+      requestBody:
+        $ref: "#/components/requestBodies/RegistrationRequestBodyStudent"
+      responses:
+        "200":
+          $ref: "#/components/responses/TokenObtain200"
+        "400":
+          $ref: "#/components/responses/TokenObtain400"
+
+  "/api/auth/token/refresh/":
+    post:
+      tags:
+        - auth
+        - users
+        - employees
+        - clients
+      summary: "Refresh token"
+      requestBody:
+        $ref: "#/components/requestBodies/TokenRefreshRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/TokenRefresh200"
+        "400":
+          $ref: "#/components/responses/TokenRefresh400"
+
+  "/api/orders/":
+    post:
+      tags:
+        - orders
+      summary: "Create order"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/OrderCreateBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/OrderCreate201"
+        "400":
+          $ref: "#/components/responses/OrderCreate400"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserBase:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        full_name:
+          type: string
+        is_trainer:
+          type: boolean
+        password:
+          type: string
+
+    StudentBase:
+      type: object
+      properties:
+        is_ready:
+          type: boolean
+        room:
+          $ref: "#/components/schemas/RoomBase"
+        points:
+          type: number
+        user:
+          $ref: "#/components/schemas/UserBase"
+
+    RoomBase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        count_students:
+          type: number
+        count_rounds:
+          type: number
+        duration_round:
+          type: number
+
+  requestBodies:
+    LoginRequestBodyClient:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              phone_number:
+                type: string
+              password:
+                type: string
+      required: true
+
+    SignUpRequestBodyClient:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              full_name:
+                type: string
+              uuid:
+                type: string
+      required: true
+
+    TokenObtainRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+      required: true
+
+    TokenRefreshRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              refresh:
+                type: string
+      required: true
+
+    RoomCreateBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              count_students:
+                type: number
+              count_rounds:
+                type: number
+              duration_round:
+                type: number
+
+  responses:
+    RegistrationTrainer201:
+      description: "Created"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              access:
+                type: string
+                description: "access token"
+              refresh:
+                type: string
+                description: "refresh token"
+
+    RegistrationTrainer400:
+      description: "Bad Request"
+
+    RegistrationStudent201:
+      description: "Created"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              access:
+                type: string
+                description: "access token"
+              refresh:
+                type: string
+                description: "refresh token"
+
+    RegistrationStudent400:
+      description: "Bad Request"
+
+    TokenObtain200:
+      description: "Success"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              access:
+                type: string
+                description: "access token"
+              refresh:
+                type: string
+                description: "refresh token"
+
+    TokenObtain400:
+      description: "Bad request"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "No active account found with the given credentials"
+
+    TokenRefresh200:
+      description: "Success"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              access:
+                type: string
+                description: "access token"
+              refresh:
+                type: string
+                description: "refresh token"
+
+    TokenRefresh400:
+      description: "Bad request"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "Token is invalid or expired"
+              code:
+                type: string
+                example: "token_not_valid"
+
+    RoomCreate201:
+      description: "Created"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RoomBase"
+
+    RoomCreate400:
+      description: "Bad Request"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              count_students:
+                type: array
+                items:
+                  type: string
+                  example: "Минимальное количество участнков в группе - 2, максимальное - 15"
+              trainer:
+                type: array
+                items:
+                  type: string
+                  example: "Not Found"
+
+    RoomRetrieve:
+      description: "Room info"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RoomBase"
+
+    StudentRetrieve:
+      description: "Student info"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/StudentBase"

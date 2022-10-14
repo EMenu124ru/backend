@@ -22,7 +22,6 @@ django-model-utils = "^4.2.0"
 django-redis = "^5.2.0"
 djangorestframework = "^3.13.1"
 django-cors-headers = "^3.13.0"
-drf-spectacular = "^0.22.1"
 psycopg2-binary = "^2.9.3"
 
 invoke = {version = "^1.7.1", optional = true}
