@@ -71,10 +71,10 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    "apps.orders.OrdersConfig",
-    "apps.restaurants.RestaurantsConfig",
-    "apps.reviews.ReviewsConfig",
-    "apps.users.UsersConfig",
+    "apps.orders.apps.OrdersConfig",
+    "apps.restaurants.apps.RestaurantsConfig",
+    "apps.reviews.apps.ReviewsConfig",
+    "apps.users.apps.UsersConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
