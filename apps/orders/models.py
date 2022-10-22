@@ -27,12 +27,21 @@ class Dish(models.Model):
         verbose_name="Название",
     )
     description = models.TextField(
-        verbose_name="Описание",
+        verbose_name="Полное описание",
+    )
+    short_description = models.TextField(
+        verbose_name="Краткое описание",
     )
     price = models.DecimalField(
         max_digits=11,
         decimal_places=2,
         verbose_name="Цена",
+    )
+    compound = models.TextField(
+        verbose_name="Состав",
+    )
+    weight = models.PositiveIntegerField(
+        verbose_name="Вес блюда",
     )
     reviews = models.ManyToManyField(
         "reviews.Review",
