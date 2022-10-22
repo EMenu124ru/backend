@@ -58,6 +58,19 @@ class Dish(models.Model):
 
 
 class Order(models.Model):
+
+    class Statuses(models.TextChoices):
+        WAITING_FOR_COOKING = "WAITING_FOR_COOKING", "Waiting for cooking"
+        COOKING = "COOKING", "Cooking"
+        WAITING_FOR_DELIVERY = "WAITING_FOR_DELIVERY", "Waiting for delivery"
+        IN_PROCESS_DELIVERY = "IN_PROCESS_DELIVERY", "In process delivery"
+        DELIVERED = "DELIVERED", "Delivered"
+        REMOVED = "REMOVED", "Removed"
+
+    status = models.TextField(
+        choices=Statuses.choices,
+        verbose_name="Статус заказа",
+    )
     price = models.DecimalField(
         max_digits=11,
         decimal_places=2,
