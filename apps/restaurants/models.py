@@ -5,6 +5,11 @@ class Restaurant(models.Model):
     address = models.TextField(
         verbose_name="Адрес",
     )
+    reviews = models.ManyToManyField(
+        "reviews.Review",
+        related_name="restaurant",
+        verbose_name="Отзыв",
+    )
 
     class Meta:
         verbose_name = "Ресторан"
@@ -17,27 +22,26 @@ class Restaurant(models.Model):
 class Schedule(models.Model):
     restaurant = models.ForeignKey(
         Restaurant,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
+        on_delete=models.CASCADE,
+        related_name="schedules",
         verbose_name="Ресторан",
     )
-    time_open = models.DateTimeField(
+    time_open = models.TimeField(
         verbose_name="Время открытия",
     )
-    time_close = models.DateTimeField(
+    time_close = models.TimeField(
         verbose_name="Время закрытия",
     )
 
     class WeekDays(models.IntegerChoices):
         """Week day choices"""
-        MONDAY = 1
-        TUESDAY = 2
-        WEDNESDAY = 3
-        THURSDAY = 4
-        FRIDAY = 5
-        SATURDAY = 6
-        SUNDAY = 7
+        MONDAY = 0
+        TUESDAY = 1
+        WEDNESDAY = 2
+        THURSDAY = 3
+        FRIDAY = 4
+        SATURDAY = 5
+        SUNDAY = 6
 
     week_day = models.IntegerField(
         choices=WeekDays.choices,

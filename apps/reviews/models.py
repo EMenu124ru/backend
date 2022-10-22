@@ -15,6 +15,7 @@ class Review(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+        related_name="reviews",
         verbose_name="Клиент",
     )
 
@@ -32,10 +33,9 @@ class ReviewImages(models.Model):
     )
     review = models.ForeignKey(
         Review,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Отзыв"
+        on_delete=models.CASCADE,
+        related_name="images",
+        verbose_name="Отзыв",
     )
 
     class Meta:
@@ -44,51 +44,3 @@ class ReviewImages(models.Model):
 
     def __str__(self) -> str:
         return f"ReviewImages {self.image} {self.review}"
-
-
-class RestaurantReview(models.Model):
-    restaurant = models.ForeignKey(
-        "restaurants.Restaurant",
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Ресторан",
-    )
-    review = models.ForeignKey(
-        Review,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Отзыв",
-    )
-
-    class Meta:
-        verbose_name = "Отзыв ресторана"
-        verbose_name_plural = "Отзывы ресторанов"
-
-    def __str__(self) -> str:
-        return f"RestaurantReview {self.restaurant} {self.review}"
-
-
-class DishReview(models.Model):
-    dish = models.ForeignKey(
-        "orders.Dish",
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Блюдо",
-    )
-    review = models.ForeignKey(
-        Review,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Отзыв",
-    )
-
-    class Meta:
-        verbose_name = "Отзыв блюда"
-        verbose_name_plural = "Отзывы блюд"
-
-    def __str__(self) -> str:
-        return f"DishReview {self.dish} {self.review}"

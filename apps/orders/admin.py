@@ -39,28 +39,6 @@ class OrderAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(models.OrderDishes)
-class OrderDishesAdmin(admin.ModelAdmin):
-    """Class representation of OrderDishes model in admin panel."""
-
-    list_display = (
-        "id",
-        "order",
-        "dish",
-    )
-
-
-@admin.register(models.OrderClient)
-class OrderClientAdmin(admin.ModelAdmin):
-    """Class representation of OrderClient model in admin panel."""
-
-    list_display = (
-        "id",
-        "client",
-        "order",
-    )
-
-
 @admin.register(models.DishImages)
 class DishImagesAdmin(admin.ModelAdmin):
     """Class representation of DishImages model in admin panel."""

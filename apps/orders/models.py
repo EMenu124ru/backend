@@ -18,9 +18,8 @@ class Category(models.Model):
 class Dish(models.Model):
     category = models.ForeignKey(
         Category,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
+        on_delete=models.CASCADE,
+        related_name="dishes",
         verbose_name="Категория",
     )
     name = models.CharField(
@@ -34,6 +33,11 @@ class Dish(models.Model):
         max_digits=11,
         decimal_places=2,
         verbose_name="Цена",
+    )
+    reviews = models.ManyToManyField(
+        "reviews.Review",
+        related_name="dish",
+        verbose_name="Отзыв",
     )
 
     class Meta:
@@ -58,10 +62,24 @@ class Order(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+        related_name="orders",
         verbose_name="Сотрудник",
     )
-    place_number = models.IntegerField(
-        verbose_name="Номер места"
+    client = models.ForeignKey(
+        "users.Client",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="orders",
+        verbose_name="Клиент",
+    )
+    place_number = models.PositiveIntegerField(
+        verbose_name="Номер места",
+    )
+    dishes = models.ManyToManyField(
+        Dish,
+        related_name="orders",
+        verbose_name="Блюда",
     )
 
     class Meta:
@@ -72,63 +90,14 @@ class Order(models.Model):
         return f"Order {self.price} {self.comment} {self.employee} {self.place_number}"
 
 
-class OrderDishes(models.Model):
-    order = models.ForeignKey(
-        Order,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Заказ",
-    )
-    dish = models.ForeignKey(
-        Dish,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Блюдо",
-    )
-
-    class Meta:
-        verbose_name = "Блюда в заказе"
-        verbose_name_plural = "Блюда в заказах"
-
-    def __str__(self) -> str:
-        return f"Order {self.order} {self.dish}"
-
-
-class OrderClient(models.Model):
-    client = models.ForeignKey(
-        "users.Client",
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Клиент",
-    )
-    order = models.ForeignKey(
-        Order,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Заказ",
-    )
-
-    class Meta:
-        verbose_name = "Клиент, сделавший заказ"
-        verbose_name_plural = "Клиенты, сделавшие заказ"
-
-    def __str__(self) -> str:
-        return f"Order {self.client} {self.order}"
-
-
 class DishImages(models.Model):
     image = models.ImageField(
         verbose_name="Картинка",
     )
     dish = models.ForeignKey(
         Dish,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
+        on_delete=models.CASCADE,
+        related_name="images",
         verbose_name="Блюдо",
     )
 
