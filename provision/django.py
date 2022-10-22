@@ -33,7 +33,7 @@ def createsuperuser(
     """Create superuser."""
     manage(
         context,
-        f"createsuperuser2 --username {username} --password {password} --noinput --email {email}",
+        command=f"createsuperuser2 --username {username} --password {password} --noinput --email {email}",
     )
 
 
