@@ -5,16 +5,16 @@ from django.db import models
 
 class User(AbstractUser):
 
-    # @property
-    # def is_client(self) -> bool:
-    #     try:
-    #         return self.client is not None
-    #     except Client.DoesNotExist:
-    #         return False
+    @property
+    def is_client(self) -> bool:
+        try:
+            return self.client is not None
+        except Client.DoesNotExist:
+            return False
 
     class Meta:
-        verbose_name = ('Пользователь')
-        verbose_name_plural = ('Пользователи')
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     def str(self) -> str:
         return (
