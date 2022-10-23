@@ -17,3 +17,13 @@ class DishViewSet(BaseViewSet):
         if self.action in ("create", "update", "partial_update"):
             return serializers.DishCreateSerializer
         return serializers.DishRetrieveSerializer
+
+
+class OrderViewSet(BaseViewSet):
+
+    queryset = models.Order.objects.all()
+
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update"):
+            return serializers.OrderCreateSerializer
+        return serializers.OrderRetrieveSerializer

@@ -74,7 +74,36 @@ class DishImageSerializer(serializers.ModelSerializer):
         )
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderRetrieveSerializer(serializers.ModelSerializer):
+
+    employee = serializers.PrimaryKeyRelatedField(
+        queryset=Employee.objects.all(),
+        allow_null=True,
+    )
+    client = serializers.PrimaryKeyRelatedField(
+        queryset=Client.objects.all(),
+        allow_null=True,
+    )
+    dishes = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Order
+        fields = (
+            "id",
+            "status",
+            "price",
+            "comment",
+            "employee",
+            "client",
+            "place_number",
+            "dishes",
+        )
+
+    def get_dishes(self, obj):
+        return DishRetrieveSerializer(obj.dishes.all(), many=True).data
+
+
+class OrderCreateSerializer(serializers.ModelSerializer):
 
     employee = serializers.PrimaryKeyRelatedField(
         queryset=Employee.objects.all(),
@@ -86,6 +115,7 @@ class OrderSerializer(serializers.ModelSerializer):
     )
     dishes = serializers.PrimaryKeyRelatedField(
         queryset=models.Dish.objects.all(),
+        many=True,
     )
 
     class Meta:
@@ -97,6 +127,10 @@ class OrderSerializer(serializers.ModelSerializer):
             "comment",
             "employee",
             "client",
-            "place_number"
+            "place_number",
             "dishes",
         )
+
+    @property
+    def data(self) -> OrderedDict:
+        return OrderRetrieveSerializer(instance=self.instance).data
