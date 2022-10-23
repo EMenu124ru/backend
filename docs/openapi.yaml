@@ -13,10 +13,10 @@ tags:
     description: "Employee namespace"
   - name: orders
     description: "Order namespace"
+  - name: categories
+    description: "Category namespace"
   - name: dishes
     description: "Dish namespace"
-  - name: dish-images
-    description: "Dish Images namespace"
   - name: reviews
     description: "Review namespace"
   - name: restaurants
@@ -83,6 +83,110 @@ paths:
           $ref: "#/components/responses/TokenRefresh200"
         "400":
           $ref: "#/components/responses/TokenRefresh400"
+
+  "/api/categories/":
+    post:
+      tags:
+        - categories
+      summary: "Create category"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CategoryCreateBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/CategoryCreate201"
+        "400":
+          $ref: "#/components/responses/CategoryCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+    get:
+      tags:
+        - categories
+      summary: "Get list categories"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/CategoryList200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+  "/api/categories/{category_id}/":
+    get:
+      tags:
+        - categories
+      summary: "Get category"
+      parameters:
+        - name: category_id
+          in: path
+          schema:
+            type: number
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/Category200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    patch:
+      tags:
+        - categories
+      summary: "Update category"
+      parameters:
+        - name: category_id
+          in: path
+          schema:
+            type: number
+          required: true
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CategoryCreateBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/Category200"
+        "400":
+          $ref: "#/components/responses/CategoryCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    delete:
+      tags:
+        - categories
+      summary: "Delete category"
+      parameters:
+        - name: category_id
+          in: path
+          schema:
+            type: number
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
 
   "/api/orders/":
     post:
@@ -166,11 +270,10 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/orders/{order_id}/cancel/":
-    post:
+    delete:
       tags:
         - orders
-      summary: "Cancel order"
+      summary: "Delete order"
       parameters:
         - name: order_id
           in: path
@@ -180,8 +283,8 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
-          description: "Ok"
+        "204":
+          description: "No Content"
         "401":
           description: "Unauthorized"
         "403":
@@ -293,11 +396,17 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/dish-images/":
+  "/api/dishes/{dish_id}/images/":
     post:
       tags:
-        - dish-images
+        - dishes
       summary: "Add dish image"
+      parameters:
+        - name: dish_id
+          in: path
+          schema:
+            type: number
+          required: true
       security:
         - bearerAuth: []
       requestBody:
@@ -311,13 +420,40 @@ paths:
           description: "Unauthorized"
         "403":
           description: "Forbidden"
+    
+    get:
+      tags:
+        - dishes
+      summary: "Get list dish images"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: dish_id
+          in: path
+          schema:
+            type: number
+          required: true
+      responses:
+        "200":
+          $ref: "#/components/responses/DishImages200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
 
-  "/api/dish-images/{dish_image_id}/":
+  "/api/dishes/{dish_id}/images/{dish_image_id}/":
     delete:
       tags:
-        - dish-images
+        - dishes
       summary: "Delete dish image"
       parameters:
+        - name: dish_id
+          in: path
+          schema:
+            type: number
+          required: true
         - name: dish_image_id
           in: path
           schema:
@@ -433,12 +569,18 @@ components:
           nullable: true
         place_number:
           type: number
+
+    CategoryBase:
+      type: object
+      properties:
+        name:
+          type: string
         dishes:
           type: array
           items:
-            type: number
+            $ref: "#/components/schemas/DishBase"
 
-    CategoryBase:
+    CategoryCreateBase:
       type: object
       properties:
         name:
@@ -465,6 +607,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ReviewBase"
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderBase"
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/DishImageBase"
 
     DishCreateBase:
       type: object
@@ -495,10 +645,10 @@ components:
     DishImageCreateBase:
       type: object
       properties:
-        image:
-          type: string
-        dish:
-          type: number
+        images:
+          type: array
+          items:
+            type: string
 
     RestaurantBase:
       type: object
@@ -570,7 +720,16 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/DishImageCreateBase"
+            type: array
+            items:
+              $ref: "#/components/schemas/DishImageCreateBase"
+      required: true
+
+    CategoryCreateBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CategoryCreateBase"
       required: true
 
     TokenObtainRequestBody:
@@ -665,9 +824,25 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/OrderBase"
+            type: object
+            properties:
+              links:
+                type: object
+                properties:
+                  next:
+                    type: string
+                    format: url
+                  previous:
+                    type: string
+                    format: url
+              count:
+                type: number
+              total_pages:
+                type: number
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderBase"
 
     Order200:
       description: "Order item"
@@ -675,6 +850,48 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderBase"
+
+    CategoryCreate201:
+      description: "Category created"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CategoryBase"
+
+    CategoryCreate400:
+      description: "Category created error"
+
+    CategoryList200:
+      description: "Category list"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              links:
+                type: object
+                properties:
+                  next:
+                    type: string
+                    format: url
+                  previous:
+                    type: string
+                    format: url
+              count:
+                type: number
+              total_pages:
+                type: number
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryBase"
+
+    Category200:
+      description: "Category item"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CategoryBase"
 
     DishCreate201:
       description: "Dish create"
@@ -691,9 +908,25 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/DishBase"
+            type: object
+            properties:
+              links:
+                type: object
+                properties:
+                  next:
+                    type: string
+                    format: url
+                  previous:
+                    type: string
+                    format: url
+              count:
+                type: number
+              total_pages:
+                type: number
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DishBase"
 
     Dish200:
       description: "Dish item"
@@ -707,7 +940,18 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/DishImageBase"
+            type: array
+            items:
+              $ref: "#/components/schemas/DishImageBase"
 
     DishImageCreate400:
       description: "Dish image created error"
+
+    DishImages200:
+      description: "Dish image get"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/DishImageBase"

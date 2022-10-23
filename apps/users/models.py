@@ -56,12 +56,12 @@ class Employee(models.Model):
     class Roles(models.TextChoices):
         """Class choices."""
 
-        WAITER = "WAITER", "Waiter"
-        BARTENDER = "BARTENDER", "Bartender"
-        COOK = "COOK", "Cook"
-        CHEF = "CHEF", "Chef"
-        MANAGER = "MANAGER", "Manager"
-        HOSTESS = "HOSTESS", "Hostess"
+        WAITER = "WAITER", "Официант"
+        BARTENDER = "BARTENDER", "Бармен"
+        COOK = "COOK", "Повар"
+        CHEF = "CHEF", "Шеф-повар"
+        MANAGER = "MANAGER", "Менеджер"
+        HOSTESS = "HOSTESS", "Хостес"
 
     user = models.OneToOneField(
         User,

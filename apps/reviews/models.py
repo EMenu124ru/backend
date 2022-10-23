@@ -1,6 +1,10 @@
 from django.db import models
 
 
+def get_directory_path(instance, filename) -> str:
+    return f"reviews/{instance.review.id}/{filename}"
+
+
 class Review(models.Model):
     review = models.TextField(
         verbose_name="Текст отзыва",
@@ -29,6 +33,7 @@ class Review(models.Model):
 
 class ReviewImages(models.Model):
     image = models.ImageField(
+        upload_to=get_directory_path,
         verbose_name="Картинка"
     )
     review = models.ForeignKey(
