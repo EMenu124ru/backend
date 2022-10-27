@@ -103,23 +103,12 @@ class DishImageViewSet(CreateDestroyViewSet):
 
 class OrderViewSet(BaseViewSet):
 
+    queryset = models.Order.objects.all()
+
     def get_serializer_class(self):
-        if self.action == "reservation":
-            return serializers.RestaurantAndOrderRetrieveSerializer
         if self.action in ("create", "update", "partial_update"):
             return serializers.OrderCreateSerializer
         return serializers.OrderRetrieveSerializer
-
-    def get_queryset(self):
-        if self.action == "reservation":
-            return models.Order.objects.prefetch_related(
-                "restaurant_and_order",
-            ).get(id=self.request.parser_context["kwargs"]["pk"]).restaurant_and_order.all()
-        return models.Order.objects.all()
-
-    @decorators.action(methods=("GET",), detail=True)
-    def reservation(self, request, *args, **kwargs) -> response.Response:
-        return super().list(request, *args, **kwargs)
 
 
 class RestaurantAndOrderViewSet(BaseViewSet):
