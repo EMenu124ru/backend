@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -12,6 +13,10 @@ class Review(models.Model):
     mark = models.DecimalField(
         max_digits=3,
         decimal_places=2,
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5),
+        ],
         verbose_name="Оценка",
     )
     client = models.ForeignKey(

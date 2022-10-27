@@ -27,3 +27,18 @@ class OrderViewSet(BaseViewSet):
         if self.action in ("create", "update", "partial_update"):
             return serializers.OrderCreateSerializer
         return serializers.OrderRetrieveSerializer
+
+
+class RestaurantAndOrderViewSet(BaseViewSet):
+
+    queryset = models.RestaurantAndOrder.objects.all()
+
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update"):
+            return serializers.RestaurantAndOrderCreateSerializer
+        return serializers.RestaurantAndOrderRetrieveSerializer
+
+    def perform_destroy(self, instance):
+        if instance.order:
+            instance.order.delete()
+        instance.delete()

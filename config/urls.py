@@ -12,7 +12,7 @@ if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
 
 urlpatterns += [
-    path("api/", include("config.api_router")),
+    path("api/v1/", include("config.api_router")),
     path("auth-token/", obtain_auth_token),
 ]
 

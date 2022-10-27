@@ -23,7 +23,7 @@ tags:
     description: "Restaurant namespace"
 
 paths:
-  "/api/login/client/":
+  "/api/v1/login/client/":
     post:
       tags:
         - auth
@@ -38,7 +38,7 @@ paths:
         "400":
           $ref: "#/components/responses/TokenObtain400"
 
-  "/api/signup/client/":
+  "/api/v1/signup/client/":
     post:
       tags:
         - auth
@@ -53,7 +53,7 @@ paths:
         "400":
           $ref: "#/components/responses/TokenObtain400"
 
-  "/api/login/employee/":
+  "/api/v1/login/employee/":
     post:
       tags:
         - auth
@@ -68,7 +68,7 @@ paths:
         "400":
           $ref: "#/components/responses/TokenObtain400"
 
-  "/api/auth/token/refresh/":
+  "/api/v1/auth/token/refresh/":
     post:
       tags:
         - auth
@@ -84,7 +84,7 @@ paths:
         "400":
           $ref: "#/components/responses/TokenRefresh400"
 
-  "/api/categories/":
+  "/api/v1/categories/":
     post:
       tags:
         - categories
@@ -117,7 +117,7 @@ paths:
         "403":
           description: "Forbidden"
 
-  "/api/categories/{category_id}/":
+  "/api/v1/categories/{category_id}/":
     get:
       tags:
         - categories
@@ -188,7 +188,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/orders/":
+  "/api/v1/orders/":
     post:
       tags:
         - orders
@@ -221,7 +221,7 @@ paths:
         "403":
           description: "Forbidden"
 
-  "/api/orders/{order_id}/":
+  "/api/v1/orders/{order_id}/":
     get:
       tags:
         - orders
@@ -292,7 +292,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/dishes/":
+  "/api/v1/dishes/":
     post:
       tags:
         - dishes
@@ -325,7 +325,7 @@ paths:
         "403":
           description: "Forbidden"
 
-  "/api/dishes/{dish_id}/":
+  "/api/v1/dishes/{dish_id}/":
     get:
       tags:
         - dishes
@@ -396,7 +396,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/dishes/{dish_id}/images/":
+  "/api/v1/dishes/{dish_id}/images/":
     post:
       tags:
         - dishes
@@ -443,7 +443,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/dishes/{dish_id}/images/{dish_image_id}/":
+  "/api/v1/dishes/{dish_id}/images/{dish_image_id}/":
     delete:
       tags:
         - dishes

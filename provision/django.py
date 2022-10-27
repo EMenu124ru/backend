@@ -5,7 +5,7 @@ from . import common, docker
 
 @task
 def manage(context, service="django", command="", compose="dev"):
-    """ase template for commands with python manage.py."""
+    """Base template for commands with python manage.py."""
     docker.docker_compose_run(context, service, f"python manage.py {command}", compose)
 
 
@@ -71,4 +71,4 @@ def shell(context, params=""):
         https://django-extensions.readthedocs.io/en/latest/shell_plus.html
     """
     common.success("Entering Django Shell")
-    manage(context, f"shell_plus --ipython {params}")
+    manage(context, command="shell")

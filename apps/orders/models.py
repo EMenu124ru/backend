@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 
 
@@ -42,12 +43,16 @@ class Dish(models.Model):
     price = models.DecimalField(
         max_digits=11,
         decimal_places=2,
+        validators=[MinValueValidator(0)],
         verbose_name="Цена",
     )
     compound = models.TextField(
         verbose_name="Состав",
     )
-    weight = models.PositiveIntegerField(
+    weight = models.DecimalField(
+        max_digits=11,
+        decimal_places=3,
+        validators=[MinValueValidator(0)],
         verbose_name="Вес блюда",
     )
     reviews = models.ManyToManyField(
@@ -72,7 +77,6 @@ class Order(models.Model):
         WAITING_FOR_DELIVERY = "WAITING_FOR_DELIVERY", "Ожидает доставки"
         IN_PROCESS_DELIVERY = "IN_PROCESS_DELIVERY", "В процессе доставки"
         DELIVERED = "DELIVERED", "Доставлен"
-        REMOVED = "REMOVED", "Удален"
 
     status = models.TextField(
         choices=Statuses.choices,
@@ -81,6 +85,7 @@ class Order(models.Model):
     price = models.DecimalField(
         max_digits=11,
         decimal_places=2,
+        validators=[MinValueValidator(0)],
         verbose_name="Цена",
     )
     comment = models.TextField(
@@ -148,15 +153,13 @@ class RestaurantAndOrder(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name="reservation",
+        related_name="restaurant_and_order",
         verbose_name="Заказ",
     )
     restaurant = models.ForeignKey(
         "restaurants.Restaurant",
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name="reservation",
+        on_delete=models.CASCADE,
+        related_name="restaurant_and_order",
         verbose_name="Ресторан",
     )
 
