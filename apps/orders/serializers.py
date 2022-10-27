@@ -19,9 +19,35 @@ class CategorySerializer(serializers.ModelSerializer):
         )
 
 
+class DishImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.DishImages
+        fields = (
+            "id",
+            "image",
+        )
+
+
+class DishImageWithDishSerializer(serializers.ModelSerializer):
+
+    dish = serializers.PrimaryKeyRelatedField(
+        queryset=models.Dish.objects.all(),
+    )
+
+    class Meta:
+        model = models.DishImages
+        fields = (
+            "id",
+            "image",
+            "dish",
+        )
+
+
 class DishRetrieveSerializer(serializers.ModelSerializer):
 
     category = CategorySerializer()
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Dish
@@ -34,7 +60,11 @@ class DishRetrieveSerializer(serializers.ModelSerializer):
             "price",
             "compound",
             "weight",
+            "images",
         )
+
+    def get_images(serlf, obj):
+        return DishImageSerializer(obj.images.all(), many=True).data
 
 
 class DishCreateSerializer(serializers.ModelSerializer):
@@ -59,21 +89,6 @@ class DishCreateSerializer(serializers.ModelSerializer):
     @property
     def data(self) -> OrderedDict:
         return DishRetrieveSerializer(instance=self.instance).data
-
-
-class DishImageSerializer(serializers.ModelSerializer):
-
-    dish = serializers.PrimaryKeyRelatedField(
-        queryset=models.Dish.objects.all(),
-    )
-
-    class Meta:
-        model = models.DishImages
-        fields = (
-            "id",
-            "image",
-            "dish",
-        )
 
 
 class OrderRetrieveSerializer(serializers.ModelSerializer):

@@ -17,6 +17,8 @@ tags:
     description: "Category namespace"
   - name: dishes
     description: "Dish namespace"
+  - name: dish-images
+    description: "Dish namespace"
   - name: reviews
     description: "Review namespace"
   - name: restaurants
@@ -181,6 +183,30 @@ paths:
       responses:
         "204":
           description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/categories/{category_id}/dishes/":
+    get:
+      tags:
+        - categories
+        - dishes
+      summary: "Get dishes of some category"
+      parameters:
+        - name: category_id
+          in: path
+          schema:
+            type: number
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DishList200"
         "401":
           description: "Unauthorized"
         "403":
@@ -396,46 +422,22 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/dishes/{dish_id}/images/":
-    post:
-      tags:
-        - dishes
-      summary: "Add dish image"
-      parameters:
-        - name: dish_id
-          in: path
-          schema:
-            type: number
-          required: true
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/DishImageCreateBody"
-      responses:
-        "201":
-          $ref: "#/components/responses/DishImageCreate201"
-        "400":
-          $ref: "#/components/responses/DishImageCreate400"
-        "401":
-          description: "Unauthorized"
-        "403":
-          description: "Forbidden"
-    
+  "/api/v1/dishes/{dish_id}/orders/":
     get:
       tags:
         - dishes
-      summary: "Get list dish images"
-      security:
-        - bearerAuth: []
+      summary: "Get orders of some dish"
       parameters:
         - name: dish_id
           in: path
           schema:
             type: number
           required: true
+      security:
+        - bearerAuth: []
       responses:
         "200":
-          $ref: "#/components/responses/DishImages200"
+          $ref: "#/components/responses/OrderList200"
         "401":
           description: "Unauthorized"
         "403":
@@ -443,17 +445,55 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/dishes/{dish_id}/images/{dish_image_id}/":
-    delete:
+  "/api/v1/dishes/{dish_id}/reviews/":
+    get:
       tags:
         - dishes
-      summary: "Delete dish image"
+        - reviews
+      summary: "Get reviews of some dish"
       parameters:
         - name: dish_id
           in: path
           schema:
             type: number
           required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ReviewList200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+  
+  "/api/v1/dish-images/":
+    post:
+      tags:
+        - dish-images
+      summary: "Create dish image"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/DishImageCreateBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/DishImages200"
+        "400":
+          $ref: "#/components/responses/DishImageCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+  "/api/v1/dish-images/{dish_image_id}/":
+    delete:
+      tags:
+        - dish-images
+      summary: "Delete dish image"
+      parameters:
         - name: dish_image_id
           in: path
           schema:
@@ -479,21 +519,6 @@ components:
       bearerFormat: JWT
 
   schemas:
-    UserBase:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-        first_name:
-          type: string
-        last_name:
-          type: string
-        username:
-          type: string
-        password:
-          type: string
-
     ClientCreateBase:
       type: object
       properties:
@@ -511,28 +536,6 @@ components:
         phone_number:
           type: string
 
-    OptionalClientBase:
-      type: object
-      nullable: true
-      properties:
-        user:
-          $ref: "#/components/schemas/UserBase"
-        bonuses:
-          type: number
-        phone_number:
-          type: string
-
-    OptionalEmployeeBase:
-      type: object
-      nullable: true
-      properties:
-        user:
-          $ref: "#/components/schemas/UserBase"
-        role:
-          type: string
-        restaurant:
-          $ref: "#/components/schemas/RestaurantBase"
-
     OrderBase:
       type: object
       properties:
@@ -543,9 +546,9 @@ components:
         comment:
           type: string
         employee:
-          $ref: "#/components/schemas/OptionalEmployeeBase"
+          type: number
         client:
-          $ref: "#/components/schemas/OptionalClientBase"
+          type: number
         place_number:
           type: number
         dishes:
@@ -569,22 +572,50 @@ components:
           nullable: true
         place_number:
           type: number
+        dishes:
+          type: array
+          items:
+            type: number
 
     CategoryBase:
       type: object
       properties:
+        id:
+          type: number
         name:
           type: string
-        dishes:
-          type: array
-          items:
-            $ref: "#/components/schemas/DishBase"
 
     CategoryCreateBase:
       type: object
       properties:
         name:
           type: string
+
+    DishImageBase:
+      type: object
+      properties:
+        id:
+          type: number
+        images:
+          type: string
+
+    DishImageBundleCreateBase:
+      type: object
+      properties:
+        images:
+          type: array
+          items:
+            type: string
+
+    DishImageCreateBase:
+      type: object
+      properties:
+        images:
+          type: array
+          items:
+            type: string
+        dish:
+          type: number
 
     DishBase:
       type: object
@@ -603,14 +634,6 @@ components:
           type: string
         weight:
           type: number
-        reviews:
-          type: array
-          items:
-            $ref: "#/components/schemas/ReviewBase"
-        orders:
-          type: array
-          items:
-            $ref: "#/components/schemas/OrderBase"
         images:
           type: array
           items:
@@ -633,32 +656,10 @@ components:
           type: string
         weight:
           type: number
-
-    DishImageBase:
-      type: object
-      properties:
-        image:
-          type: string
-        dish:
-          $ref: "#/components/schemas/DishBase"
-
-    DishImageCreateBase:
-      type: object
-      properties:
         images:
           type: array
           items:
             type: string
-
-    RestaurantBase:
-      type: object
-      properties:
-        address:
-          type: string
-        reviews:
-          type: array
-          items:
-            $ref: "#/components/schemas/ReviewBase"
 
     ReviewBase:
       type: object
@@ -668,7 +669,12 @@ components:
         mark:
           type: number
         client:
-          $ref: "#/components/schemas/OptionalClientBase"
+          type: number
+          nullable: true
+        images:
+          type: array
+          items:
+            type: string
 
   requestBodies:
     LoginRequestBodyClient:
@@ -714,6 +720,15 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/DishCreateBase"
+      required: true
+
+    DishImageBundleCreateBody:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/DishImageBundleCreateBase"
       required: true
 
     DishImageCreateBody:
@@ -832,9 +847,11 @@ components:
                   next:
                     type: string
                     format: url
+                    nullable: true
                   previous:
                     type: string
                     format: url
+                    nullable: true
               count:
                 type: number
               total_pages:
@@ -874,9 +891,11 @@ components:
                   next:
                     type: string
                     format: url
+                    nullable: true
                   previous:
                     type: string
                     format: url
+                    nullable: true
               count:
                 type: number
               total_pages:
@@ -916,9 +935,11 @@ components:
                   next:
                     type: string
                     format: url
+                    nullable: true
                   previous:
                     type: string
                     format: url
+                    nullable: true
               count:
                 type: number
               total_pages:
@@ -955,3 +976,12 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/DishImageBase"
+    
+    ReviewList200:
+      description: "List of reviews"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/ReviewBase"
