@@ -30,21 +30,6 @@ class DishImageSerializer(serializers.ModelSerializer):
         )
 
 
-class DishImageWithDishSerializer(serializers.ModelSerializer):
-
-    dish = serializers.PrimaryKeyRelatedField(
-        queryset=models.Dish.objects.all(),
-    )
-
-    class Meta:
-        model = models.DishImages
-        fields = (
-            "id",
-            "image",
-            "dish",
-        )
-
-
 class DishRetrieveSerializer(serializers.ModelSerializer):
 
     category = CategorySerializer()

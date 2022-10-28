@@ -79,7 +79,6 @@ class DishViewSet(BaseViewSet):
 class DishImageViewSet(CreateDestroyViewSet):
 
     queryset = models.DishImages.objects.all()
-    serializer_class = serializers.DishImageWithDishSerializer
 
     def create(self, request, *args, **kwargs):
         dish = models.Dish.objects.get(id=request.data["dish"])
