@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from datetime import datetime
 
 from django.utils import timezone
 from rest_framework import serializers
@@ -63,7 +64,7 @@ class DishRetrieveSerializer(serializers.ModelSerializer):
             "images",
         )
 
-    def get_images(serlf, obj):
+    def get_images(serlf, obj) -> list:
         return DishImageSerializer(obj.images.all(), many=True).data
 
 
@@ -152,7 +153,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     def data(self) -> OrderedDict:
         return OrderRetrieveSerializer(instance=self.instance).data
 
-    def validate_dishes(self, dishes):
+    def validate_dishes(self, dishes) -> list:
         if dishes:
             return dishes
         raise serializers.ValidationError("Заказ не может быть без блюд")
@@ -194,9 +195,11 @@ class RestaurantAndOrderCreateSerializer(serializers.ModelSerializer):
             "restaurant",
         )
 
-    def validate_arrival_time(self, arrival_time):
+    def validate_arrival_time(self, arrival_time) -> datetime:
         if timezone.now() >= arrival_time:
-            raise serializers.ValidationError("Время прихода не может быть раньше текущего времени")
+            raise serializers.ValidationError(
+                "Время прихода не может быть раньше текущего времени",
+            )
         return arrival_time
 
     def create(self, validated_data) -> models.RestaurantAndOrder:
@@ -204,12 +207,12 @@ class RestaurantAndOrderCreateSerializer(serializers.ModelSerializer):
         dishes = order_dict.pop("dishes")
         order = models.Order.objects.create(**order_dict)
         order.dishes.set(dishes)
-        reservation = models.RestaurantAndOrder.objects.create(
+        restaurantAndOrders = models.RestaurantAndOrder.objects.create(
             arrival_time=validated_data["arrival_time"],
             restaurant=validated_data["restaurant"],
             order=order,
         )
-        return reservation
+        return restaurantAndOrders
 
     @property
     def data(self) -> OrderedDict:

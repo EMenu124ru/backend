@@ -10,11 +10,31 @@ from apps.orders.viewsets import (
 )
 
 router = DefaultRouter() if settings.DEBUG else SimpleRouter()
-router.register("categories", CategoryViewSet, basename="categories")
-router.register("dishes", DishViewSet, basename="dishes")
-router.register("orders", OrderViewSet, basename="orders")
-router.register("dish-images", DishImageViewSet, basename="dish-images")
-router.register("reservations", RestaurantAndOrderViewSet, basename="reservations")
+router.register(
+    "categories",
+    CategoryViewSet,
+    basename="categories",
+)
+router.register(
+    "dishes",
+    DishViewSet,
+    basename="dishes",
+)
+router.register(
+    "orders",
+    OrderViewSet,
+    basename="orders",
+)
+router.register(
+    "dish-images",
+    DishImageViewSet,
+    basename="dish-images",
+)
+router.register(
+    "restaurant-and-orders",
+    RestaurantAndOrderViewSet,
+    basename="restaurantAndOrders",
+)
 
 app_name = "api"
 urlpatterns = router.urls
