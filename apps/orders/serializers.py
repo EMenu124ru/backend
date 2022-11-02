@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from datetime import datetime
 
 from django.utils import timezone
@@ -30,30 +29,7 @@ class DishImageSerializer(serializers.ModelSerializer):
         )
 
 
-class DishRetrieveSerializer(serializers.ModelSerializer):
-
-    category = CategorySerializer()
-    images = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Dish
-        fields = (
-            "id",
-            "category",
-            "name",
-            "description",
-            "short_description",
-            "price",
-            "compound",
-            "weight",
-            "images",
-        )
-
-    def get_images(serlf, obj) -> list:
-        return DishImageSerializer(obj.images.all(), many=True).data
-
-
-class DishCreateSerializer(serializers.ModelSerializer):
+class DishSerializer(serializers.ModelSerializer):
 
     category = serializers.PrimaryKeyRelatedField(
         queryset=models.Category.objects.all(),
@@ -72,41 +48,17 @@ class DishCreateSerializer(serializers.ModelSerializer):
             "weight",
         )
 
-    @property
-    def data(self) -> OrderedDict:
-        return DishRetrieveSerializer(instance=self.instance).data
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        new_info = {
+            "images": DishImageSerializer(instance.images.all(), many=True).data,
+            "category": CategorySerializer(instance=instance.category).data,
+        }
+        data.update(new_info)
+        return data
 
 
-class OrderRetrieveSerializer(serializers.ModelSerializer):
-
-    employee = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(),
-        allow_null=True,
-    )
-    client = serializers.PrimaryKeyRelatedField(
-        queryset=Client.objects.all(),
-        allow_null=True,
-    )
-    dishes = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Order
-        fields = (
-            "id",
-            "status",
-            "price",
-            "comment",
-            "employee",
-            "client",
-            "place_number",
-            "dishes",
-        )
-
-    def get_dishes(self, obj) -> list:
-        return DishRetrieveSerializer(obj.dishes.all(), many=True).data
-
-
-class OrderCreateSerializer(serializers.ModelSerializer):
+class OrderSerializer(serializers.ModelSerializer):
 
     employee = serializers.PrimaryKeyRelatedField(
         queryset=Employee.objects.all(),
@@ -134,40 +86,26 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             "dishes",
         )
 
-    @property
-    def data(self) -> OrderedDict:
-        return OrderRetrieveSerializer(instance=self.instance).data
-
     def validate_dishes(self, dishes) -> list:
         if dishes:
             return dishes
         raise serializers.ValidationError("Заказ не может быть без блюд")
 
-
-class RestaurantAndOrderRetrieveSerializer(serializers.ModelSerializer):
-
-    order = OrderRetrieveSerializer()
-    restaurant = serializers.PrimaryKeyRelatedField(
-        queryset=Restaurant.objects.all(),
-        allow_null=True,
-    )
-
-    class Meta:
-        model = models.RestaurantAndOrder
-        fields = (
-            "id",
-            "arrival_time",
-            "order",
-            "restaurant",
-        )
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        new_info = {
+            "dishes": DishSerializer(instance.dishes.all(), many=True).data,
+        }
+        data.update(new_info)
+        return data
 
 
-class RestaurantAndOrderCreateSerializer(serializers.ModelSerializer):
+class RestaurantAndOrderSerializer(serializers.ModelSerializer):
 
     restaurant = serializers.PrimaryKeyRelatedField(
         queryset=Restaurant.objects.all(),
     )
-    order = OrderCreateSerializer(
+    order = OrderSerializer(
         allow_null=True,
     )
 
@@ -198,9 +136,3 @@ class RestaurantAndOrderCreateSerializer(serializers.ModelSerializer):
             order=order,
         )
         return restaurantAndOrders
-
-    @property
-    def data(self) -> OrderedDict:
-        return RestaurantAndOrderRetrieveSerializer(
-            instance=self.instance,
-        ).data

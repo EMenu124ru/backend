@@ -1,7 +1,6 @@
 from rest_framework import decorators, response, status
 
 from apps.core.views import BaseViewSet, CreateDestroyViewSet
-from apps.reviews.serializers import ReviewSerializer
 
 from . import models, serializers
 
@@ -10,7 +9,7 @@ class CategoryViewSet(BaseViewSet):
 
     def get_serializer_class(self):
         if self.action == "dishes":
-            return serializers.DishRetrieveSerializer
+            return serializers.DishSerializer
         return serializers.CategorySerializer
 
     def get_queryset(self):
@@ -28,13 +27,11 @@ class CategoryViewSet(BaseViewSet):
 class DishViewSet(BaseViewSet):
 
     def get_serializer_class(self):
-        if self.action == "reviews":
-            return ReviewSerializer
+        # if self.action == "reviews":
+        #     return ReviewSerializer
         if self.action == "orders":
-            return serializers.OrderRetrieveSerializer
-        if self.action in ("create", "update", "partial_update"):
-            return serializers.DishCreateSerializer
-        return serializers.DishRetrieveSerializer
+            return serializers.OrderSerializer
+        return serializers.DishSerializer
 
     def get_queryset(self):
         if self.action == "reviews":
@@ -103,21 +100,13 @@ class DishImageViewSet(CreateDestroyViewSet):
 class OrderViewSet(BaseViewSet):
 
     queryset = models.Order.objects.all()
-
-    def get_serializer_class(self):
-        if self.action in ("create", "update", "partial_update"):
-            return serializers.OrderCreateSerializer
-        return serializers.OrderRetrieveSerializer
+    serializer_class = serializers.OrderSerializer
 
 
 class RestaurantAndOrderViewSet(BaseViewSet):
 
     queryset = models.RestaurantAndOrder.objects.all()
-
-    def get_serializer_class(self):
-        if self.action in ("create", "update", "partial_update"):
-            return serializers.RestaurantAndOrderCreateSerializer
-        return serializers.RestaurantAndOrderRetrieveSerializer
+    serializer_class = serializers.RestaurantAndOrderSerializer
 
     def perform_destroy(self, instance):
         if instance.order:
