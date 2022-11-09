@@ -77,12 +77,8 @@ class ClientSerializer(serializers.ModelSerializer):
         user_fields = validated_data['user']
         username = (
             f"{user_fields['first_name']}_{user_fields['last_name']}"
+            f"_{validated_data['phone_number']}"
         )
-        if models.User.objects.filter(username=username).exists():
-            username = (
-                f"{user_fields['first_name']}_{user_fields['last_name']}"
-                f"_{validated_data['phone_number']}"
-            )
         user = models.User.objects.create(
             username=username,
             first_name=user_fields['first_name'],

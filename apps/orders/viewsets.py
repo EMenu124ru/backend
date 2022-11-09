@@ -65,7 +65,7 @@ class DishViewSet(BaseViewSet):
             ],
         )
         return response.Response(
-            serializer.data,
+            data=serializers.DishSerializer(dish).data,
             status=status.HTTP_201_CREATED,
         )
 
