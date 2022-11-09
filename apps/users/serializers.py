@@ -49,10 +49,6 @@ class ClientAuthSerializer(serializers.Serializer):
                 phone_number=attrs['phone_number'],
             ).first()
         ):
-            if not client:
-                raise serializers.ValidationError(
-                    'Нет клиента с таким номером телефона',
-                )
             if not client.user.check_password(attrs['password']):
                 raise serializers.ValidationError(
                     'Не верный пароль',
@@ -98,23 +94,23 @@ class ClientSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data) -> models.Client:
         if "user" in validated_data:
-            if "first_name" in validated_data["user"]:
-                instance.user.first_name = (
-                    validated_data["user"].pop("first_name")
-                )
-            if "last_name" in validated_data["user"]:
-                instance.user.last_name = (
-                    validated_data["user"].pop("last_name")
-                )
+            user_fields = validated_data["user"]
+            instance.user.first_name = (
+                user_fields.get("first_name", instance.user.first_name)
+            )
+            instance.user.last_name = (
+                user_fields.get("last_name", instance.user.last_name)
+            )
             if "password" in validated_data["user"]:
                 instance.user.set_password(
-                    validated_data["user"].pop("password")
+                    user_fields.pop("password")
                 )
             instance.user.save()
-        if validated_data:
-            if "phone_number" in validated_data:
-                instance.phone_number = validated_data.pop("phone_number")
-            if "bonuses" in validated_data:
-                instance.bonuses = validated_data.pop("bonuses")
-            instance.save()
+        instance.phone_number = (
+            validated_data.get("phone_number", instance.phone_number)
+        )
+        instance.bonuses = (
+            validated_data.get("bonuses", instance.bonuses)
+        )
+        instance.save()
         return instance
