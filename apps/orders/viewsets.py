@@ -33,6 +33,11 @@ class DishViewSet(BaseViewSet):
             return serializers.OrderSerializer
         return serializers.DishSerializer
 
+    def perform_destroy(self, instance) -> None:
+        for image in instance.images.all():
+            image.image.storage.delete(image.image.path)
+        instance.delete()
+
     def get_queryset(self):
         if self.action == "reviews":
             return models.Dish.objects.prefetch_related(

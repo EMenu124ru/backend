@@ -8,6 +8,7 @@ from apps.orders.viewsets import (
     OrderViewSet,
     RestaurantAndOrderViewSet,
 )
+from apps.users.viewsets import ClientViewSet
 
 router = DefaultRouter() if settings.DEBUG else SimpleRouter()
 router.register(
@@ -34,6 +35,11 @@ router.register(
     "restaurant-and-orders",
     RestaurantAndOrderViewSet,
     basename="restaurantAndOrders",
+)
+router.register(
+    "clients",
+    ClientViewSet,
+    basename="clients",
 )
 
 app_name = "api"

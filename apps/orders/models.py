@@ -1,5 +1,7 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils import timezone
 
 
 def get_directory_path(instance, filename) -> str:
@@ -7,6 +9,13 @@ def get_directory_path(instance, filename) -> str:
         f"dishes/{instance.dish.name.replace(' ', '_')}"
         f"_{instance.dish.id}/{filename}"
     )
+
+
+def validate_arrival_time(arrival_time) -> None:
+    if timezone.now() >= arrival_time:
+        raise ValidationError(
+            "Время прихода не может быть раньше текущего времени",
+        )
 
 
 class Category(models.Model):
@@ -146,6 +155,7 @@ class DishImages(models.Model):
 
 class RestaurantAndOrder(models.Model):
     arrival_time = models.DateTimeField(
+        validators=[validate_arrival_time],
         verbose_name="Время прибытия",
     )
     order = models.ForeignKey(

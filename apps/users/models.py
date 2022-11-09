@@ -40,6 +40,7 @@ class Client(models.Model):
     phone_number = models.CharField(
         max_length=17,
         validators=[phone_regex],
+        unique=True,
         verbose_name="Телефонный номер",
     )
 

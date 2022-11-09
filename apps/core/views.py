@@ -17,3 +17,15 @@ class CreateDestroyViewSet(
     """CreateDestroy ViewSet for `create` and `destroy` actions."""
 
     pass
+
+
+class CRUDViewSet(
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
+    """CRUD ViewSet for `create`, `destroy`, `retrieve` and `update` actions."""
+
+    pass

@@ -1,6 +1,3 @@
-from datetime import datetime
-
-from django.utils import timezone
 from rest_framework import serializers
 
 from apps.restaurants.models import Restaurant
@@ -87,9 +84,9 @@ class OrderSerializer(serializers.ModelSerializer):
         )
 
     def validate_dishes(self, dishes) -> list:
-        if dishes:
-            return dishes
-        raise serializers.ValidationError("Заказ не может быть без блюд")
+        if not dishes:
+            raise serializers.ValidationError("Заказ не может быть без блюд")
+        return dishes
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -117,13 +114,6 @@ class RestaurantAndOrderSerializer(serializers.ModelSerializer):
             "order",
             "restaurant",
         )
-
-    def validate_arrival_time(self, arrival_time) -> datetime:
-        if timezone.now() >= arrival_time:
-            raise serializers.ValidationError(
-                "Время прихода не может быть раньше текущего времени",
-            )
-        return arrival_time
 
     def create(self, validated_data) -> models.RestaurantAndOrder:
         order_dict = validated_data.pop("order")
