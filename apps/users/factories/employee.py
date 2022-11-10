@@ -4,7 +4,7 @@ from factory.django import DjangoModelFactory
 from apps.restaurants.factories import RestaurantFactory
 from apps.users.models import Employee
 
-from .user_factory import UserFactory
+from .user import UserFactory
 
 
 class EmployeeFactory(DjangoModelFactory):

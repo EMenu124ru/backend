@@ -3,7 +3,7 @@ from factory.django import DjangoModelFactory
 
 from apps.users.models import Client
 
-from .user_factory import UserFactory
+from .user import UserFactory
 
 
 class ClientFactory(DjangoModelFactory):
@@ -30,4 +30,7 @@ class ClientFactory(DjangoModelFactory):
         return obj
 
     class Meta:
+        django_get_or_create = (
+            "phone_number",
+        )
         model = Client

@@ -24,4 +24,7 @@ class UserFactory(DjangoModelFactory):
     )
 
     class Meta:
+        django_get_or_create = (
+            "username",
+        )
         model = User

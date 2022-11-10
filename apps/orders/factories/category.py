@@ -12,4 +12,7 @@ class CategoryFactory(DjangoModelFactory):
     )
 
     class Meta:
+        django_get_or_create = (
+            "name",
+        )
         model = Category

@@ -1,8 +1,10 @@
-from factory import Faker, SubFactory
+from factory import Faker, SubFactory, post_generation
 from factory.django import DjangoModelFactory
 
 from apps.reviews.models import Review
 from apps.users.factories import ClientFactory
+
+IMAGES_COUNT = 3
 
 
 class ReviewFactory(DjangoModelFactory):

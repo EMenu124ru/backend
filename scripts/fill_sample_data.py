@@ -13,10 +13,11 @@ from apps.users.factories import ClientFactory, EmployeeFactory, UserFactory
 
 USERS_COUNT = 10
 CLIENTS_COUNT = EMPLOYEES_COUNT = 5
-DISHES_COUNT = DISH_IMAGES_COUNT = 10
+DISHES_COUNT = 10
 CATEGORIES_COUNT = 2
 ORDERS_COUNT = 3
 DISH_REVIEWS_COUNT = 10
+IMAGES_PER_DISH_COUNT = IMAGES_PER_REVIEW_COUNT = 3
 RESTAURANTS_COUNT = 3
 RESTAURANT_REVIEWS_COUNT = 3
 SCHEDULES_COUNT = 7
@@ -32,18 +33,18 @@ def run():
     )
     clients = [
         ClientFactory.create(user=users[i])
-        for i in range(CLIENTS_COUNT)]
+        for i in range(CLIENTS_COUNT)
+    ]
     rest_reviews = []
     for _ in range(RESTAURANT_REVIEWS_COUNT):
         client = clients[randint(0, CLIENTS_COUNT - 1)]
         rest_reviews.append(ReviewFactory.create(client=client))
     for review in rest_reviews:
-        ReviewImagesFactory.create(
+        ReviewImagesFactory.create_batch(
             review=review,
+            size=IMAGES_PER_REVIEW_COUNT,
         )
-    restaurants = []
-    for review in rest_reviews:
-        restaurants.append(RestaurantFactory.create(reviews=(review,)))
+    restaurants = [RestaurantFactory.create(reviews=(review,)) for review in rest_reviews]
     for _ in range(SCHEDULES_COUNT):
         restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]
         ScheduleFactory.create(restaurant=restaurant)
@@ -59,8 +60,9 @@ def run():
         size=CATEGORIES_COUNT,
     )
     for review in dish_reviews:
-        ReviewImagesFactory.create(
+        ReviewImagesFactory.create_batch(
             review=review,
+            size=IMAGES_PER_REVIEW_COUNT,
         )
     dishes = []
     for review in dish_reviews:
@@ -70,18 +72,16 @@ def run():
             reviews=(review,),
             ))
     for dish in dishes:
-        DishImagesFactory.create(
+        DishImagesFactory.create_batch(
             dish=dish,
+            size=IMAGES_PER_REVIEW_COUNT,
         )
     orders = []
     for i in range(ORDERS_COUNT):
-        client = clients[i]
-        employee = employees[i]
-        temp_dishes = dishes[i: i + 2]
         orders.append(OrderFactory.create(
-            client=client,
-            employee=employee,
-            dishes=temp_dishes,
+            client=clients[i],
+            employee=employees[i],
+            dishes=dishes[i: i + 2],
         ))
     for order in orders:
         restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]

@@ -1,3 +1,3 @@
-from .client_factory import ClientFactory
-from .employee_factory import EmployeeFactory
-from .user_factory import UserFactory
+from .client import ClientFactory
+from .employee import EmployeeFactory
+from .user import UserFactory

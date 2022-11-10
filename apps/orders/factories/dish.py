@@ -3,7 +3,10 @@ from factory.django import DjangoModelFactory
 
 from apps.orders.models import Dish
 
-from .category_factory import CategoryFactory
+from .category import CategoryFactory
+from apps.reviews.factories import ReviewFactory
+
+IMAGES_COUNT = REVIEWS_COUNT = 3
 
 
 class DishFactory(DjangoModelFactory):
@@ -46,9 +49,10 @@ class DishFactory(DjangoModelFactory):
     def reviews(self, create, extracted, **kwargs):
         if not create:
             return
-        if extracted:
-            for review in extracted:
-                self.reviews.add(review)
+        reviews = extracted if extracted is not None else (
+            ReviewFactory(review=self) for _ in range(REVIEWS_COUNT)
+        )
+        self.reviews.add(*reviews)
 
     class Meta:
         model = Dish

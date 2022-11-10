@@ -1,2 +1,2 @@
-from .review_factory import ReviewFactory
-from .review_images_factory import ReviewImagesFactory
+from .review import ReviewFactory
+from .review_images import ReviewImagesFactory

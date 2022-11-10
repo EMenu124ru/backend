@@ -1,2 +1,2 @@
-from .restaurant_factory import RestaurantFactory
-from .schedule_factory import ScheduleFactory
+from .restaurant import RestaurantFactory
+from .schedule import ScheduleFactory
