@@ -78,6 +78,26 @@ class Dish(models.Model):
         return f"Dish {self.name} {self.category} {self.price} {self.description}"
 
 
+class DishImages(models.Model):
+    image = models.ImageField(
+        upload_to=get_directory_path,
+        verbose_name="Картинка",
+    )
+    dish = models.ForeignKey(
+        Dish,
+        on_delete=models.CASCADE,
+        related_name="images",
+        verbose_name="Блюдо",
+    )
+
+    class Meta:
+        verbose_name = "Картинка блюда"
+        verbose_name_plural = "Картинки блюд"
+
+    def __str__(self) -> str:
+        return f"Order {self.dish}"
+
+
 class Order(models.Model):
 
     class Statuses(models.TextChoices):
@@ -119,11 +139,6 @@ class Order(models.Model):
     place_number = models.PositiveIntegerField(
         verbose_name="Номер места",
     )
-    dishes = models.ManyToManyField(
-        Dish,
-        related_name="orders",
-        verbose_name="Блюда",
-    )
 
     class Meta:
         verbose_name = "Заказ"
@@ -133,24 +148,26 @@ class Order(models.Model):
         return f"Order {self.price} {self.comment} {self.employee} {self.place_number}"
 
 
-class DishImages(models.Model):
-    image = models.ImageField(
-        upload_to=get_directory_path,
-        verbose_name="Картинка",
+class OrderAndDishes(models.Model):
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="dishes",
+        verbose_name="Заказ",
     )
     dish = models.ForeignKey(
         Dish,
         on_delete=models.CASCADE,
-        related_name="images",
+        related_name="orders",
         verbose_name="Блюдо",
     )
 
     class Meta:
-        verbose_name = "Картинка блюда"
-        verbose_name_plural = "Картинки блюд"
+        verbose_name = "Заказ и блюдо"
+        verbose_name_plural = "Заказы и блюда"
 
     def __str__(self) -> str:
-        return f"Order {self.dish}"
+        return f"OrderAndDish {self.order} {self.dish}"
 
 
 class RestaurantAndOrder(models.Model):
@@ -178,4 +195,4 @@ class RestaurantAndOrder(models.Model):
         verbose_name_plural = "Ресторан и заказы"
 
     def __str__(self) -> str:
-        return f"Order {self.arrival_time} {self.order} {self.restaurant}"
+        return f"RestaurantAndOrder {self.arrival_time} {self.order} {self.restaurant}"

@@ -75,13 +75,46 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "status",
-            "price",
             "comment",
             "employee",
             "client",
             "place_number",
             "dishes",
         )
+
+    def create(self, validated_data) -> models.Order:
+        dishes = validated_data.pop("dishes")
+        validated_data.update(
+            {"price": sum([dish.price for dish in dishes])}
+        )
+        order = models.Order.objects.create(**validated_data)
+        models.OrderAndDishes.objects.bulk_create(
+            [
+                models.OrderAndDishes(
+                    order=order,
+                    dish=dish,
+                )
+                for dish in dishes
+            ],
+        )
+        return order
+
+    def update(self, instance, validated_data) -> models.Order:
+        dishes = validated_data.pop("dishes")
+        if dishes:
+            models.OrderAndDishes.objects.filter(order=instance).delete()
+            models.OrderAndDishes.objects.bulk_create(
+                [
+                    models.OrderAndDishes(
+                        order=instance,
+                        dish=dish,
+                    )
+                    for dish in dishes
+                ],
+            )
+            instance.price = sum([dish.price for dish in dishes])
+            instance.save()
+        return super().update(instance, validated_data)
 
     def validate_dishes(self, dishes) -> list:
         if not dishes:
@@ -90,8 +123,11 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
+        pk_dishes = instance.dishes.values_list("dish", flat=True)
+        dishes = models.Dish.objects.filter(id__in=pk_dishes)
         new_info = {
-            "dishes": DishSerializer(instance.dishes.all(), many=True).data,
+            "dishes": DishSerializer(dishes, many=True).data,
+            "price": instance.price,
         }
         data.update(new_info)
         return data
@@ -117,12 +153,17 @@ class RestaurantAndOrderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data) -> models.RestaurantAndOrder:
         order_dict = validated_data.pop("order")
-        dishes = order_dict.pop("dishes")
-        order = models.Order.objects.create(**order_dict)
-        order.dishes.set(dishes)
-        restaurantAndOrders = models.RestaurantAndOrder.objects.create(
+        order = None
+        if order_dict is not None:
+            order_dict["dishes"] = [dish.id for dish in order_dict["dishes"]]
+            order_dict["employee"] = self.context["request"].user.employee.id
+            serializer = OrderSerializer(data=order_dict)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            order = models.Order.objects.get(id=serializer.data["id"])
+        restaurant_and_orders = models.RestaurantAndOrder.objects.create(
             arrival_time=validated_data["arrival_time"],
             restaurant=validated_data["restaurant"],
             order=order,
         )
-        return restaurantAndOrders
+        return restaurant_and_orders

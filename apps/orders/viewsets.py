@@ -2,10 +2,14 @@ from rest_framework import decorators, response, status
 
 from apps.core.views import BaseViewSet, CreateDestroyViewSet
 
-from . import models, serializers
+from . import models, permissions, serializers
 
 
 class CategoryViewSet(BaseViewSet):
+
+    permission_classes = (
+        permissions.permissions.IsAuthenticated & permissions.IsManager,
+    )
 
     def get_serializer_class(self):
         if self.action == "dishes":
@@ -25,6 +29,10 @@ class CategoryViewSet(BaseViewSet):
 
 
 class DishViewSet(BaseViewSet):
+
+    permission_classes = (
+        permissions.permissions.IsAuthenticated & permissions.IsManager,
+    )
 
     def get_serializer_class(self):
         # if self.action == "reviews":
@@ -56,13 +64,7 @@ class DishViewSet(BaseViewSet):
         self.perform_create(serializer)
         dish = models.Dish.objects.get(id=serializer.data["id"])
         models.DishImages.objects.bulk_create(
-            [
-                models.DishImages(
-                    image=image,
-                    dish=dish,
-                )
-                for image in images
-            ],
+            [models.DishImages(image=image, dish=dish) for image in images],
         )
         return response.Response(
             data=serializers.DishSerializer(dish).data,
@@ -81,6 +83,9 @@ class DishViewSet(BaseViewSet):
 class DishImageViewSet(CreateDestroyViewSet):
 
     queryset = models.DishImages.objects.all()
+    permission_classes = (
+        permissions.permissions.IsAuthenticated & permissions.IsManager,
+    )
 
     def create(self, request, *args, **kwargs):
         dish = models.Dish.objects.get(id=request.data["dish"])
@@ -106,12 +111,23 @@ class OrderViewSet(BaseViewSet):
 
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
+    permission_classes = (
+        permissions.permissions.IsAuthenticated & (
+            permissions.IsCook | permissions.IsWaiter
+        ),
+    )
+
+    def perform_create(self, serializer) -> None:
+        serializer.save(employee=self.request.user.employee)
 
 
 class RestaurantAndOrderViewSet(BaseViewSet):
 
     queryset = models.RestaurantAndOrder.objects.all()
     serializer_class = serializers.RestaurantAndOrderSerializer
+    permission_classes = (
+        permissions.permissions.IsAuthenticated & permissions.IsHostess,
+    )
 
     def perform_destroy(self, instance):
         if instance.order:

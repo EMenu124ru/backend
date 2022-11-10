@@ -61,7 +61,7 @@ class Employee(models.Model):
         BARTENDER = "BARTENDER", "Бармен"
         COOK = "COOK", "Повар"
         CHEF = "CHEF", "Шеф-повар"
-        MANAGER = "MANAGER", "Менеджер"
+        MANAGER = "MANAGER", "Управляющий"
         HOSTESS = "HOSTESS", "Хостес"
 
     user = models.OneToOneField(

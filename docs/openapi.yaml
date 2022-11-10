@@ -27,11 +27,10 @@ tags:
     description: "restaurantAndOrders namespace"
 
 paths:
-  "/api/v1/login/client/":
+  "/api/v1/clients/login/":
     post:
       tags:
         - auth
-        - users
         - clients
       summary: "Login client"
       requestBody:
@@ -42,11 +41,9 @@ paths:
         "400":
           $ref: "#/components/responses/TokenObtain400"
 
-  "/api/v1/signup/client/":
+  "/api/v1/clients/":
     post:
       tags:
-        - auth
-        - users
         - clients
       summary: "Sign up client"
       requestBody:
@@ -57,11 +54,81 @@ paths:
         "400":
           $ref: "#/components/responses/TokenObtain400"
 
-  "/api/v1/login/employee/":
+  "/api/v1/clients/{client_id}/":
+    get:
+      tags:
+        - clients
+      summary: "Get client"
+      parameters:
+        - name: client_id
+          in: path
+          schema:
+            type: number
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/Client200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    patch:
+      tags:
+        - clients
+      summary: "Update client"
+      parameters:
+        - name: client_id
+          in: path
+          schema:
+            type: number
+          required: true
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/SignUpRequestBodyClient"
+      responses:
+        "200":
+          $ref: "#/components/responses/Client200"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    delete:
+      tags:
+        - clients
+      summary: "Delete client"
+      parameters:
+        - name: client_id
+          in: path
+          schema:
+            type: number
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/staff/login/":
     post:
       tags:
         - auth
-        - users
         - employees
       summary: "Login employee"
       requestBody:
@@ -76,7 +143,6 @@ paths:
     post:
       tags:
         - auth
-        - users
         - employees
         - clients
       summary: "Refresh token"
@@ -678,12 +744,23 @@ components:
       bearerFormat: JWT
 
   schemas:
+    ClientBase:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        phone_number:
+          type: string
+
     ClientCreateBase:
       type: object
       properties:
-        email:
-          type: string
-          format: email
         first_name:
           type: string
         last_name:
@@ -703,7 +780,7 @@ components:
         status:
           type: string
         price:
-          type: string
+          type: number
         comment:
           type: string
         employee:
@@ -722,8 +799,6 @@ components:
       properties:
         status:
           type: string
-        price:
-          type: number
         comment:
           type: string
         employee:
@@ -1061,6 +1136,13 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderBase"
+
+    Client200:
+      description: "Client item"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ClientBase"
 
     CategoryCreate201:
       description: "Category created"

@@ -2,13 +2,16 @@ from rest_framework import decorators, response, status
 
 from apps.core.views import CRUDViewSet
 
-from . import models, serializers
+from . import models, permissions, serializers
 
 
 class ClientViewSet(CRUDViewSet):
 
     queryset = models.Client.objects.all()
     serializer_class = serializers.ClientSerializer
+    permission_classes = (
+        permissions.IsCurrentUser,
+    )
 
     def perform_destroy(self, instance):
         instance.user.delete()
