@@ -1,12 +1,11 @@
-from factory import Faker, SubFactory, post_generation
+from factory import Faker, SubFactory
 from factory.django import DjangoModelFactory
 
 from apps.orders.models import Dish
 
 from .category import CategoryFactory
-from apps.reviews.factories import ReviewFactory
 
-IMAGES_COUNT = REVIEWS_COUNT = 3
+REVIEWS_COUNT = 3
 
 
 class DishFactory(DjangoModelFactory):
@@ -44,15 +43,6 @@ class DishFactory(DjangoModelFactory):
         min_value=50,
         max_value=750,
     )
-
-    @post_generation
-    def reviews(self, create, extracted, **kwargs):
-        if not create:
-            return
-        reviews = extracted if extracted is not None else (
-            ReviewFactory(review=self) for _ in range(REVIEWS_COUNT)
-        )
-        self.reviews.add(*reviews)
 
     class Meta:
         model = Dish

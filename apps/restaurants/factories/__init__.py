@@ -1,2 +1,2 @@
-from .restaurant import RestaurantFactory
-from .schedule import ScheduleFactory
+from .restaurant import RestaurantFactory  # noqa F401
+from .schedule import ScheduleFactory  # noqa F401

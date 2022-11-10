@@ -26,8 +26,6 @@ RESTAURANT_AND_ORDER_COUNT = 3
 
 def run():
     """Generate examples."""
-    # creating 10 users, 5 of them are clients,
-    # and other 5 are employees
     users = UserFactory.create_batch(
         size=USERS_COUNT,
     )

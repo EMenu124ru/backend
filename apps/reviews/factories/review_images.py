@@ -1,4 +1,4 @@
-from factory import SubFactory, post_generation
+from factory import SubFactory
 from factory.django import DjangoModelFactory, ImageField
 
 from apps.reviews.models import ReviewImages

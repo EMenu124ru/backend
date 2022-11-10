@@ -1,4 +1,4 @@
-from factory import Faker, SubFactory, fuzzy, post_generation
+from factory import Faker, SubFactory, fuzzy
 from factory.django import DjangoModelFactory
 
 from apps.orders.models import Order
@@ -33,15 +33,6 @@ class OrderFactory(DjangoModelFactory):
         min_value=0,
         max_value=15,
     )
-
-    @post_generation
-    def dishes(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted:
-            for dish in extracted:
-                self.dishes.add(dish)
 
     class Meta:
         model = Order
