@@ -19,7 +19,7 @@ def install_requirements(context):
 @task
 def fill_sample_data(context):
     """Prepare sample data for local usage."""
-    django.manage(context, "runscript fill_sample_data")
+    django.manage(context, command="runscript fill_sample_data")
 
 
 @task
