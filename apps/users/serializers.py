@@ -31,8 +31,8 @@ class ClientAuthSerializer(serializers.Serializer):
         ).first()
         refresh = RefreshToken.for_user(client.user)
         return {
-            'refresh': str(refresh),
             'access': str(refresh.access_token),
+            'refresh': str(refresh),
         }
 
     def validate_phone_number(self, phone_number: str) -> str:

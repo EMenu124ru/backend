@@ -50,6 +50,17 @@ class DishImagesAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(models.OrderAndDishes)
+class OrderAndDishesAdmin(admin.ModelAdmin):
+    """Class representation of OrderAndDishes model in admin panel."""
+
+    list_display = (
+        "id",
+        "order",
+        "dish",
+    )
+
+
 @admin.register(models.RestaurantAndOrder)
 class RestaurantAndOrderAdmin(admin.ModelAdmin):
     """Class representation of RestaurantAndOrder model in admin panel."""
