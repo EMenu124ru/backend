@@ -59,7 +59,7 @@ def set_default_site(context):
     """
     manage(
         context,
-        "set_default_site --name localhost:8000 --domain localhost:8000",
+        command="set_default_site --name localhost:8000 --domain localhost:8000",
     )
 
 

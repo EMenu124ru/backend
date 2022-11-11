@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 
 from factory import Faker, LazyAttribute, SubFactory, fuzzy
 from factory.django import DjangoModelFactory
@@ -18,7 +18,7 @@ class ScheduleFactory(DjangoModelFactory):
         "time",
     )
     time_close = LazyAttribute(
-        lambda obj: datetime.combine(date.today(), obj.time_open) + timedelta(hours=8),
+        lambda obj: datetime.combine(date.today(), time.fromisoformat(obj.time_open)) + timedelta(hours=8),
     )
     week_day = fuzzy.FuzzyChoice(
         [item[0] for item in Schedule.WeekDays.choices],

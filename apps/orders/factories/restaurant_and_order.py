@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+import pytz
 from factory import LazyAttribute, SubFactory
 from factory.django import DjangoModelFactory
 
@@ -13,7 +14,7 @@ class RestaurantAndOrderFactory(DjangoModelFactory):
     """Factory for RestaurantAndOrder instance."""
 
     arrival_time = LazyAttribute(
-        lambda _: datetime.today() + timedelta(days=2),
+        lambda _: datetime.now(pytz.UTC) + timedelta(days=2),
     )
     order = SubFactory(
         OrderFactory,

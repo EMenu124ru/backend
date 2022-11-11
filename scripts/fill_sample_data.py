@@ -4,6 +4,7 @@ from apps.orders.factories import (
     CategoryFactory,
     DishFactory,
     DishImagesFactory,
+    OrderAndDishesFactory,
     OrderFactory,
     RestaurantAndOrderFactory,
 )
@@ -40,7 +41,10 @@ def run():
             review=review,
             size=IMAGES_PER_REVIEW_COUNT,
         )
-    restaurants = [RestaurantFactory.create(reviews=(review,)) for review in rest_reviews]
+    restaurants = []
+    for review in rest_reviews:
+        restaurants.append(RestaurantFactory.create())
+        restaurants[-1].reviews.add(review)
     for _ in range(SCHEDULES_COUNT):
         restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]
         ScheduleFactory.create(restaurant=restaurant)
@@ -52,21 +56,21 @@ def run():
     for _ in range(DISH_REVIEWS_COUNT):
         client = clients[randint(0, CLIENTS_COUNT - 1)]
         dish_reviews.append(ReviewFactory.create(client=client))
-    categories = CategoryFactory.create_batch(
-        size=CATEGORIES_COUNT,
-    )
     for review in dish_reviews:
         ReviewImagesFactory.create_batch(
             review=review,
             size=IMAGES_PER_REVIEW_COUNT,
         )
+    categories = CategoryFactory.create_batch(
+        size=CATEGORIES_COUNT,
+    )
     dishes = []
     for review in dish_reviews:
         category = categories[randint(0, CATEGORIES_COUNT - 1)]
         dishes.append(DishFactory.create(
             category=category,
-            reviews=(review,),
-            ))
+        ))
+        dishes[-1].reviews.add(review)
     for dish in dishes:
         DishImagesFactory.create_batch(
             dish=dish,
@@ -77,8 +81,12 @@ def run():
         orders.append(OrderFactory.create(
             client=clients[i],
             employee=employees[i],
-            dishes=dishes[i: i + 2],
         ))
+        for dish in dishes[i: i + 2]:
+            OrderAndDishesFactory.create(
+                order=orders[-1],
+                dish=dish,
+            )
     for order in orders:
         restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]
         RestaurantAndOrderFactory.create(

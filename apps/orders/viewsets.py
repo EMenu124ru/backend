@@ -52,9 +52,12 @@ class DishViewSet(BaseViewSet):
                 "reviews",
             ).get(id=self.request.parser_context["kwargs"]["pk"]).reviews.all()
         if self.action == "orders":
-            return models.Dish.objects.prefetch_related(
+            orders = models.Dish.objects.prefetch_related(
                 "orders",
-            ).get(id=self.request.parser_context["kwargs"]["pk"]).orders.all()
+            ).get(
+                id=self.request.parser_context["kwargs"]["pk"],
+            ).orders.all().values_list("order", flat=True)
+            return models.Order.objects.filter(id__in=orders)
         return models.Dish.objects.all()
 
     def create(self, request, *args, **kwargs):

@@ -30,7 +30,7 @@ def init(context):
     install_tools(context)
     install_requirements(context)
     docker.build(context)
-    django.manage(context, "migrate")
+    django.manage(context, command="migrate")
     django.set_default_site(context)
     django.createsuperuser(context)
     try:
