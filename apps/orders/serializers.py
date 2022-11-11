@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from rest_framework import serializers
 
 from apps.restaurants.models import Restaurant
@@ -85,7 +87,7 @@ class OrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data) -> models.Order:
         dishes = validated_data.pop("dishes")
         validated_data.update(
-            {"price": sum([dish.price for dish in dishes])}
+            {"price": sum([Decimal(dish.price) for dish in dishes])}
         )
         order = models.Order.objects.create(**validated_data)
         models.OrderAndDishes.objects.bulk_create(
@@ -112,7 +114,7 @@ class OrderSerializer(serializers.ModelSerializer):
                     for dish in dishes
                 ],
             )
-            instance.price = sum([dish.price for dish in dishes])
+            instance.price = sum([Decimal(dish.price) for dish in dishes])
             instance.save()
         return super().update(instance, validated_data)
 
