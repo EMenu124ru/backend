@@ -26,6 +26,7 @@ def migrate(context, app_name=""):
 @task
 def createsuperuser(
     context,
+    compose,
     username="root",
     password="root",
     email="root@root.com",
@@ -34,6 +35,7 @@ def createsuperuser(
     manage(
         context,
         command=f"createsuperuser2 --username {username} --password {password} --noinput --email {email}",
+        compose=compose,
     )
 
 
@@ -48,19 +50,6 @@ def resetdb(context, apply_migrations=True):
     makemigrations(context)
     migrate(context)
     createsuperuser(context)
-    set_default_site(context)
-
-
-def set_default_site(context):
-    """Set default site to localhost.
-
-    Set default site domain to `localhost:8000` so `get_absolute_url`
-    works correctly in local environment
-    """
-    manage(
-        context,
-        command="set_default_site --name localhost:8000 --domain localhost:8000",
-    )
 
 
 @task

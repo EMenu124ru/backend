@@ -277,6 +277,6 @@ emenu/media/
 .pytest_cache/
 .ipython/
 .env
-.envs/.production
+.envs/
 .idea
 .vs_code

@@ -4,35 +4,17 @@ from . import common, django, docker
 
 
 @task
-def install_tools(context):
-    """Install cli dependencies, and tools needed to install requirements."""
-    context.run("pip install setuptools pip pip-tools wheel poetry")
-
-
-@task
-def install_requirements(context):
-    """Install local development requirements."""
-    common.success("Install requirements with poetry")
-    context.run("poetry install --extras dev")
-
-
-@task
 def fill_sample_data(context):
     """Prepare sample data for local usage."""
     django.manage(context, command="runscript fill_sample_data")
 
 
 @task
-def init(context):
+def init(context, compose="prod"):
     """Prepare env for working with project."""
-    common.success("Setting up git config")
-    common.success("Initial assembly of all dependencies")
-    install_tools(context)
-    install_requirements(context)
-    docker.build(context)
-    django.manage(context, command="migrate")
-    django.set_default_site(context)
-    django.createsuperuser(context)
+    docker.build(context, compose=compose)
+    django.manage(context, command="migrate", compose=compose)
+    django.createsuperuser(context, compose=compose)
     try:
         fill_sample_data(context)
     except NotImplementedError:
@@ -41,4 +23,3 @@ def init(context):
             "You're the first developer - pls generate factories \n"
             "for test data and setup development environment",
         )
-    context.run("poetry lock --no-update")
