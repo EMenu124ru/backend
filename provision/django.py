@@ -35,8 +35,8 @@ def createsuperuser(
     manage(
         context,
         command=(
-            f"createsuperuser2 --username {username}"
-            f"--password {password} --noinput"
+            f"createsuperuser2 --username {username} "
+            f"--password {password} --noinput "
             f"--email {email}"
         ),
         compose=compose,
