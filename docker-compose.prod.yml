@@ -3,7 +3,6 @@ version: '3'
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
-  static_volume:
   media_volume:
 
 services:
@@ -17,7 +16,6 @@ services:
     ports:
       - 80:80
     volumes:
-      - static_volume:/server/static
       - media_volume:/server/media
 
   django: &django
@@ -25,7 +23,6 @@ services:
       context: .
       dockerfile: ./server/compose/production/django/Dockerfile
     image: emenu_production_django
-    platform: linux/x86_64
     depends_on:
       - postgres
       - redis
@@ -35,9 +32,7 @@ services:
     expose:
       - 8000
     volumes:
-      - static_volume:/server/static
       - media_volume:/server/media
-      - ./server:/server
     command: /start
 
   postgres:

@@ -1,8 +1,11 @@
 from invoke import task
 
+DEVELOPMENT_CONTAINER = "dev"
+PRODUCTION_CONTAINER = "prod"
+
 CONTAINERS = {
-    "dev": "docker-compose",
-    "prod": "docker-compose -f docker-compose.prod.yml",
+    DEVELOPMENT_CONTAINER: "docker-compose",
+    PRODUCTION_CONTAINER: "docker-compose -f docker-compose.prod.yml",
 }
 
 

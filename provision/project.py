@@ -4,19 +4,20 @@ from . import common, django, docker
 
 
 @task
-def fill_sample_data(context):
+def fill_sample_data(context, compose="dev"):
     """Prepare sample data for local usage."""
-    django.manage(context, command="runscript fill_sample_data")
+    django.manage(context, command="runscript fill_sample_data", compose=compose)
 
 
 @task
-def init(context, compose="prod"):
+def init(context, compose=docker.DEVELOPMENT_CONTAINER):
     """Prepare env for working with project."""
     docker.build(context, compose=compose)
     django.manage(context, command="migrate", compose=compose)
-    django.createsuperuser(context, compose=compose)
+    if compose == docker.DEVELOPMENT_CONTAINER:
+        django.createsuperuser(context, compose=compose)
     try:
-        fill_sample_data(context)
+        fill_sample_data(context, compose=compose)
     except NotImplementedError:
         common.warn(
             "Awesome, almost everything is Done! \n"

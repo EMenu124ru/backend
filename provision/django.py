@@ -27,20 +27,24 @@ def migrate(context, app_name=""):
 def createsuperuser(
     context,
     compose,
-    username="root",
-    password="root",
-    email="root@root.com",
+    username="admin",
+    password="admin",
+    email="admin@admin.com",
 ):
     """Create superuser."""
     manage(
         context,
-        command=f"createsuperuser2 --username {username} --password {password} --noinput --email {email}",
+        command=(
+            f"createsuperuser2 --username {username}"
+            f"--password {password} --noinput"
+            f"--email {email}"
+        ),
         compose=compose,
     )
 
 
 @task
-def resetdb(context, apply_migrations=True):
+def resetdb(context, apply_migrations=True, compose="dev"):
     """Reset database to initial state (including test DB)."""
     common.success("Reset database to its initial state")
     manage(context, "drop_test_database --noinput")
@@ -49,7 +53,7 @@ def resetdb(context, apply_migrations=True):
         return
     makemigrations(context)
     migrate(context)
-    createsuperuser(context)
+    createsuperuser(context, compose)
 
 
 @task
@@ -60,4 +64,4 @@ def shell(context, params=""):
         https://django-extensions.readthedocs.io/en/latest/shell_plus.html
     """
     common.success("Entering Django Shell")
-    manage(context, command="shell")
+    manage(context, command=f"shell {params}")

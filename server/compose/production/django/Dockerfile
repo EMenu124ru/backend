@@ -41,6 +41,9 @@ RUN chmod +x /start-celerybeat
 
 RUN chown django:django ${APP_HOME}
 
+RUN chgrp -R django ./media/
+RUN chmod -R g+w ./media/
+
 USER django
 
 ENTRYPOINT ["/entrypoint"]
