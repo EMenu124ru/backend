@@ -8,7 +8,7 @@ from .base import env
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["62.113.96.162"]
+ALLOWED_HOSTS = ["62.113.96.162", "109.226.233.33"]
 
 # DATABASES
 # ------------------------------------------------------------------------------
