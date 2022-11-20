@@ -71,19 +71,17 @@ class IsCook(permissions.BasePermission):
 
 class IsHostess(permissions.BasePermission):
 
-    def is_hostess(self, user: User) -> bool:
-        if user.is_client:
-            return False
-        if user.employee.role == Employee.Roles.HOSTESS:
+    def is_hostess_or_client(self, user: User) -> bool:
+        if user.is_client or user.employee.role == Employee.Roles.HOSTESS:
             return True
         return False
 
     def has_permission(self, request, view) -> bool:
         if request.method == "GET":
             return True
-        return self.is_hostess(request.user)
+        return self.is_hostess_or_client(request.user)
 
     def has_object_permission(self, request, view, obj) -> bool:
         if request.method in ("PUT", "PATCH", "DELETE"):
-            return self.is_hostess(request.user)
+            return self.is_hostess_or_client(request.user)
         return True

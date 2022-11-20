@@ -62,10 +62,12 @@ class OrderSerializer(serializers.ModelSerializer):
     employee = serializers.PrimaryKeyRelatedField(
         queryset=Employee.objects.all(),
         allow_null=True,
+        required=False,
     )
     client = serializers.PrimaryKeyRelatedField(
         queryset=Client.objects.all(),
         allow_null=True,
+        required=False,
     )
     dishes = serializers.PrimaryKeyRelatedField(
         queryset=models.Dish.objects.all(),
