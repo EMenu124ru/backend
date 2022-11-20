@@ -271,8 +271,6 @@ Session.vim
 # Auto-generated tag files
 tags
 
-### Project template
-emenu/media/
 
 .pytest_cache/
 .ipython/
