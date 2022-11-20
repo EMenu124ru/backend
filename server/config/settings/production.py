@@ -1,3 +1,5 @@
+from corsheaders.defaults import default_headers
+
 import dj_database_url
 
 from .base import *  # noqa
@@ -8,7 +10,24 @@ from .base import env
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["62.113.96.162", "109.226.233.33"]
+ALLOWED_HOSTS = ("62.113.96.162", ) # ["*"]
+
+# CORS_ORIGIN_WHITELIST = (
+#     "http://62.113.96.162",
+#     "http://109.226.233.33:3000",
+# )
+
+# CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_CREDENTIALS = True
+
+# CORS_ALLOW_METHODS = [
+#     'DELETE',
+#     'GET',
+#     'OPTIONS',
+#     'PATCH',
+#     'POST',
+#     'PUT',
+# ]
 
 # DATABASES
 # ------------------------------------------------------------------------------
