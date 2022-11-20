@@ -2,9 +2,9 @@ import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
 
-from apps.orders.factories import OrderFactory, DishFactory
-from apps.users.factories import ClientFactory, EmployeeFactory
+from apps.orders.factories import DishFactory, OrderFactory
 from apps.orders.models import Order
+from apps.users.factories import ClientFactory, EmployeeFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -134,7 +134,6 @@ def test_create_order_by_client(
     client,
     api_client,
 ) -> None:
-    employee = EmployeeFactory.create()
     order = OrderFactory.build()
     dishes = DishFactory.create_batch(
         size=DISHES_COUNT,
@@ -336,4 +335,4 @@ def test_remove_order_by_not_auth(
             kwargs={"pk": order.pk},
         ),
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
