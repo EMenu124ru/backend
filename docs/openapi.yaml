@@ -64,6 +64,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id клиента"
           required: true
       security:
         - bearerAuth: []
@@ -86,6 +87,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id клиента"
           required: true
       security:
         - bearerAuth: []
@@ -112,6 +114,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id клиента"
           required: true
       security:
         - bearerAuth: []
@@ -185,7 +188,14 @@ paths:
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       responses:
         "200":
@@ -205,6 +215,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id категории"
           required: true
       security:
         - bearerAuth: []
@@ -227,6 +238,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id категории"
           required: true
       security:
         - bearerAuth: []
@@ -253,6 +265,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id категории"
           required: true
       security:
         - bearerAuth: []
@@ -277,13 +290,21 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id категории"
           required: true
         - in: query
           name: page
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       security:
         - bearerAuth: []
@@ -328,7 +349,14 @@ paths:
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       responses:
         "200":
@@ -348,6 +376,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id заказа"
           required: true
       security:
         - bearerAuth: []
@@ -370,6 +399,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id заказа"
           required: true
       security:
         - bearerAuth: []
@@ -396,6 +426,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id заказа"
           required: true
       security:
         - bearerAuth: []
@@ -440,7 +471,14 @@ paths:
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       responses:
         "200":
@@ -460,6 +498,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id блюда"
           required: true
       security:
         - bearerAuth: []
@@ -482,6 +521,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id блюда"
           required: true
       security:
         - bearerAuth: []
@@ -508,6 +548,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id блюда"
           required: true
       security:
         - bearerAuth: []
@@ -531,13 +572,21 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id блюда"
           required: true
         - in: query
           name: page
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       security:
         - bearerAuth: []
@@ -562,13 +611,21 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id блюда"
           required: true
         - in: query
           name: page
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       security:
         - bearerAuth: []
@@ -611,6 +668,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id фото блюда"
           required: true
       security:
         - bearerAuth: []
@@ -655,7 +713,14 @@ paths:
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       responses:
         "200":
@@ -676,6 +741,7 @@ paths:
           schema:
             type: number
           required: true
+          description: "Id бронирования"
       security:
         - bearerAuth: []
       responses:
@@ -697,6 +763,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id бронирования"
           required: true
       security:
         - bearerAuth: []
@@ -723,6 +790,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id бронирования"
           required: true
       security:
         - bearerAuth: []
@@ -764,8 +832,6 @@ components:
         first_name:
           type: string
         last_name:
-          type: string
-        username:
           type: string
         password:
           type: string
