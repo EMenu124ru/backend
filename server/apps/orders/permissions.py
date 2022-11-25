@@ -48,16 +48,15 @@ class OrderPermissions(permissions.BasePermission):
         ]):
             return False
         if request.method == "POST":
-            return not request.user.is_client
+            return check_role_employee(request.user, Employee.Roles.WAITER)
         return True
 
     def has_object_permission(self, request, view, obj) -> bool:
-        if request.method == "DELETE" and not request.user.is_client:
-            if request.user.employee.role in (
-                Employee.Roles.WAITER,
-                Employee.Roles.HOSTESS,
-            ):
-                return True
+        if request.method == "DELETE" and (
+            check_role_employee(request.user, Employee.Roles.WAITER) or
+            check_role_employee(request.user, Employee.Roles.HOSTESS)
+        ):
+            return True
         if request.method in ("PUT", "PATCH", "GET"):
             return obj.client.user == request.user or not request.user.is_client
         return False
@@ -74,10 +73,11 @@ class RestaurantAndOrdersPermissions(permissions.BasePermission):
             request.user.is_client,
         ]):
             return False
-        return (
-            request.user.is_client
-            or request.user.employee.role == Employee.Roles.HOSTESS
-        )
+        return any([
+            request.user.is_client,
+            request.user.employee.role == Employee.Roles.HOSTESS,
+            request.user.employee.role == Employee.Roles.WAITER,
+        ])
 
     def has_object_permission(self, request, view, obj) -> bool:
         if request.method == "GET":

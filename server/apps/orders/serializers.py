@@ -150,30 +150,39 @@ class OrderSerializer(BaseSerializer):
                 create.extend([idx for _ in range(count)])
         return create, delete
 
+    def validate_dishes(self, dishes) -> list:
+        if not dishes:
+            raise serializers.ValidationError("Заказ не может быть без блюд")
+        return dishes
+
+    def validate(self, attrs: OrderedDict) -> OrderedDict:
+        if self.instance:
+            if (
+                self._user.is_client and
+                not self.check_fields_by_client(self.instance, attrs)
+            ):
+                raise serializers.ValidationError(
+                    "Пользователь может изменить только состав заказа",
+                )
+            if not self._user.is_client:
+                if (
+                    self._user.employee.role in (
+                        Employee.Roles.CHEF,
+                        Employee.Roles.COOK,
+                        Employee.Roles.BARTENDER,
+                    ) and
+                    not self.check_fields_by_cook(self.instance, attrs)
+                ):
+                    raise serializers.ValidationError(
+                        "Работник может изменить только статус и комментарий к заказу",
+                    )
+        return attrs
+
     def update(
         self,
         instance: models.Order,
         validated_data: OrderedDict,
     ) -> models.Order:
-        if (
-            self._user.is_client and
-            not self.check_fields_by_client(instance, validated_data)
-        ):
-            raise serializers.ValidationError(
-                "Пользователь может изменить только состав заказа",
-            )
-        if not self._user.is_client:
-            if (
-                self._user.employee.role in (
-                    Employee.Roles.CHEF,
-                    Employee.Roles.COOK,
-                    Employee.Roles.BARTENDER,
-                ) and
-                not self.check_fields_by_cook(instance, validated_data)
-            ):
-                raise serializers.ValidationError(
-                    "Работник может изменить только статус и комментарий к заказу",
-                )
         dishes = validated_data.pop("dishes", [])
         if dishes:
             existing = models.OrderAndDishes.objects.filter(
@@ -202,11 +211,6 @@ class OrderSerializer(BaseSerializer):
             instance.price = sum([Decimal(dish.price) for dish in dishes])
             instance.save()
         return super().update(instance, validated_data)
-
-    def validate_dishes(self, dishes) -> list:
-        if not dishes:
-            raise serializers.ValidationError("Заказ не может быть без блюд")
-        return dishes
 
     def to_representation(self, instance: models.Order) -> OrderedDict:
         data = super().to_representation(instance)
@@ -237,6 +241,39 @@ class RestaurantAndOrderSerializer(BaseSerializer):
             "order",
             "restaurant",
         )
+
+    def check_fields_by_hostess(
+        self,
+        instance: models.RestaurantAndOrder,
+        validated_data: OrderedDict,
+    ) -> bool:
+        data = validated_data.copy()
+        data.pop("arrival_time", None)
+        return all([
+            instance.__getattribute__(key) == value
+            for key, value in data.items()
+        ])
+
+    def validate(self, attrs: OrderedDict) -> OrderedDict:
+        if self._user.is_client:
+            return attrs
+        if self.instance:
+            if (
+                self._user.employee.role == Employee.Roles.HOSTESS and
+                not self.check_fields_by_hostess(self.instance, attrs)
+            ):
+                raise serializers.ValidationError(
+                    "Редактируя бронь, хостесс может менять только время прибытия",
+                )
+            return attrs
+        if (
+            self._user.employee.role == Employee.Roles.HOSTESS and
+            attrs.get("order", None) is not None
+        ):
+            raise serializers.ValidationError(
+                "Создавая бронь, хостесс не может создать заказ",
+            )
+        return attrs
 
     def create(self, validated_data: OrderedDict) -> models.RestaurantAndOrder:
         order_dict = validated_data.pop("order")
