@@ -7,9 +7,7 @@ from . import models, permissions, serializers
 
 class CategoryViewSet(BaseViewSet):
 
-    permission_classes = (
-        permissions.permissions.IsAuthenticated & permissions.IsManager,
-    )
+    permission_classes = (permissions.DishCategoryPermissions,)
 
     def get_serializer_class(self):
         if self.action == "dishes":
@@ -30,9 +28,7 @@ class CategoryViewSet(BaseViewSet):
 
 class DishViewSet(BaseViewSet):
 
-    permission_classes = (
-        permissions.permissions.IsAuthenticated & permissions.IsManager,
-    )
+    permission_classes = (permissions.DishCategoryPermissions,)
 
     def get_serializer_class(self):
         # if self.action == "reviews":
@@ -61,7 +57,7 @@ class DishViewSet(BaseViewSet):
         return models.Dish.objects.all()
 
     def create(self, request, *args, **kwargs):
-        images = request.data.pop("images")
+        images = request.data.get("images", [])
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -87,7 +83,7 @@ class DishImageViewSet(CreateDestroyViewSet):
 
     queryset = models.DishImages.objects.all()
     permission_classes = (
-        permissions.permissions.IsAuthenticated & permissions.IsManager,
+        permissions.permissions.IsAuthenticated & permissions.DishCategoryPermissions,
     )
 
     def create(self, request, *args, **kwargs):
@@ -115,9 +111,7 @@ class OrderViewSet(BaseViewSet):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
     permission_classes = (
-        permissions.permissions.IsAuthenticated & (
-            permissions.IsCook | permissions.IsWaiter
-        ),
+        permissions.permissions.IsAuthenticated, permissions.OrderPermissions
     )
 
     def perform_create(self, serializer) -> None:
@@ -129,7 +123,9 @@ class RestaurantAndOrderViewSet(BaseViewSet):
     queryset = models.RestaurantAndOrder.objects.all()
     serializer_class = serializers.RestaurantAndOrderSerializer
     permission_classes = (
-        permissions.permissions.IsAuthenticated & permissions.IsHostess,
+        permissions.permissions.IsAuthenticated & (
+            permissions.RestaurantAndOrdersPermissions
+        ),
     )
 
     def perform_destroy(self, instance):

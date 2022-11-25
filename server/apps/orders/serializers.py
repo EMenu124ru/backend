@@ -1,14 +1,16 @@
+from collections import Counter, OrderedDict
 from decimal import Decimal
 
 from rest_framework import serializers
 
+from apps.core.serializers import BaseSerializer
 from apps.restaurants.models import Restaurant
 from apps.users.models import Client, Employee
 
 from . import models
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(BaseSerializer):
 
     class Meta:
         model = models.Category
@@ -18,7 +20,7 @@ class CategorySerializer(serializers.ModelSerializer):
         )
 
 
-class DishImageSerializer(serializers.ModelSerializer):
+class DishImageSerializer(BaseSerializer):
 
     class Meta:
         model = models.DishImages
@@ -28,7 +30,7 @@ class DishImageSerializer(serializers.ModelSerializer):
         )
 
 
-class DishSerializer(serializers.ModelSerializer):
+class DishSerializer(BaseSerializer):
 
     category = serializers.PrimaryKeyRelatedField(
         queryset=models.Category.objects.all(),
@@ -47,7 +49,7 @@ class DishSerializer(serializers.ModelSerializer):
             "weight",
         )
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: models.Dish) -> OrderedDict:
         data = super().to_representation(instance)
         new_info = {
             "images": DishImageSerializer(instance.images.all(), many=True).data,
@@ -57,7 +59,7 @@ class DishSerializer(serializers.ModelSerializer):
         return data
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderSerializer(BaseSerializer):
 
     employee = serializers.PrimaryKeyRelatedField(
         queryset=Employee.objects.all(),
@@ -86,7 +88,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "dishes",
         )
 
-    def create(self, validated_data) -> models.Order:
+    def create(self, validated_data: OrderedDict) -> models.Order:
         dishes = validated_data.pop("dishes")
         validated_data.update(
             {"price": sum([Decimal(dish.price) for dish in dishes])}
@@ -103,17 +105,98 @@ class OrderSerializer(serializers.ModelSerializer):
         )
         return order
 
-    def update(self, instance, validated_data) -> models.Order:
-        dishes = validated_data.pop("dishes")
+    def check_fields_by_client(
+        self,
+        instance: models.Order,
+        validated_data: OrderedDict,
+    ) -> bool:
+        data = validated_data.copy()
+        data.pop("dishes", None)
+        return all([
+            instance.__getattribute__(key) == value
+            for key, value in data.items()
+        ])
+
+    def check_fields_by_cook(
+        self,
+        instance: models.Order,
+        validated_data: OrderedDict,
+    ) -> bool:
+        data = validated_data.copy()
+        data.pop("status", None)
+        data.pop("comment", None)
+        return all([
+            instance.__getattribute__(key) == value
+            for key, value in data.items()
+        ])
+
+    def get_dishes(
+        self,
+        received: list[int],
+        existing: list[int],
+    ) -> list[list, list]:
+        received, existing = Counter(received), Counter(existing)
+        delete, create = [], []
+        for idx, count in existing.items():
+            if idx in received:
+                if received[idx] < count:
+                    delete.extend([idx for _ in range(count-received[idx])])
+                if received[idx] > count:
+                    create.extend([idx for _ in range(received[idx-count])])
+            else:
+                delete.extend([idx for _ in range(count)])
+        for idx, count in received.items():
+            if idx not in existing:
+                create.extend([idx for _ in range(count)])
+        return create, delete
+
+    def update(
+        self,
+        instance: models.Order,
+        validated_data: OrderedDict,
+    ) -> models.Order:
+        if (
+            self._user.is_client and
+            not self.check_fields_by_client(instance, validated_data)
+        ):
+            raise serializers.ValidationError(
+                "Пользователь может изменить только состав заказа",
+            )
+        if not self._user.is_client:
+            if (
+                self._user.employee.role in (
+                    Employee.Roles.CHEF,
+                    Employee.Roles.COOK,
+                    Employee.Roles.BARTENDER,
+                ) and
+                not self.check_fields_by_cook(instance, validated_data)
+            ):
+                raise serializers.ValidationError(
+                    "Работник может изменить только статус и комментарий к заказу",
+                )
+        dishes = validated_data.pop("dishes", [])
         if dishes:
-            models.OrderAndDishes.objects.filter(order=instance).delete()
+            existing = models.OrderAndDishes.objects.filter(
+                order=instance
+            ).values_list(
+                "dish__id",
+                flat=True,
+            )
+            create, delete = self.get_dishes(
+                [dish.id for dish in dishes],
+                existing,
+            )
+            models.OrderAndDishes.objects.filter(
+                order=instance,
+                dish__id__in=delete,
+            ).delete()
             models.OrderAndDishes.objects.bulk_create(
                 [
                     models.OrderAndDishes(
                         order=instance,
                         dish=dish,
                     )
-                    for dish in dishes
+                    for dish in models.Dish.objects.filter(id__in=create)
                 ],
             )
             instance.price = sum([Decimal(dish.price) for dish in dishes])
@@ -125,7 +208,7 @@ class OrderSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Заказ не может быть без блюд")
         return dishes
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: models.Order) -> OrderedDict:
         data = super().to_representation(instance)
         pk_dishes = instance.dishes.values_list("dish", flat=True)
         dishes = models.Dish.objects.filter(id__in=pk_dishes)
@@ -137,7 +220,7 @@ class OrderSerializer(serializers.ModelSerializer):
         return data
 
 
-class RestaurantAndOrderSerializer(serializers.ModelSerializer):
+class RestaurantAndOrderSerializer(BaseSerializer):
 
     restaurant = serializers.PrimaryKeyRelatedField(
         queryset=Restaurant.objects.all(),
@@ -155,12 +238,12 @@ class RestaurantAndOrderSerializer(serializers.ModelSerializer):
             "restaurant",
         )
 
-    def create(self, validated_data) -> models.RestaurantAndOrder:
+    def create(self, validated_data: OrderedDict) -> models.RestaurantAndOrder:
         order_dict = validated_data.pop("order")
         order = None
         if order_dict is not None:
             order_dict["dishes"] = [dish.id for dish in order_dict["dishes"]]
-            order_dict["employee"] = self.context["request"].user.employee.id
+            order_dict["employee"] = self._user.employee.id
             serializer = OrderSerializer(data=order_dict)
             serializer.is_valid(raise_exception=True)
             serializer.save()
