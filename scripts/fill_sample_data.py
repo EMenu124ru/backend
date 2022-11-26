@@ -1,2 +1,0 @@
-def run():
-    """Generate examples."""

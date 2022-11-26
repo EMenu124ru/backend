@@ -52,6 +52,7 @@ coverage.xml
 
 # Django stuff:
 staticfiles/
+media/
 
 # Sphinx documentation
 docs/_build/
@@ -83,6 +84,7 @@ ENV/
 ### Node template
 # Logs
 logs
+*.logs
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -269,12 +271,10 @@ Session.vim
 # Auto-generated tag files
 tags
 
-### Project template
-emenu/media/
 
 .pytest_cache/
 .ipython/
 .env
-.envs/.production
+.envs/
 .idea
 .vs_code

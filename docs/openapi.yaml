@@ -1,0 +1,1393 @@
+openapi: 3.0.2
+
+info:
+  title: EMenu
+  version: 0.1.0
+
+tags:
+  - name: auth
+    description: "Auth namespace"
+  - name: clients
+    description: "Client namespace"
+  - name: employees
+    description: "Employee namespace"
+  - name: orders
+    description: "Order namespace"
+  - name: categories
+    description: "Category namespace"
+  - name: dishes
+    description: "Dish namespace"
+  - name: dish-images
+    description: "Dish namespace"
+  - name: reviews
+    description: "Review namespace"
+  - name: restaurants
+    description: "Restaurant namespace"
+  - name: restaurantAndOrders
+    description: "restaurantAndOrders namespace"
+
+paths:
+  "/api/v1/clients/login/":
+    post:
+      tags:
+        - auth
+        - clients
+      summary: "Login client"
+      requestBody:
+        $ref: "#/components/requestBodies/LoginRequestBodyClient"
+      responses:
+        "200":
+          $ref: "#/components/responses/TokenObtain200"
+        "400":
+          $ref: "#/components/responses/TokenObtain400"
+
+  "/api/v1/clients/":
+    post:
+      tags:
+        - clients
+      summary: "Sign up client"
+      requestBody:
+        $ref: "#/components/requestBodies/SignUpRequestBodyClient"
+      responses:
+        "200":
+          $ref: "#/components/responses/TokenObtain200"
+        "400":
+          $ref: "#/components/responses/TokenObtain400"
+
+  "/api/v1/clients/{client_id}/":
+    get:
+      tags:
+        - clients
+      summary: "Get client"
+      parameters:
+        - name: client_id
+          in: path
+          schema:
+            type: number
+          description: "Id клиента"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/Client200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    patch:
+      tags:
+        - clients
+      summary: "Update client"
+      parameters:
+        - name: client_id
+          in: path
+          schema:
+            type: number
+          description: "Id клиента"
+          required: true
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/SignUpRequestBodyClient"
+      responses:
+        "200":
+          $ref: "#/components/responses/Client200"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    delete:
+      tags:
+        - clients
+      summary: "Delete client"
+      parameters:
+        - name: client_id
+          in: path
+          schema:
+            type: number
+          description: "Id клиента"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/staff/login/":
+    post:
+      tags:
+        - auth
+        - employees
+      summary: "Login employee"
+      requestBody:
+        $ref: "#/components/requestBodies/LoginRequestBodyEmployee"
+      responses:
+        "200":
+          $ref: "#/components/responses/TokenObtain200"
+        "400":
+          $ref: "#/components/responses/TokenObtain400"
+
+  "/api/v1/auth/token/refresh/":
+    post:
+      tags:
+        - auth
+        - employees
+        - clients
+      summary: "Refresh token"
+      requestBody:
+        $ref: "#/components/requestBodies/TokenRefreshRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/TokenRefresh200"
+        "400":
+          $ref: "#/components/responses/TokenRefresh400"
+
+  "/api/v1/categories/":
+    post:
+      tags:
+        - categories
+      summary: "Create category"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CategoryCreateBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/CategoryCreate201"
+        "400":
+          $ref: "#/components/responses/CategoryCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+    get:
+      tags:
+        - categories
+      summary: "Get list categories"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            nullable: true
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
+          required: false
+      responses:
+        "200":
+          $ref: "#/components/responses/CategoryList200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+  "/api/v1/categories/{category_id}/":
+    get:
+      tags:
+        - categories
+      summary: "Get category"
+      parameters:
+        - name: category_id
+          in: path
+          schema:
+            type: number
+          description: "Id категории"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/Category200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    patch:
+      tags:
+        - categories
+      summary: "Update category"
+      parameters:
+        - name: category_id
+          in: path
+          schema:
+            type: number
+          description: "Id категории"
+          required: true
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CategoryCreateBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/Category200"
+        "400":
+          $ref: "#/components/responses/CategoryCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    delete:
+      tags:
+        - categories
+      summary: "Delete category"
+      parameters:
+        - name: category_id
+          in: path
+          schema:
+            type: number
+          description: "Id категории"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/categories/{category_id}/dishes/":
+    get:
+      tags:
+        - categories
+        - dishes
+      summary: "Get dishes of some category"
+      parameters:
+        - name: category_id
+          in: path
+          schema:
+            type: number
+          description: "Id категории"
+          required: true
+        - in: query
+          name: page
+          schema:
+            type: number
+            nullable: true
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
+          required: false
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DishList200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/orders/":
+    post:
+      tags:
+        - orders
+      summary: "Create order"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/OrderCreateBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/OrderCreate201"
+        "400":
+          $ref: "#/components/responses/OrderCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+    get:
+      tags:
+        - orders
+      summary: "Get list orders"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            nullable: true
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
+          required: false
+      responses:
+        "200":
+          $ref: "#/components/responses/OrderList200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+  "/api/v1/orders/{order_id}/":
+    get:
+      tags:
+        - orders
+      summary: "Get order"
+      parameters:
+        - name: order_id
+          in: path
+          schema:
+            type: number
+          description: "Id заказа"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/Order200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    patch:
+      tags:
+        - orders
+      summary: "Update order"
+      parameters:
+        - name: order_id
+          in: path
+          schema:
+            type: number
+          description: "Id заказа"
+          required: true
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/OrderCreateBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/Order200"
+        "400":
+          $ref: "#/components/responses/OrderCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    delete:
+      tags:
+        - orders
+      summary: "Delete order"
+      parameters:
+        - name: order_id
+          in: path
+          schema:
+            type: number
+          description: "Id заказа"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/dishes/":
+    post:
+      tags:
+        - dishes
+      summary: "Create dish"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/DishCreateBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/DishCreate201"
+        "400":
+          $ref: "#/components/responses/DishCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+    get:
+      tags:
+        - dishes
+      summary: "Get list dishes"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            nullable: true
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
+          required: false
+      responses:
+        "200":
+          $ref: "#/components/responses/DishList200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+  "/api/v1/dishes/{dish_id}/":
+    get:
+      tags:
+        - dishes
+      summary: "Get dish"
+      parameters:
+        - name: dish_id
+          in: path
+          schema:
+            type: number
+          description: "Id блюда"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/Dish200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    patch:
+      tags:
+        - dishes
+      summary: "Update dish"
+      parameters:
+        - name: dish_id
+          in: path
+          schema:
+            type: number
+          description: "Id блюда"
+          required: true
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/DishCreateBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/Dish200"
+        "400":
+          $ref: "#/components/responses/DishCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    delete:
+      tags:
+        - dishes
+      summary: "Delete dish"
+      parameters:
+        - name: dish_id
+          in: path
+          schema:
+            type: number
+          description: "Id блюда"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/dishes/{dish_id}/orders/":
+    get:
+      tags:
+        - dishes
+      summary: "Get orders of some dish"
+      parameters:
+        - name: dish_id
+          in: path
+          schema:
+            type: number
+          description: "Id блюда"
+          required: true
+        - in: query
+          name: page
+          schema:
+            type: number
+            nullable: true
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
+          required: false
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/OrderList200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/dishes/{dish_id}/reviews/":
+    get:
+      tags:
+        - dishes
+        - reviews
+      summary: "Get reviews of some dish"
+      parameters:
+        - name: dish_id
+          in: path
+          schema:
+            type: number
+          description: "Id блюда"
+          required: true
+        - in: query
+          name: page
+          schema:
+            type: number
+            nullable: true
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
+          required: false
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ReviewList200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/dish-images/":
+    post:
+      tags:
+        - dish-images
+      summary: "Create dish image"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/DishImageCreateBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/DishImages200"
+        "400":
+          $ref: "#/components/responses/DishImageCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+  "/api/v1/dish-images/{dish_image_id}/":
+    delete:
+      tags:
+        - dish-images
+      summary: "Delete dish image"
+      parameters:
+        - name: dish_image_id
+          in: path
+          schema:
+            type: number
+          description: "Id фото блюда"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/restaurant-and-orders/":
+    post:
+      tags:
+        - restaurantAndOrders
+      summary: "Create restaurantAndOrders"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/RestaurantAndOrdersRequestBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/RestaurantAndOrdersCreate201"
+        "400":
+          $ref: "#/components/responses/RestaurantAndOrdersCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+    get:
+      tags:
+        - restaurantAndOrders
+      summary: "Get list restaurantAndOrders"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            nullable: true
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
+          required: false
+      responses:
+        "200":
+          $ref: "#/components/responses/RestaurantAndOrdersList200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+  "/api/v1/restaurant-and-orders/{restaurantAndOrders_id}/":
+    get:
+      tags:
+        - restaurantAndOrders
+      summary: "Get restaurantAndOrders"
+      parameters:
+        - name: restaurantAndOrders_id
+          in: path
+          schema:
+            type: number
+          required: true
+          description: "Id бронирования"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/RestaurantAndOrders200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    patch:
+      tags:
+        - restaurantAndOrders
+      summary: "Update restaurantAndOrders"
+      parameters:
+        - name: restaurantAndOrders_id
+          in: path
+          schema:
+            type: number
+          description: "Id бронирования"
+          required: true
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/RestaurantAndOrdersRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/RestaurantAndOrders200"
+        "400":
+          $ref: "#/components/responses/RestaurantAndOrdersCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    delete:
+      tags:
+        - restaurantAndOrders
+      summary: "Delete restaurantAndOrders"
+      parameters:
+        - name: restaurantAndOrders_id
+          in: path
+          schema:
+            type: number
+          description: "Id бронирования"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ClientBase:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        phone_number:
+          type: string
+
+    ClientCreateBase:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        password:
+          type: string
+        phone_number:
+          type: string
+
+    OrderBase:
+      type: object
+      properties:
+        id:
+          type: number
+        status:
+          type: string
+        price:
+          type: string
+        comment:
+          type: string
+        employee:
+          type: number
+        client:
+          type: number
+        place_number:
+          type: number
+        dishes:
+          type: array
+          items:
+            $ref: "#/components/schemas/DishBase"
+
+    OrderCreateBase:
+      type: object
+      properties:
+        status:
+          type: string
+        comment:
+          type: string
+        employee:
+          type: number
+        client:
+          type: number
+          nullable: true
+        place_number:
+          type: number
+        dishes:
+          type: array
+          items:
+            type: number
+
+    CategoryBase:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+
+    CategoryCreateBase:
+      type: object
+      properties:
+        name:
+          type: string
+
+    DishImageBase:
+      type: object
+      properties:
+        id:
+          type: number
+        image:
+          type: string
+
+    DishImageBundleCreateBase:
+      type: object
+      properties:
+        images:
+          type: array
+          items:
+            type: string
+
+    DishImageCreateBase:
+      type: object
+      properties:
+        images:
+          type: array
+          items:
+            type: string
+        dish:
+          type: number
+
+    DishBase:
+      type: object
+      properties:
+        id:
+          type: number
+        category:
+          $ref: "#/components/schemas/CategoryBase"
+        name:
+          type: string
+        description:
+          type: string
+        short_description:
+          type: string
+        price:
+          type: string
+        compound:
+          type: string
+        weight:
+          type: string
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/DishImageBase"
+
+    DishCreateBase:
+      type: object
+      properties:
+        category:
+          type: number
+        name:
+          type: string
+        description:
+          type: string
+        short_description:
+          type: string
+        price:
+          type: number
+        compound:
+          type: string
+        weight:
+          type: number
+        images:
+          type: array
+          items:
+            type: string
+
+    ReviewBase:
+      type: object
+      properties:
+        review:
+          type: string
+        mark:
+          type: number
+        client:
+          type: number
+          nullable: true
+        images:
+          type: array
+          items:
+            type: string
+
+    RestaurantAndOrdersCreateBase:
+      type: object
+      properties:
+        arrival_time:
+          type: string
+          format: date-time
+        order:
+          $ref: "#/components/schemas/OrderCreateBase"
+        restaurant:
+          type: number
+
+    RestaurantAndOrdersBase:
+      type: object
+      properties:
+        id:
+          type: number
+        arrival_time:
+          type: string
+          format: date-time
+        order:
+          $ref: "#/components/schemas/OrderBase"
+        restaurant:
+          type: number
+
+  requestBodies:
+    LoginRequestBodyClient:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              phone_number:
+                type: string
+              password:
+                type: string
+      required: true
+
+    SignUpRequestBodyClient:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ClientCreateBase"
+      required: true
+
+    LoginRequestBodyEmployee:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      required: true
+
+    OrderCreateBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderCreateBase"
+      required: true
+
+    DishCreateBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DishCreateBase"
+      required: true
+
+    DishImageBundleCreateBody:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/DishImageBundleCreateBase"
+      required: true
+
+    DishImageCreateBody:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/DishImageCreateBase"
+      required: true
+
+    CategoryCreateBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CategoryCreateBase"
+      required: true
+
+    TokenObtainRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+      required: true
+
+    TokenRefreshRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              refresh:
+                type: string
+      required: true
+
+    RestaurantAndOrdersRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestaurantAndOrdersCreateBase"
+      required: true
+
+  responses:
+    TokenObtain200:
+      description: "Success"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              access:
+                type: string
+                description: "access token"
+              refresh:
+                type: string
+                description: "refresh token"
+
+    TokenObtain400:
+      description: "Bad request"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "No active account found with the given credentials"
+
+    TokenRefresh200:
+      description: "Success"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              access:
+                type: string
+                description: "access token"
+              refresh:
+                type: string
+                description: "refresh token"
+
+    TokenRefresh400:
+      description: "Bad request"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "Token is invalid or expired"
+              code:
+                type: string
+                example: "token_not_valid"
+
+    OrderCreate201:
+      description: "Order created"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderBase"
+
+    OrderCreate400:
+      description: "Order created error"
+
+    OrderList200:
+      description: "Order list"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              links:
+                type: object
+                properties:
+                  next:
+                    type: string
+                    format: url
+                    nullable: true
+                  previous:
+                    type: string
+                    format: url
+                    nullable: true
+              count:
+                type: number
+              total_pages:
+                type: number
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderBase"
+
+    Order200:
+      description: "Order item"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderBase"
+
+    Client200:
+      description: "Client item"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ClientBase"
+
+    CategoryCreate201:
+      description: "Category created"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CategoryBase"
+
+    CategoryCreate400:
+      description: "Category created error"
+
+    CategoryList200:
+      description: "Category list"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              links:
+                type: object
+                properties:
+                  next:
+                    type: string
+                    format: url
+                    nullable: true
+                  previous:
+                    type: string
+                    format: url
+                    nullable: true
+              count:
+                type: number
+              total_pages:
+                type: number
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryBase"
+
+    Category200:
+      description: "Category item"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CategoryBase"
+
+    DishCreate201:
+      description: "Dish create"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DishBase"
+
+    DishCreate400:
+      description: "Dish created error"
+
+    DishList200:
+      description: "Dish list"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              links:
+                type: object
+                properties:
+                  next:
+                    type: string
+                    format: url
+                    nullable: true
+                  previous:
+                    type: string
+                    format: url
+                    nullable: true
+              count:
+                type: number
+              total_pages:
+                type: number
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DishBase"
+
+    Dish200:
+      description: "Dish item"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DishBase"
+
+    DishImageCreate201:
+      description: "Dish image create"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/DishImageBase"
+
+    DishImageCreate400:
+      description: "Dish image created error"
+
+    DishImages200:
+      description: "Dish image get"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/DishImageBase"
+
+    ReviewList200:
+      description: "List of reviews"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              links:
+                type: object
+                properties:
+                  next:
+                    type: string
+                    format: url
+                    nullable: true
+                  previous:
+                    type: string
+                    format: url
+                    nullable: true
+              count:
+                type: number
+              total_pages:
+                type: number
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReviewBase"
+
+    RestaurantAndOrdersList200:
+      description: "List of restaurantAndOrders"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              links:
+                type: object
+                properties:
+                  next:
+                    type: string
+                    format: url
+                    nullable: true
+                  previous:
+                    type: string
+                    format: url
+                    nullable: true
+              count:
+                type: number
+              total_pages:
+                type: number
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RestaurantAndOrdersBase"
+
+    RestaurantAndOrdersCreate201:
+      description: "RestaurantAndOrders create"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestaurantAndOrdersBase"
+
+    RestaurantAndOrdersCreate400:
+      description: "RestaurantAndOrders created error"
+
+    RestaurantAndOrders200:
+      description: "RestaurantAndOrders get"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/RestaurantAndOrdersBase"

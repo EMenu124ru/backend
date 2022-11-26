@@ -8,18 +8,16 @@ services:
   django: &django
     build:
       context: .
-      dockerfile: ./compose/local/django/Dockerfile
+      dockerfile: ./server/compose/local/django/Dockerfile
     image: emenu_local_django
     container_name: emenu_local_django
-    platform: linux/x86_64
     depends_on:
       - postgres
       - redis
     volumes:
-      - .:/app:z
+      - ./server:/server
     env_file:
-      - ./.envs/.local/.django
-      - ./.envs/.local/.postgres
+      - ./server/.envs/.postgres
     ports:
       - "8000:8000"
     command: /start
@@ -27,14 +25,14 @@ services:
   postgres:
     build:
       context: .
-      dockerfile: ./compose/production/postgres/Dockerfile
+      dockerfile: ./server/compose/production/postgres/Dockerfile
     image: emenu_production_postgres
     container_name: emenu_local_postgres
     volumes:
       - emenu_local_postgres_data:/var/lib/postgresql/data:Z
       - emenu_local_postgres_data_backups:/backups:z
     env_file:
-      - ./.envs/.local/.postgres
+      - ./server/.envs/.postgres
 
   redis:
     image: redis:6
@@ -60,10 +58,8 @@ services:
     ports: []
     command: /start-celerybeat
 
-  flower:
-    <<: *django
-    image: emenu_local_flower
-    container_name: emenu_local_flower
+  swagger-editor:
+    image: swaggerapi/swagger-editor
+    container_name: "swagger-editor"
     ports:
-      - "5555:5555"
-    command: /start-flower
+      - "80:8080"

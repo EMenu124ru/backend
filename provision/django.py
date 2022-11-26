@@ -5,7 +5,7 @@ from . import common, docker
 
 @task
 def manage(context, service="django", command="", compose="dev"):
-    """ase template for commands with python manage.py."""
+    """Base template for commands with python manage.py."""
     docker.docker_compose_run(context, service, f"python manage.py {command}", compose)
 
 
@@ -26,19 +26,25 @@ def migrate(context, app_name=""):
 @task
 def createsuperuser(
     context,
-    username="root",
-    password="root",
-    email="root@root.com",
+    compose,
+    username="admin",
+    password="admin",
+    email="admin@admin.com",
 ):
     """Create superuser."""
     manage(
         context,
-        f"createsuperuser2 --username {username} --password {password} --noinput --email {email}",
+        command=(
+            f"createsuperuser2 --username {username} "
+            f"--password {password} --noinput "
+            f"--email {email}"
+        ),
+        compose=compose,
     )
 
 
 @task
-def resetdb(context, apply_migrations=True):
+def resetdb(context, apply_migrations=True, compose="dev"):
     """Reset database to initial state (including test DB)."""
     common.success("Reset database to its initial state")
     manage(context, "drop_test_database --noinput")
@@ -47,20 +53,7 @@ def resetdb(context, apply_migrations=True):
         return
     makemigrations(context)
     migrate(context)
-    createsuperuser(context)
-    set_default_site(context)
-
-
-def set_default_site(context):
-    """Set default site to localhost.
-
-    Set default site domain to `localhost:8000` so `get_absolute_url`
-    works correctly in local environment
-    """
-    manage(
-        context,
-        "set_default_site --name localhost:8000 --domain localhost:8000",
-    )
+    createsuperuser(context, compose)
 
 
 @task
@@ -71,4 +64,4 @@ def shell(context, params=""):
         https://django-extensions.readthedocs.io/en/latest/shell_plus.html
     """
     common.success("Entering Django Shell")
-    manage(context, f"shell_plus --ipython {params}")
+    manage(context, command=f"shell {params}")
