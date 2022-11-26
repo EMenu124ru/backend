@@ -16,7 +16,7 @@ def build(context, compose="dev"):
 
 
 @task
-def run_demon(context, compose="dev"):
+def run_background(context, compose="dev"):
     """Build project."""
     context.run(f"{CONTAINERS[compose]} up -d")
 
