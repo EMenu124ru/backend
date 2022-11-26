@@ -16,6 +16,12 @@ def build(context, compose="dev"):
 
 
 @task
+def run_demon(context, compose="dev"):
+    """Build project."""
+    context.run(f"{CONTAINERS[compose]} up -d")
+
+
+@task
 def run(context, compose="dev"):
     """Run postgres, redis, telegram app."""
     context.run(f"{CONTAINERS[compose]} up")
@@ -34,17 +40,18 @@ def clean_volumes(context, compose="dev"):
 
 
 @task
-def clear(context):
+def stop(context, compose="dev"):
     """Stop and remove all containers defined in docker-compose."""
-    context.run("docker stop $(docker ps -a -q)")
-    context.run("docker system prune --volumes --all -f")
+    context.run(f"{CONTAINERS[compose]} stop")
+
+
+@task
+def clear(context, compose="dev"):
+    """Stop and remove all containers defined in docker-compose."""
+    stop(context, compose)
+    context.run("docker system prune -f")
 
 
 def docker_compose_run(context, service, command, compose="dev"):
-    """Run ``exec`` using docker-compose."""
+    """Run ``run`` using docker-compose."""
     return context.run(f"{CONTAINERS[compose]} run --rm {service} {command}")
-
-
-def docker_compose_exec(context, service, command, compose="dev"):
-    """Run ``exec`` using docker-compose."""
-    return context.run(f"{CONTAINERS[compose]} exec {service} {command}")
