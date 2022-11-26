@@ -10,5 +10,6 @@ urlpatterns = [
     path("api/v1/staff/", include("apps.users.urls")),
     path("api/v1/token/refresh/", include("apps.users.refresh_urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
