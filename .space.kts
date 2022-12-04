@@ -1,8 +1,8 @@
 job("Run npm test and publish") {
 
   failOn {
-    testFailed { enabled = false }
-    nonZeroExitCode { enabled = false }
+    //testFailed { enabled = false }
+    //nonZeroExitCode { enabled = false }
   }
 
   startOn {
