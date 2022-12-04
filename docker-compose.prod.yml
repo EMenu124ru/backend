@@ -20,10 +20,10 @@ services:
       - media_volume:/server/media
 
   django: &django
+	image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_django:latest
     build:
       context: .
       dockerfile: ./server/compose/production/django/Dockerfile
-    image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_django:latest
     depends_on:
       - postgres
       - redis
@@ -37,10 +37,10 @@ services:
     command: /start
 
   postgres:
+	image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_postgres:latest
     build:
       context: .
       dockerfile: ./server/compose/production/postgres/Dockerfile
-    image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_postgres:latest
     volumes:
       - production_postgres_data:/var/lib/postgresql/data:Z
       - production_postgres_data_backups:/backups:z
