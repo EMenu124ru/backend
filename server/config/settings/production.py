@@ -3,6 +3,8 @@ import dj_database_url
 from .base import *  # noqa
 from .base import env
 
+
+print(AUTH_USER_MODEL)
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
