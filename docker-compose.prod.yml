@@ -1,14 +1,12 @@
 version: '3'
 
 volumes:
-  production_postgres_data: {}
-  production_postgres_data_backups: {}
+  postgres_data: {}
   media_volume:
 
 services:
   nginx:
-  	image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/nginx:latest
-    restart: always
+    image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/nginx:latest
     build:
       context: ./
       dockerfile: ./nginx/Dockerfile
@@ -20,7 +18,7 @@ services:
       - media_volume:/server/media
 
   django: &django
-	image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_django:latest
+    image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_django:latest
     build:
       context: .
       dockerfile: ./server/compose/production/django/Dockerfile
@@ -37,25 +35,8 @@ services:
     command: /start
 
   postgres:
-	image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_postgres:latest
-    build:
-      context: .
-      dockerfile: ./server/compose/production/postgres/Dockerfile
+    image: postgres:14.4
     volumes:
-      - production_postgres_data:/var/lib/postgresql/data:Z
-      - production_postgres_data_backups:/backups:z
+      - postgres_data:/var/lib/postgresql/data
     env_file:
       - ./server/.envs/.postgres
-
-  redis:
-    image: redis:6
-
-  celeryworker:
-    <<: *django
-    image: emenu_production_celeryworker
-    command: /start-celeryworker
-
-  celerybeat:
-    <<: *django
-    image: emenu_production_celerybeat
-    command: /start-celerybeat

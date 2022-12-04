@@ -1,8 +1,7 @@
 version: '3'
 
 volumes:
-  emenu_local_postgres_data: {}
-  emenu_local_postgres_data_backups: {}
+  postgres_data: {}
 
 services:
   django: &django
@@ -13,7 +12,6 @@ services:
     container_name: emenu_local_django
     depends_on:
       - postgres
-      - redis
     volumes:
       - ./server:/server
     env_file:
@@ -23,40 +21,12 @@ services:
     command: /start
 
   postgres:
-    build:
-      context: .
-      dockerfile: ./server/compose/production/postgres/Dockerfile
-    image: emenu_production_postgres
+    image: postgres:14.4
     container_name: emenu_local_postgres
     volumes:
-      - emenu_local_postgres_data:/var/lib/postgresql/data:Z
-      - emenu_local_postgres_data_backups:/backups:z
+       - postgres_data:/var/lib/postgresql/data
     env_file:
       - ./server/.envs/.postgres
-
-  redis:
-    image: redis:6
-    container_name: emenu_local_redis
-
-  celeryworker:
-    <<: *django
-    image: emenu_local_celeryworker
-    container_name: emenu_local_celeryworker
-    depends_on:
-      - redis
-      - postgres
-    ports: []
-    command: /start-celeryworker
-
-  celerybeat:
-    <<: *django
-    image: emenu_local_celerybeat
-    container_name: emenu_local_celerybeat
-    depends_on:
-      - redis
-      - postgres
-    ports: []
-    command: /start-celerybeat
 
   swagger-editor:
     image: swaggerapi/swagger-editor
