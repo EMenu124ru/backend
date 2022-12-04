@@ -16,14 +16,14 @@ job("Run npm test and publish") {
     }
   }
 
-  container(displayName = "Run tests", image = "python:3.10-alpine3.16") {
-        shellScript {
-          content = """
-          			pip install invoke rich 
-                    inv tests.pytest
-                    """
-        }
-    }
+  //container(displayName = "Run tests", image = "python:3.10-alpine3.16") {
+    //    shellScript {
+    //      content = """
+    //      			pip install invoke rich 
+     //               inv tests.pytest
+    //                """
+    //    }
+    //}
 
   host("Build artifacts and a Docker image") {
 
