@@ -34,8 +34,7 @@ job("Run npm test and publish") {
 
     // Nginx
     dockerBuildPush {
-      context = "./"
-      file = "./nginx/Dockerfile"
+      file = "nginx/Dockerfile"
       // Docker context, by default, project root
       file = "Dockerfile"
       val spaceRepo = "${"$"}SPACE_REPO/nginx"
@@ -47,8 +46,7 @@ job("Run npm test and publish") {
     
     // Django
     dockerBuildPush {
-      context = "./"
-      file = "./server/compose/production/django/Dockerfile"
+      file = "server/compose/production/django/Dockerfile"
       // Docker context, by default, project root
       file = "Dockerfile"
       val spaceRepo = "${"$"}SPACE_REPO/django"
@@ -60,8 +58,7 @@ job("Run npm test and publish") {
     
     // postgres
     dockerBuildPush {
-      context = "./"
-      file = "./server/compose/production/postgres/Dockerfile"
+      file = "server/compose/production/postgres/Dockerfile"
       // Docker context, by default, project root
       file = "Dockerfile"
       val spaceRepo = "${"$"}SPACE_REPO/postgres"
