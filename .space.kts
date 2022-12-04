@@ -33,35 +33,35 @@ job("Run npm test and publish") {
     }
 
     // Nginx
-    dockerBuildPush {
-      file = "nginx/Dockerfile"
-      val spaceRepo = "${"$"}SPACE_REPO/nginx"
-      tags {
-        +"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
-        +"$spaceRepo:latest"
-      }
-    }
+    //dockerBuildPush {
+      //file = "nginx/Dockerfile"
+      //val spaceRepo = "${"$"}SPACE_REPO/nginx"
+      //tags {
+        //+"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
+        //+"$spaceRepo:latest"
+      //}
+    //}
     
     // Django
-    dockerBuildPush {
-      file = "server/compose/production/django/Dockerfile"
+    //dockerBuildPush {
+      //file = "server/compose/production/django/Dockerfile"
       // Docker context, by default, project root
-      val spaceRepo = "${"$"}SPACE_REPO/django"
-      tags {
-        +"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
-        +"$spaceRepo:latest"
-      }
-    }
+      //val spaceRepo = "${"$"}SPACE_REPO/django"
+      //tags {
+        //+"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
+      //  +"$spaceRepo:latest"
+    //  }
+    //}
     
     // postgres
-    dockerBuildPush {
-      file = "server/compose/production/postgres/Dockerfile"
-      val spaceRepo = "${"$"}SPACE_REPO/postgres"
-      tags {
-        +"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
-        +"$spaceRepo:latest"
-      }
-    }
+   // dockerBuildPush {
+     // file = "server/compose/production/postgres/Dockerfile"
+      //val spaceRepo = "${"$"}SPACE_REPO/postgres"
+      //tags {
+        //+"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
+        //+"$spaceRepo:latest"
+      //}
+    //}
     
   }
    container(displayName = "Run myscript", image = "rastasheep/ubuntu-sshd") {
@@ -73,7 +73,7 @@ job("Run npm test and publish") {
           				apt update
           				apt install -y sshpass
                         apt update
-          				sshpass -p "${"$"}SSH_PASS" ssh -o StrictHostKeyChecking=no root@${"$"}SSH_IP "cd ~/EMenuBackend ls"
+          				sshpass -p "${"$"}SSH_PASS" ssh -o StrictHostKeyChecking=no root@${"$"}SSH_IP "cd ~/EMenuBackend; ls"
                     """
         }
     }
