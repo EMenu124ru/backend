@@ -1,21 +1,89 @@
-job("Build, publish") {
-    container(image = "python_custom_img:0.0.1") {
-        // specify URL of the package index using env var
-        env["URL"] = "https://pypi.pkg.jetbrains.space/ikit-ki20-161-b/p/team-course-project-2022-2023/python/simple"
+job("Run npm test and publish") {
 
-        // We suppose that your project has default build configuration -
-        // the built package is saved to the ./dist directory
+  failOn {
+    testFailed { enabled = false }
+    nonZeroExitCode { enabled = false }
+  }
+
+  startOn {
+    gitPush {
+      branchFilter {
+        +"main"
+      }
+      //pathFilter {
+      //  +"src/**"
+      //}
+    }
+  }
+
+
+  host("Build artifacts and a Docker image") {
+
+    env["HUB_USER"] = Params("dockerhub_user")
+    env["HUB_TOKEN"] = Secrets("dockerhub_token")
+    env["SSH_PASS"] = Secrets("ssh_password")
+    env["SSH_IP"] = Params("ssh_ip")
+    env["SPACE_REPO"] = "ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend"
+
+    shellScript {
+      // login to Docker Hub
+      content = """
+                    docker login ${'$'}SPACE_REPO -u ${'$'}HUB_USER --password "${'$'}HUB_TOKEN"
+                  """
+    }
+
+    // Nginx
+    dockerBuildPush {
+      context = "./"
+      file = "./nginx/Dockerfile"
+      // Docker context, by default, project root
+      file = "Dockerfile"
+      val spaceRepo = "${"$"}SPACE_REPO/nginx"
+      tags {
+        +"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
+        +"$spaceRepo:latest"
+      }
+    }
+    
+    // Django
+    dockerBuildPush {
+      context = "./"
+      file = "./server/compose/production/django/Dockerfile"
+      // Docker context, by default, project root
+      file = "Dockerfile"
+      val spaceRepo = "${"$"}SPACE_REPO/django"
+      tags {
+        +"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
+        +"$spaceRepo:latest"
+      }
+    }
+    
+    // postgres
+    dockerBuildPush {
+      context = "./"
+      file = "./server/compose/production/postgres/Dockerfile"
+      // Docker context, by default, project root
+      file = "Dockerfile"
+      val spaceRepo = "${"$"}SPACE_REPO/postgres"
+      tags {
+        +"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
+        +"$spaceRepo:latest"
+      }
+    }
+    
+  }
+   container(displayName = "Run myscript", image = "rastasheep/ubuntu-sshd") {
+       env["SSH_IP"] = Params("ssh_ip")
+       env["SSH_PASS"] = Secrets("ssh_password")
+       env["SPACE_REPO"] = "ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/frontend-client"
         shellScript {
-            content = """
-                echo Install requirements...
-                pip install rich invoke
-                echo Build project...
-                inv docker.clear
-                inv docker.build
-                inv docker.run_background
-                echo Upload package...
-                twine upload --repository-url ${'$'}URL -u ${'$'}JB_SPACE_CLIENT_ID -p ${'$'}JB_SPACE_CLIENT_SECRET dist/*
-            """
+          content = """
+          				apt update
+          				apt install -y sshpass
+                        apt update
+          				sshpass -p "${"$"}SSH_PASS" ssh -o StrictHostKeyChecking=no root@${"$"}SSH_IP "cd ~/EMenuBackend ls"
+                    """
         }
     }
 }
+
