@@ -7,6 +7,7 @@ volumes:
 
 services:
   nginx:
+  	image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/nginx:latest
     restart: always
     build:
       context: ./
@@ -22,7 +23,7 @@ services:
     build:
       context: .
       dockerfile: ./server/compose/production/django/Dockerfile
-    image: emenu_production_django
+    image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_django:latest
     depends_on:
       - postgres
       - redis
@@ -39,7 +40,7 @@ services:
     build:
       context: .
       dockerfile: ./server/compose/production/postgres/Dockerfile
-    image: emenu_production_postgres
+    image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_postgres:latest
     volumes:
       - production_postgres_data:/var/lib/postgresql/data:Z
       - production_postgres_data_backups:/backups:z
