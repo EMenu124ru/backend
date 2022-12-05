@@ -60,16 +60,6 @@ job("Run npm test and publish") {
     	}
     }
     
-    // postgres
-   dockerBuildPush {
-    file = "server/compose/production/postgres/Dockerfile"
-    val spaceRepo = "${"$"}SPACE_REPO/postgres"
-      tags {
-        +"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
-        +"$spaceRepo:latest"
-      }
-    }
-    
   }
    container(displayName = "Run myscript", image = "rastasheep/ubuntu-sshd") {
        env["SSH_IP"] = Params("ssh_ip")
