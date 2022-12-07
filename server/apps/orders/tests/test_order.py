@@ -30,7 +30,6 @@ def test_create_order_by_waiter(
             "price": sum_dishes_prices,
             "comment": order.comment,
             "client": client.pk,
-            "place_number": order.place_number,
             "dishes": [dish.id for dish in dishes],
         },
     )
@@ -41,35 +40,6 @@ def test_create_order_by_waiter(
         comment=order.comment,
         client=client.pk,
         employee=waiter.pk,
-        place_number=order.place_number,
-    ).exists()
-
-
-def test_update_order_by_waiter(
-    waiter,
-    api_client,
-) -> None:
-    dishes = DishFactory.create_batch(
-        size=DISHES_COUNT,
-    )
-    order = OrderFactory.create(
-        employee=waiter,
-        price=sum([dish.price for dish in dishes]),
-    )
-    api_client.force_authenticate(user=waiter.user)
-    new_place_number = 3
-    response = api_client.patch(
-        reverse_lazy(
-            "api:orders-detail",
-            kwargs={"pk": order.pk},
-        ),
-        data={
-            "place_number": new_place_number,
-        },
-    )
-    assert response.status_code == status.HTTP_200_OK
-    assert Order.objects.filter(
-        place_number=new_place_number,
     ).exists()
 
 
@@ -125,14 +95,20 @@ def test_update_order_by_cook_failed(
         price=sum([dish.price for dish in dishes]),
     )
     api_client.force_authenticate(user=cook.user)
-    new_place_number = order.place_number + 3
+    for dish in dishes:
+        OrderAndDishesFactory.create(dish=dish, order=order)
+    _, existed = dishes[:DISHES_COUNT // 2], dishes[DISHES_COUNT // 2:]
+    new_dishes = DishFactory.create_batch(
+        size=DISHES_COUNT,
+    )
+    dishes = existed + new_dishes
     response = api_client.patch(
         reverse_lazy(
             "api:orders-detail",
             kwargs={"pk": order.pk},
         ),
         data={
-            "place_number": new_place_number,
+            "dishes": [dish.id for dish in dishes],
         },
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -161,7 +137,6 @@ def test_update_order_by_cook_success(
         data={
             "comment": new_comment,
             "status": new_status,
-            "place_number": order.place_number,
         },
     )
     assert response.status_code == status.HTTP_200_OK
@@ -253,7 +228,6 @@ def test_create_order_by_client(
             "price": sum_dishes_prices,
             "comment": order.comment,
             "client": client.pk,
-            "place_number": order.place_number,
             "dishes": [dish.id for dish in dishes],
         },
     )
@@ -270,17 +244,18 @@ def test_update_order_by_client_failed(
     order = OrderFactory.create(
         client=client,
         price=sum([dish.dish.price for dish in dishes]),
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     order.dishes.set(dishes)
     api_client.force_authenticate(user=client.user)
-    new_place_number = order.place_number + 3
+    new_empoyee = EmployeeFactory.create()
     response = api_client.patch(
         reverse_lazy(
             "api:orders-detail",
             kwargs={"pk": order.pk},
         ),
         data={
-            "place_number": new_place_number,
+            "employee": new_empoyee,
         },
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -309,13 +284,13 @@ def test_update_order_by_client_success(
         ),
         data={
             "dishes": [dish.id for dish in new_dishes],
-            "place_number": order.place_number,
+            "status": order.status,
         },
     )
     assert response.status_code == status.HTTP_200_OK
     assert Order.objects.filter(
         id=order.pk,
-        place_number=order.place_number,
+        status=order.status,
     )
     assert OrderAndDishes.objects.filter(
         order=order.pk,
@@ -421,7 +396,6 @@ def test_create_order_by_not_auth(
             "comment": order.comment,
             "client": client.pk,
             "employee": employee.pk,
-            "place_number": order.place_number,
             "dishes": [dish.id for dish in dishes],
         },
     )

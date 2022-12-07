@@ -35,7 +35,6 @@ class OrderAdmin(admin.ModelAdmin):
         "price",
         "comment",
         "employee",
-        "place_number",
     )
 
 
@@ -70,4 +69,5 @@ class RestaurantAndOrderAdmin(admin.ModelAdmin):
         "arrival_time",
         "order",
         "restaurant",
+        "place_number",
     )

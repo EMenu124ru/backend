@@ -28,11 +28,6 @@ class OrderFactory(DjangoModelFactory):
     client = SubFactory(
         ClientFactory,
     )
-    place_number = Faker(
-        "pyint",
-        min_value=0,
-        max_value=15,
-    )
 
     class Meta:
         model = Order
