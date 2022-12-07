@@ -248,14 +248,14 @@ def test_update_order_by_client_failed(
     )
     order.dishes.set(dishes)
     api_client.force_authenticate(user=client.user)
-    new_status = Order.Statuses.CANCEL
+    new_empoyee = EmployeeFactory.create()
     response = api_client.patch(
         reverse_lazy(
             "api:orders-detail",
             kwargs={"pk": order.pk},
         ),
         data={
-            "new_status": new_status,
+            "employee": new_empoyee,
         },
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST

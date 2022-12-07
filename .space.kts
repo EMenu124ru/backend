@@ -16,15 +16,6 @@ job("Run npm test and publish") {
     }
   }
 
-  //container(displayName = "Run tests", image = "python:3.10-alpine3.16") {
-    //    shellScript {
-    //      content = """
-    //      			pip install invoke rich 
-     //               inv tests.pytest
-    //                """
-    //    }
-    //}
-
   host("Build artifacts and a Docker image") {
 
     env["HUB_USER"] = Params("dockerhub_user")
@@ -52,22 +43,12 @@ job("Run npm test and publish") {
     
     // Django
     dockerBuildPush {
-      file = "server/compose/production/django/Dockerfile"
+      file = "server/Dockerfile"
       val spaceRepo = "${"$"}SPACE_REPO/django"
       tags {
         +"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
         +"$spaceRepo:latest"
     	}
-    }
-    
-    // postgres
-   dockerBuildPush {
-    file = "server/compose/production/postgres/Dockerfile"
-    val spaceRepo = "${"$"}SPACE_REPO/postgres"
-      tags {
-        +"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
-        +"$spaceRepo:latest"
-      }
     }
     
   }

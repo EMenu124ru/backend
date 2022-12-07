@@ -1,35 +1,38 @@
 version: '3'
 
 volumes:
-  postgres_data: {}
+  postgres_data:
 
 services:
-  django: &django
+  django:
+    container_name: django
     build:
-      context: .
-      dockerfile: ./server/compose/local/django/Dockerfile
-    image: emenu_local_django
-    container_name: emenu_local_django
+      context: ./server
+      dockerfile: ./Dockerfile
+      args:
+        MODE: "--with dev"
     depends_on:
       - postgres
     volumes:
       - ./server:/server
-    env_file:
-      - ./server/.envs/.postgres
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     ports:
       - "8000:8000"
-    command: /start
+    command: python manage.py runserver 0.0.0.0:8000
 
   postgres:
+    container_name: postgres
     image: postgres:14.4
-    container_name: emenu_local_postgres
     volumes:
        - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - ./server/.envs/.postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
 
   swagger-editor:
     image: swaggerapi/swagger-editor
-    container_name: "swagger-editor"
+    container_name: swagger-editor
     ports:
       - "80:8080"

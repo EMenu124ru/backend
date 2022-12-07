@@ -1,14 +1,15 @@
 version: '3'
 
 volumes:
-  postgres_data: {}
+  postgres_data:
   media_volume:
 
 services:
   nginx:
+    container_name: nginx
     image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/nginx:latest
     build:
-      context: ./
+      context: .
       dockerfile: ./nginx/Dockerfile
     depends_on:
       - django
@@ -17,26 +18,31 @@ services:
     volumes:
       - media_volume:/server/media
 
-  django: &django
+  django:
+    container_name: django
     image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_django:latest
     build:
-      context: .
-      dockerfile: ./server/compose/production/django/Dockerfile
+      context: ./server
+      dockerfile: ./Dockerfile
     depends_on:
       - postgres
-      - redis
-    env_file:
-      - ./server/.envs/.django
-      - ./server/.envs/.postgres
     expose:
       - 8000
     volumes:
       - media_volume:/server/media
-    command: /start
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - DJANGO_ADMIN_URL=${DJANGO_ADMIN_URL}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+    command: gunicorn config.wsgi -c ./config/gunicorn.py
 
   postgres:
+    container_name: postgresql
     image: postgres:14.4
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - ./server/.envs/.postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
