@@ -20,18 +20,6 @@ class Restaurant(models.Model):
 
 
 class Schedule(models.Model):
-    restaurant = models.ForeignKey(
-        Restaurant,
-        on_delete=models.CASCADE,
-        related_name="schedules",
-        verbose_name="Ресторан",
-    )
-    time_open = models.TimeField(
-        verbose_name="Время открытия",
-    )
-    time_close = models.TimeField(
-        verbose_name="Время закрытия",
-    )
 
     class WeekDays(models.IntegerChoices):
         """Week day choices"""
@@ -46,6 +34,18 @@ class Schedule(models.Model):
     week_day = models.IntegerField(
         choices=WeekDays.choices,
         verbose_name="День недели",
+    )
+    restaurant = models.ForeignKey(
+        Restaurant,
+        on_delete=models.CASCADE,
+        related_name="schedules",
+        verbose_name="Ресторан",
+    )
+    time_open = models.TimeField(
+        verbose_name="Время открытия",
+    )
+    time_close = models.TimeField(
+        verbose_name="Время закрытия",
     )
 
     class Meta:

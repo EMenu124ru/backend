@@ -111,7 +111,7 @@ class OrderViewSet(BaseViewSet):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
     permission_classes = (
-        permissions.permissions.IsAuthenticated, permissions.OrderPermissions
+        permissions.permissions.IsAuthenticated & permissions.OrderPermissions,
     )
 
     def perform_create(self, serializer) -> None:
@@ -123,9 +123,7 @@ class RestaurantAndOrderViewSet(BaseViewSet):
     queryset = models.RestaurantAndOrder.objects.all()
     serializer_class = serializers.RestaurantAndOrderSerializer
     permission_classes = (
-        permissions.permissions.IsAuthenticated & (
-            permissions.RestaurantAndOrdersPermissions
-        ),
+        permissions.permissions.IsAuthenticated & permissions.RestaurantAndOrdersPermissions,
     )
 
     def perform_destroy(self, instance):

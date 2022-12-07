@@ -101,14 +101,18 @@ class DishImages(models.Model):
 class Order(models.Model):
 
     class Statuses(models.TextChoices):
-        WAITING_FOR_COOKING = "WAITING_FOR_COOKING", "Ожидает готовки"
+        WAITING_FOR_COOKING = "WAITING_FOR_COOKING", "Передано на кухню"
         COOKING = "COOKING", "Готовится"
-        WAITING_FOR_DELIVERY = "WAITING_FOR_DELIVERY", "Ожидает доставки"
+        WAITING_FOR_DELIVERY = "WAITING_FOR_DELIVERY", "Ожидает доставки/готово к выдаче"
         IN_PROCESS_DELIVERY = "IN_PROCESS_DELIVERY", "В процессе доставки"
         DELIVERED = "DELIVERED", "Доставлен"
+        FINISHED = "FINISHED", "Закрыт"
+        CANCEL = "CANCEL", "Отменен"
+        PAID = "PAID", "Оплачен"
 
     status = models.TextField(
         choices=Statuses.choices,
+        default=Statuses.WAITING_FOR_COOKING,
         verbose_name="Статус заказа",
     )
     price = models.DecimalField(
@@ -136,19 +140,28 @@ class Order(models.Model):
         related_name="orders",
         verbose_name="Клиент",
     )
-    place_number = models.PositiveIntegerField(
-        verbose_name="Номер места",
-    )
 
     class Meta:
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
 
     def __str__(self) -> str:
-        return f"Order {self.price} {self.comment} {self.employee} {self.place_number}"
+        return f"Order {self.price} {self.comment} {self.employee}"
 
 
 class OrderAndDishes(models.Model):
+
+    class Statuses(models.TextChoices):
+        WAITING_FOR_COOKING = "WAITING_FOR_COOKING", "Ожидает готовки"
+        COOKING = "COOKING", "Готовится"
+        DONE = "DONE", "Готово"
+        DELIVERIED = "DELIVERIED", "Выдано"
+
+    status = models.TextField(
+        choices=Statuses.choices,
+        default=Statuses.WAITING_FOR_COOKING,
+        verbose_name="Статус блюда",
+    )
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
@@ -160,6 +173,9 @@ class OrderAndDishes(models.Model):
         on_delete=models.CASCADE,
         related_name="orders",
         verbose_name="Блюдо",
+    )
+    comment = models.TextField(
+        verbose_name="Комментарий",
     )
 
     class Meta:
@@ -188,6 +204,9 @@ class RestaurantAndOrder(models.Model):
         on_delete=models.CASCADE,
         related_name="restaurant_and_order",
         verbose_name="Ресторан",
+    )
+    place_number = models.PositiveIntegerField(
+        verbose_name="Номер места",
     )
 
     class Meta:

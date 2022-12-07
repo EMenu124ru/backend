@@ -84,7 +84,6 @@ class OrderSerializer(BaseSerializer):
             "comment",
             "employee",
             "client",
-            "place_number",
             "dishes",
         )
 
@@ -240,6 +239,7 @@ class RestaurantAndOrderSerializer(BaseSerializer):
             "arrival_time",
             "order",
             "restaurant",
+            "place_number",
         )
 
     def check_fields_by_hostess(
@@ -288,6 +288,7 @@ class RestaurantAndOrderSerializer(BaseSerializer):
         restaurant_and_orders = models.RestaurantAndOrder.objects.create(
             arrival_time=validated_data["arrival_time"],
             restaurant=validated_data["restaurant"],
+            place_number=validated_data["place_number"],
             order=order,
         )
         return restaurant_and_orders

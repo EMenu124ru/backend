@@ -853,8 +853,6 @@ components:
           type: number
         client:
           type: number
-        place_number:
-          type: number
         dishes:
           type: array
           items:
@@ -872,8 +870,6 @@ components:
         client:
           type: number
           nullable: true
-        place_number:
-          type: number
         dishes:
           type: array
           items:
@@ -990,6 +986,8 @@ components:
           $ref: "#/components/schemas/OrderCreateBase"
         restaurant:
           type: number
+        place_number:
+          type: number
 
     RestaurantAndOrdersBase:
       type: object
@@ -1002,6 +1000,8 @@ components:
         order:
           $ref: "#/components/schemas/OrderBase"
         restaurant:
+          type: number
+        place_number:
           type: number
 
   requestBodies:
