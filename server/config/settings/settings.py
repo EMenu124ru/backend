@@ -3,8 +3,6 @@ from pathlib import Path
 
 import dj_database_url
 
-from .installed_apps import INSTALLED_APPS
-
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 
 # GENERAL
@@ -157,9 +155,21 @@ LOGGING = {
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
 if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar"]
-    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
+    from .installed_apps import INSTALLED_APPS
+    import socket
+
+    def show_toolbar(request):
+        from django.conf import settings
+        return settings.DEBUG
+
     DEBUG_TOOLBAR_CONFIG = {
-        "DISABLE_PANELS": ["debug_toolbar.panels.redirects.RedirectsPanel"],
-        "SHOW_TEMPLATE_CONTEXT": True,
+        "SHOW_TEMPLATE_CONTEXT": show_toolbar,
     }
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+    INSTALLED_APPS += ['debug_toolbar']
+    INTERNAL_IPS = (
+        "0.0.0.0",
+        "127.0.0.1",
+    )
+    ip = socket.gethostbyname(socket.gethostname())
+    INTERNAL_IPS += (ip[:-1] + "1",)
