@@ -27,8 +27,8 @@ job("Run npm test and publish") {
     shellScript {
       // login to Docker Hub
       content = """
-                    docker login ${'$'}SPACE_REPO -u ${'$'}HUB_USER --password "${'$'}HUB_TOKEN"
-                  """
+        docker login ${'$'}SPACE_REPO -u ${'$'}HUB_USER --password "${'$'}HUB_TOKEN"
+      """
     }
 
     // Nginx
@@ -40,7 +40,7 @@ job("Run npm test and publish") {
         +"$spaceRepo:latest"
       }
     }
-    
+
     // Django
     dockerBuildPush {
       file = "server/Dockerfile"
@@ -50,20 +50,19 @@ job("Run npm test and publish") {
         +"$spaceRepo:latest"
     	}
     }
-    
   }
-   container(displayName = "Run myscript", image = "rastasheep/ubuntu-sshd") {
-       env["SSH_IP"] = Params("ssh_ip")
-       env["SSH_PASS"] = Secrets("ssh_password")
-       env["SPACE_REPO"] = "ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/frontend-client"
-        shellScript {
-          content = """
-          				apt update
-          				apt install -y sshpass
-                        apt update
-          				sshpass -p "${"$"}SSH_PASS" ssh -o StrictHostKeyChecking=no root@${"$"}SSH_IP "cd ~/EMenuBackend; ./pull-run.sh"
-                    """
-        }
-    }
-}
 
+  container(displayName = "Run myscript", image = "rastasheep/ubuntu-sshd") {
+      env["SSH_IP"] = Params("ssh_ip")
+      env["SSH_PASS"] = Secrets("ssh_password")
+      env["SPACE_REPO"] = "ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/frontend-client"
+      shellScript {
+        content = """
+          apt update
+          apt install -y sshpass
+          apt update
+          sshpass -p "${"$"}SSH_PASS" ssh -o StrictHostKeyChecking=no root@${"$"}SSH_IP "cd ~/EMenuBackend; ./pull-run.sh"
+        """
+      }
+  }
+}
