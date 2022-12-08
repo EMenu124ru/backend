@@ -215,3 +215,24 @@ class RestaurantAndOrder(models.Model):
 
     def __str__(self) -> str:
         return f"RestaurantAndOrder {self.arrival_time} {self.order} {self.restaurant}"
+
+
+class StopList(models.Model):
+    dishes = models.ManyToManyField(
+        Dish,
+        related_name="stop_list",
+        verbose_name="Блюда",
+    )
+    restaurant = models.ForeignKey(
+        "restaurants.Restaurant",
+        on_delete=models.CASCADE,
+        related_name="stop_list",
+        verbose_name="Ресторан",
+    )
+
+    class Meta:
+        verbose_name = "Стоп лист ресторана"
+        verbose_name_plural = "Стоп листы ресторанов"
+
+    def __str__(self) -> str:
+        return f"StopList count dishes: {self.dishes.count()}, restaurant: {self.restaurant}"

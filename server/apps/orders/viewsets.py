@@ -1,6 +1,10 @@
-from rest_framework import decorators, response, status
+from rest_framework import decorators, response, status, generics
 
-from apps.core.views import BaseViewSet, CreateDestroyViewSet
+from apps.core.views import (
+    BaseViewSet,
+    CreateDestroyViewSet,
+    CreateReadUpdateViewSet,
+)
 
 from . import models, permissions, serializers
 
@@ -130,3 +134,16 @@ class RestaurantAndOrderViewSet(BaseViewSet):
         if instance.order:
             instance.order.delete()
         instance.delete()
+
+
+class OrderAndDishesView(generics.UpdateAPIView):
+    pass
+
+# статус - изменять - повар
+# коммент - 
+
+
+class StopListViewSet(CreateReadUpdateViewSet):
+    pass
+# Read - официант
+# Create/update - повар

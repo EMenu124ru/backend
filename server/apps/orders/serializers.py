@@ -59,6 +59,14 @@ class DishSerializer(BaseSerializer):
         return data
 
 
+class DishCommentSerializer(serializers.Serializer):
+
+    dish = serializers.PrimaryKeyRelatedField(
+        queryset=models.Dish.objects.all(),
+    )
+    comment = serializers.CharField()
+
+
 class OrderSerializer(BaseSerializer):
 
     employee = serializers.PrimaryKeyRelatedField(
@@ -71,8 +79,7 @@ class OrderSerializer(BaseSerializer):
         allow_null=True,
         required=False,
     )
-    dishes = serializers.PrimaryKeyRelatedField(
-        queryset=models.Dish.objects.all(),
+    dishes = DishCommentSerializer(
         many=True,
     )
 
@@ -90,16 +97,17 @@ class OrderSerializer(BaseSerializer):
     def create(self, validated_data: OrderedDict) -> models.Order:
         dishes = validated_data.pop("dishes")
         validated_data.update(
-            {"price": sum([Decimal(dish.price) for dish in dishes])}
+            {"price": sum([Decimal(item.dish.price) for item in dishes])}
         )
         order = models.Order.objects.create(**validated_data)
         models.OrderAndDishes.objects.bulk_create(
             [
                 models.OrderAndDishes(
                     order=order,
-                    dish=dish,
+                    dish=item.dish,
+                    comment=item.comment,
                 )
-                for dish in dishes
+                for item in dishes
             ],
         )
         return order
@@ -191,7 +199,7 @@ class OrderSerializer(BaseSerializer):
                 flat=True,
             )
             create, delete = self.get_dishes(
-                [dish.id for dish in dishes],
+                [item.dish.id for item in dishes],
                 existing,
             )
             models.OrderAndDishes.objects.filter(
@@ -203,20 +211,20 @@ class OrderSerializer(BaseSerializer):
                     models.OrderAndDishes(
                         order=instance,
                         dish=dish,
+                        comment=dishes.get("comment", "")
                     )
                     for dish in models.Dish.objects.filter(id__in=create)
                 ],
             )
-            instance.price = sum([Decimal(dish.price) for dish in dishes])
+            instance.price = sum([Decimal(item.dish.price) for item in dishes])
             instance.save()
         return super().update(instance, validated_data)
 
     def to_representation(self, instance: models.Order) -> OrderedDict:
         data = super().to_representation(instance)
-        pk_dishes = instance.dishes.values_list("dish", flat=True)
-        dishes = models.Dish.objects.filter(id__in=pk_dishes)
+        dishes = instance.dishes.values_list("dish", "comment", flat=True)
         new_info = {
-            "dishes": DishSerializer(dishes, many=True).data,
+            "dishes": DishCommentSerializer(dishes, many=True).data,
             "price": instance.price,
         }
         data.update(new_info)
