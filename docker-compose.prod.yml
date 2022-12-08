@@ -2,7 +2,6 @@ version: '3'
 
 volumes:
   postgres_data:
-  media_volume:
 
 services:
   nginx:
@@ -16,7 +15,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - media_volume:/server/media
+      - ./server/media:/nginx/media/
 
   django:
     container_name: django
@@ -29,7 +28,7 @@ services:
     expose:
       - 8000
     volumes:
-      - media_volume:/server/media
+      - ./server/media:/server/media/
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - DJANGO_DEBUG=${DJANGO_DEBUG}
