@@ -155,8 +155,9 @@ LOGGING = {
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
 if DEBUG:
-    from .installed_apps import INSTALLED_APPS
     import socket
+
+    from .installed_apps import INSTALLED_APPS
 
     def show_toolbar(request):
         from django.conf import settings
