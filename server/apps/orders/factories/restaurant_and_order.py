@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 import pytz
-from factory import LazyAttribute, SubFactory
+from factory import Faker, LazyAttribute, SubFactory
 from factory.django import DjangoModelFactory
 
 from apps.orders.models import RestaurantAndOrder
@@ -21,6 +21,11 @@ class RestaurantAndOrderFactory(DjangoModelFactory):
     )
     restaurant = SubFactory(
         RestaurantFactory,
+    )
+    place_number = Faker(
+        "pyint",
+        min_value=0,
+        max_value=15,
     )
 
     class Meta:
