@@ -1,4 +1,4 @@
-from factory import SubFactory, fuzzy
+from factory import Faker, SubFactory, fuzzy
 from factory.django import DjangoModelFactory
 
 from apps.orders.models import OrderAndDishes
@@ -17,6 +17,10 @@ class OrderAndDishesFactory(DjangoModelFactory):
     )
     dish = SubFactory(
         DishFactory,
+    )
+    comment = Faker(
+        "text",
+        max_nb_chars=30,
     )
 
     class Meta:

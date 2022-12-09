@@ -1,29 +1,54 @@
-from rest_framework import decorators, response, status, generics
+from rest_framework import decorators, permissions, response, status
 
 from apps.core.views import (
     BaseViewSet,
     CreateDestroyViewSet,
-    CreateReadUpdateViewSet,
+    CreateReadDeleteViewSet,
+    CreateUpdateDestroyViewSet,
 )
 
-from . import models, permissions, serializers
+from .models import (
+    Category,
+    Dish,
+    DishImages,
+    Order,
+    OrderAndDishes,
+    RestaurantAndOrder,
+    StopList,
+)
+from .permissions import (
+    DishCategoryPermissions,
+    OrderAndDishesPermission,
+    OrderPermissions,
+    RestaurantAndOrdersPermissions,
+    StopListPermission,
+)
+from .serializers import (
+    CategorySerializer,
+    DishImageSerializer,
+    DishSerializer,
+    OrderAndDishSerializer,
+    OrderSerializer,
+    RestaurantAndOrderSerializer,
+    StopListSerializer,
+)
 
 
 class CategoryViewSet(BaseViewSet):
 
-    permission_classes = (permissions.DishCategoryPermissions,)
+    permission_classes = (DishCategoryPermissions,)
 
     def get_serializer_class(self):
         if self.action == "dishes":
-            return serializers.DishSerializer
-        return serializers.CategorySerializer
+            return DishSerializer
+        return CategorySerializer
 
     def get_queryset(self):
         if self.action == "dishes":
-            return models.Category.objects.prefetch_related(
+            return Category.objects.prefetch_related(
                 "dishes",
             ).get(id=self.request.parser_context["kwargs"]["pk"]).dishes.all()
-        return models.Category.objects.all()
+        return Category.objects.all()
 
     @decorators.action(methods=("GET",), detail=True)
     def dishes(self, request, *args, **kwargs) -> response.Response:
@@ -32,14 +57,14 @@ class CategoryViewSet(BaseViewSet):
 
 class DishViewSet(BaseViewSet):
 
-    permission_classes = (permissions.DishCategoryPermissions,)
+    permission_classes = (DishCategoryPermissions,)
 
     def get_serializer_class(self):
         # if self.action == "reviews":
         #     return ReviewSerializer
         if self.action == "orders":
-            return serializers.OrderSerializer
-        return serializers.DishSerializer
+            return OrderSerializer
+        return DishSerializer
 
     def perform_destroy(self, instance) -> None:
         for image in instance.images.all():
@@ -48,29 +73,29 @@ class DishViewSet(BaseViewSet):
 
     def get_queryset(self):
         if self.action == "reviews":
-            return models.Dish.objects.prefetch_related(
+            return Dish.objects.prefetch_related(
                 "reviews",
             ).get(id=self.request.parser_context["kwargs"]["pk"]).reviews.all()
         if self.action == "orders":
-            orders = models.Dish.objects.prefetch_related(
+            orders = Dish.objects.prefetch_related(
                 "orders",
             ).get(
                 id=self.request.parser_context["kwargs"]["pk"],
             ).orders.all().values_list("order", flat=True)
-            return models.Order.objects.filter(id__in=orders)
-        return models.Dish.objects.all()
+            return Order.objects.filter(id__in=orders)
+        return Dish.objects.all()
 
     def create(self, request, *args, **kwargs):
         images = request.data.get("images", [])
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        dish = models.Dish.objects.get(id=serializer.data["id"])
-        models.DishImages.objects.bulk_create(
-            [models.DishImages(image=image, dish=dish) for image in images],
+        dish = Dish.objects.get(id=serializer.data["id"])
+        DishImages.objects.bulk_create(
+            [DishImages(image=image, dish=dish) for image in images],
         )
         return response.Response(
-            data=serializers.DishSerializer(dish).data,
+            data=DishSerializer(dish).data,
             status=status.HTTP_201_CREATED,
         )
 
@@ -85,24 +110,25 @@ class DishViewSet(BaseViewSet):
 
 class DishImageViewSet(CreateDestroyViewSet):
 
-    queryset = models.DishImages.objects.all()
+    queryset = DishImages.objects.all()
     permission_classes = (
-        permissions.permissions.IsAuthenticated & permissions.DishCategoryPermissions,
+        permissions.IsAuthenticated & DishCategoryPermissions,
     )
 
     def create(self, request, *args, **kwargs):
-        dish = models.Dish.objects.get(id=request.data["dish"])
-        models.DishImages.objects.bulk_create(
-            [
-                models.DishImages(
-                    image=image,
-                    dish=dish,
-                )
-                for image in request.data.pop("images")
-            ]
-        )
+        serializers = [
+            DishImageSerializer(data={
+                "image": image,
+                "dish": request.data.get("dish"),
+            })
+            for image in request.data.pop("images")
+        ]
+        for serializer in serializers:
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        dish = Dish.objects.get(id=request.data.get("dish")).all()
         return response.Response(
-            serializers.DishImageSerializer(
+            DishImageSerializer(
                 dish.images.all(),
                 many=True,
             ).data,
@@ -112,10 +138,10 @@ class DishImageViewSet(CreateDestroyViewSet):
 
 class OrderViewSet(BaseViewSet):
 
-    queryset = models.Order.objects.all()
-    serializer_class = serializers.OrderSerializer
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
     permission_classes = (
-        permissions.permissions.IsAuthenticated & permissions.OrderPermissions,
+        permissions.IsAuthenticated & OrderPermissions,
     )
 
     def perform_create(self, serializer) -> None:
@@ -124,26 +150,37 @@ class OrderViewSet(BaseViewSet):
 
 class RestaurantAndOrderViewSet(BaseViewSet):
 
-    queryset = models.RestaurantAndOrder.objects.all()
-    serializer_class = serializers.RestaurantAndOrderSerializer
+    queryset = RestaurantAndOrder.objects.all()
+    serializer_class = RestaurantAndOrderSerializer
     permission_classes = (
-        permissions.permissions.IsAuthenticated & permissions.RestaurantAndOrdersPermissions,
+        permissions.IsAuthenticated & RestaurantAndOrdersPermissions,
     )
 
-    def perform_destroy(self, instance):
+    def perform_destroy(self, instance) -> None:
         if instance.order:
             instance.order.delete()
         instance.delete()
 
 
-class OrderAndDishesView(generics.UpdateAPIView):
-    pass
+class OrderAndDishesViewSet(CreateUpdateDestroyViewSet):
 
-# статус - изменять - повар
-# коммент - 
+    queryset = OrderAndDishes.objects.all()
+    serializer_class = OrderAndDishSerializer
+    permission_classes = (
+        permissions.IsAuthenticated & OrderAndDishesPermission,
+    )
 
 
-class StopListViewSet(CreateReadUpdateViewSet):
-    pass
-# Read - официант
-# Create/update - повар
+class StopListViewSet(CreateReadDeleteViewSet):
+
+    serializer_class = StopListSerializer
+    permission_classes = (
+        permissions.IsAuthenticated & StopListPermission,
+    )
+
+    def get_queryset(self):
+        if self.action == "list":
+            return StopList.objects.filter(
+                restaurant=self.request.user.employee.restaurant,
+            )
+        return StopList.objects.all()

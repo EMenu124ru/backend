@@ -122,6 +122,7 @@ class Order(models.Model):
         verbose_name="Цена",
     )
     comment = models.TextField(
+        default="",
         verbose_name="Комментарий",
     )
     employee = models.ForeignKey(
@@ -175,6 +176,7 @@ class OrderAndDishes(models.Model):
         verbose_name="Блюдо",
     )
     comment = models.TextField(
+        default="",
         verbose_name="Комментарий",
     )
 
@@ -218,9 +220,10 @@ class RestaurantAndOrder(models.Model):
 
 
 class StopList(models.Model):
-    dishes = models.ManyToManyField(
+    dish = models.ForeignKey(
         Dish,
         related_name="stop_list",
+        on_delete=models.CASCADE,
         verbose_name="Блюда",
     )
     restaurant = models.ForeignKey(
@@ -235,4 +238,4 @@ class StopList(models.Model):
         verbose_name_plural = "Стоп листы ресторанов"
 
     def __str__(self) -> str:
-        return f"StopList count dishes: {self.dishes.count()}, restaurant: {self.restaurant}"
+        return f"StopList with dish: {self.dish}, restaurant: {self.restaurant}"

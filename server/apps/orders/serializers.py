@@ -1,4 +1,4 @@
-from collections import Counter, OrderedDict
+from collections import OrderedDict
 from decimal import Decimal
 
 from rest_framework import serializers
@@ -26,7 +26,11 @@ class DishImageSerializer(BaseSerializer):
         model = models.DishImages
         fields = (
             "id",
+            "dish",
             "image",
+        )
+        write_only_fields = (
+            "dish",
         )
 
 
@@ -59,12 +63,80 @@ class DishSerializer(BaseSerializer):
         return data
 
 
-class DishCommentSerializer(serializers.Serializer):
+class DishCommentSerializer(BaseSerializer):
 
     dish = serializers.PrimaryKeyRelatedField(
         queryset=models.Dish.objects.all(),
     )
-    comment = serializers.CharField()
+
+    class Meta:
+        model = models.OrderAndDishes
+        fields = (
+            "id",
+            "dish",
+            "comment",
+        )
+
+
+class OrderAndDishSerializer(BaseSerializer):
+
+    dish = serializers.PrimaryKeyRelatedField(
+        queryset=models.Dish.objects.all(),
+    )
+    order = serializers.PrimaryKeyRelatedField(
+        queryset=models.Order.objects.all(),
+    )
+
+    class Meta:
+        model = models.OrderAndDishes
+        fields = (
+            "id",
+            "status",
+            "order",
+            "dish",
+            "comment",
+        )
+
+    def check_fields_by_cook(
+        self,
+        instance: models.Order,
+        validated_data: OrderedDict,
+    ) -> bool:
+        data = validated_data.copy()
+        data.pop("status", None)
+        return all([
+            instance.__getattribute__(key) == value
+            for key, value in data.items()
+        ])
+
+    def check_fields_by_waiter(
+        self,
+        instance: models.Order,
+        validated_data: OrderedDict,
+    ) -> bool:
+        data = validated_data.copy()
+        data.pop("comment", None)
+        return all([
+            instance.__getattribute__(key) == value
+            for key, value in data.items()
+        ])
+
+    def validate(self, attrs: OrderedDict) -> OrderedDict:
+        if (
+            self._user.employee.role == Employee.Roles.WAITER and
+            not self.check_fields_by_waiter(self.instance, attrs)
+        ):
+            raise serializers.ValidationError(
+                "Официант может изменить только комментарий к заказу",
+            )
+        if (
+            self._user.employee.role == Employee.Roles.COOK and
+            not self.check_fields_by_cook(self.instance, attrs)
+        ):
+            raise serializers.ValidationError(
+                "Повар может изменить только статус заказа",
+            )
+        return attrs
 
 
 class OrderSerializer(BaseSerializer):
@@ -94,36 +166,6 @@ class OrderSerializer(BaseSerializer):
             "dishes",
         )
 
-    def create(self, validated_data: OrderedDict) -> models.Order:
-        dishes = validated_data.pop("dishes")
-        validated_data.update(
-            {"price": sum([Decimal(item.dish.price) for item in dishes])}
-        )
-        order = models.Order.objects.create(**validated_data)
-        models.OrderAndDishes.objects.bulk_create(
-            [
-                models.OrderAndDishes(
-                    order=order,
-                    dish=item.dish,
-                    comment=item.comment,
-                )
-                for item in dishes
-            ],
-        )
-        return order
-
-    def check_fields_by_client(
-        self,
-        instance: models.Order,
-        validated_data: OrderedDict,
-    ) -> bool:
-        data = validated_data.copy()
-        data.pop("dishes", None)
-        return all([
-            instance.__getattribute__(key) == value
-            for key, value in data.items()
-        ])
-
     def check_fields_by_cook(
         self,
         instance: models.Order,
@@ -137,92 +179,52 @@ class OrderSerializer(BaseSerializer):
             for key, value in data.items()
         ])
 
-    def get_dishes(
-        self,
-        received: list[int],
-        existing: list[int],
-    ) -> list[list, list]:
-        received, existing = Counter(received), Counter(existing)
-        delete, create = [], []
-        for idx, count in existing.items():
-            if idx in received:
-                if received[idx] < count:
-                    delete.extend([idx for _ in range(count-received[idx])])
-                if received[idx] > count:
-                    create.extend([idx for _ in range(received[idx-count])])
-            else:
-                delete.extend([idx for _ in range(count)])
-        for idx, count in received.items():
-            if idx not in existing:
-                create.extend([idx for _ in range(count)])
-        return create, delete
-
-    def validate_dishes(self, dishes) -> list:
-        if not dishes:
-            raise serializers.ValidationError("Заказ не может быть без блюд")
-        return dishes
-
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self.instance:
             if (
-                self._user.is_client and
-                not self.check_fields_by_client(self.instance, attrs)
+                self._user.employee.role in (
+                    Employee.Roles.CHEF,
+                    Employee.Roles.COOK,
+                    Employee.Roles.BARTENDER,
+                ) and
+                not self.check_fields_by_cook(self.instance, attrs)
             ):
                 raise serializers.ValidationError(
-                    "Пользователь может изменить только состав заказа",
+                    "Работник может изменить только статус и комментарий к заказу",
                 )
-            if not self._user.is_client:
-                if (
-                    self._user.employee.role in (
-                        Employee.Roles.CHEF,
-                        Employee.Roles.COOK,
-                        Employee.Roles.BARTENDER,
-                    ) and
-                    not self.check_fields_by_cook(self.instance, attrs)
-                ):
-                    raise serializers.ValidationError(
-                        "Работник может изменить только статус и комментарий к заказу",
-                    )
         return attrs
+
+    def create(self, validated_data: OrderedDict) -> models.Order:
+        dishes = validated_data.pop("dishes")
+        validated_data.update(
+            {"price": sum([Decimal(item["dish"].price) for item in dishes])}
+        )
+        order = models.Order.objects.create(**validated_data)
+        models.OrderAndDishes.objects.bulk_create(
+            [
+                models.OrderAndDishes(
+                    order=order,
+                    dish=item["dish"],
+                    comment=item["comment"],
+                )
+                for item in dishes
+            ],
+        )
+        return order
 
     def update(
         self,
         instance: models.Order,
         validated_data: OrderedDict,
     ) -> models.Order:
-        dishes = validated_data.pop("dishes", [])
-        if dishes:
-            existing = models.OrderAndDishes.objects.filter(
-                order=instance
-            ).values_list(
-                "dish__id",
-                flat=True,
-            )
-            create, delete = self.get_dishes(
-                [item.dish.id for item in dishes],
-                existing,
-            )
-            models.OrderAndDishes.objects.filter(
-                order=instance,
-                dish__id__in=delete,
-            ).delete()
-            models.OrderAndDishes.objects.bulk_create(
-                [
-                    models.OrderAndDishes(
-                        order=instance,
-                        dish=dish,
-                        comment=dishes.get("comment", "")
-                    )
-                    for dish in models.Dish.objects.filter(id__in=create)
-                ],
-            )
-            instance.price = sum([Decimal(item.dish.price) for item in dishes])
-            instance.save()
+        validated_data.pop("dishes", None)
         return super().update(instance, validated_data)
 
     def to_representation(self, instance: models.Order) -> OrderedDict:
         data = super().to_representation(instance)
-        dishes = instance.dishes.values_list("dish", "comment", flat=True)
+        dishes = instance.dishes.values("id", "dish", "comment")
+        for item in dishes:
+            item["dish"] = models.Dish.objects.get(id=item["dish"])
         new_info = {
             "dishes": DishCommentSerializer(dishes, many=True).data,
             "price": instance.price,
@@ -300,3 +302,30 @@ class RestaurantAndOrderSerializer(BaseSerializer):
             order=order,
         )
         return restaurant_and_orders
+
+
+class StopListSerializer(BaseSerializer):
+
+    dish = serializers.PrimaryKeyRelatedField(
+        queryset=models.Dish.objects.all(),
+    )
+    restaurant = serializers.PrimaryKeyRelatedField(
+        queryset=Restaurant.objects.all(),
+        allow_null=True,
+        required=False,
+    )
+
+    class Meta:
+        model = models.StopList
+        fields = (
+            "id",
+            "dish",
+            "restaurant",
+        )
+
+    def validate_dishes(self, dishes) -> list:
+        if not dishes:
+            raise serializers.ValidationError(
+                "Нельзя создать стоп лист без блюд",
+            )
+        return dishes

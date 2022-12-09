@@ -52,13 +52,17 @@ class OrderPermissions(permissions.BasePermission):
         return True
 
     def has_object_permission(self, request, view, obj) -> bool:
+        if request.method == "GET":
+            if request.user.is_client:
+                return obj.client.user == request.user
+            return check_role_employee(request.user, Employee.Roles.WAITER)
         if request.method == "DELETE" and (
             check_role_employee(request.user, Employee.Roles.WAITER) or
             check_role_employee(request.user, Employee.Roles.HOSTESS)
         ):
             return True
-        if request.method in ("PUT", "PATCH", "GET"):
-            return obj.client.user == request.user or not request.user.is_client
+        if request.method in ("PUT", "PATCH"):
+            return not request.user.is_client
         return False
 
 
@@ -94,3 +98,46 @@ class RestaurantAndOrdersPermissions(permissions.BasePermission):
                 request.user.employee.role == Employee.Roles.WAITER,
             ])
         return True
+
+
+class StopListPermission(permissions.BasePermission):
+
+    def has_permission(self, request, view) -> bool:
+        if not request.user.is_authenticated:
+            return False
+        if request.user.is_client:
+            return False
+        if view.action == "list" and any([
+            check_role_employee(request.user, Employee.Roles.COOK),
+            check_role_employee(request.user, Employee.Roles.WAITER),
+        ]):
+            return True
+        if request.method == "POST":
+            return check_role_employee(request.user, Employee.Roles.COOK)
+
+    def has_object_permission(self, request, view, obj) -> bool:
+        if request.method == "DELETE":
+            return check_role_employee(request.user, Employee.Roles.COOK)
+
+
+class OrderAndDishesPermission(permissions.BasePermission):
+
+    def has_permission(self, request, view) -> bool:
+        if not request.user.is_authenticated:
+            return False
+        if request.user.is_client:
+            return False
+        return True
+
+    def has_object_permission(self, request, view, obj) -> bool:
+        if request.method in ("PATCH", "PUT"):
+            if obj.order.client:
+                return obj.order.client.user == request.user
+            return any([
+                check_role_employee(request.user, Employee.Roles.COOK),
+                check_role_employee(request.user, Employee.Roles.WAITER),
+            ])
+        if request.method == "DELETE":
+            if obj.order.client:
+                return obj.order.client.user == request.user
+            return check_role_employee(request.user, Employee.Roles.WAITER)
