@@ -43,6 +43,7 @@ class CreateReadDeleteViewSet(
 
 
 class CreateUpdateDestroyViewSet(
+    mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,

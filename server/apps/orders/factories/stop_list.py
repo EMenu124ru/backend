@@ -1,13 +1,13 @@
 from factory import SubFactory
 from factory.django import DjangoModelFactory
 
-from apps.orders.models import OrderAndDishes
+from apps.orders.models import StopList
 from apps.restaurants.factories import RestaurantFactory
 
 from .dish import DishFactory
 
 
-class OrderFactory(DjangoModelFactory):
+class StopListFactory(DjangoModelFactory):
     """Factory for StopList instance."""
 
     dish = SubFactory(
@@ -18,4 +18,4 @@ class OrderFactory(DjangoModelFactory):
     )
 
     class Meta:
-        model = OrderAndDishes
+        model = StopList

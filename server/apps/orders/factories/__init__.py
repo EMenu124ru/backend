@@ -4,3 +4,4 @@ from .dish_images import DishImagesFactory  # noqa F401
 from .order import OrderFactory  # noqa F401
 from .order_and_dishes import OrderAndDishesFactory  # noqa F401
 from .restaurant_and_order import RestaurantAndOrderFactory  # noqa F401
+from .stop_list import StopListFactory  # noqa F401

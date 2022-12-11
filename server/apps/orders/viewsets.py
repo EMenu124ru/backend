@@ -126,7 +126,7 @@ class DishImageViewSet(CreateDestroyViewSet):
         for serializer in serializers:
             serializer.is_valid(raise_exception=True)
             serializer.save()
-        dish = Dish.objects.get(id=request.data.get("dish")).all()
+        dish = Dish.objects.get(id=request.data.get("dish"))
         return response.Response(
             DishImageSerializer(
                 dish.images.all(),

@@ -25,6 +25,10 @@ tags:
     description: "Restaurant namespace"
   - name: restaurantAndOrders
     description: "restaurantAndOrders namespace"
+  - name: orderAndDishes
+    description: "orderAndDishes namespace"
+  - name: stopList
+    description: "stopList namespace"
 
 paths:
   "/api/v1/clients/login/":

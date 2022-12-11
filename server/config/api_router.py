@@ -5,8 +5,10 @@ from apps.orders.viewsets import (
     CategoryViewSet,
     DishImageViewSet,
     DishViewSet,
+    OrderAndDishesViewSet,
     OrderViewSet,
     RestaurantAndOrderViewSet,
+    StopListViewSet,
 )
 from apps.users.viewsets import ClientViewSet
 
@@ -35,6 +37,16 @@ router.register(
     "restaurant-and-orders",
     RestaurantAndOrderViewSet,
     basename="restaurantAndOrders",
+)
+router.register(
+    "order-and-dishes",
+    OrderAndDishesViewSet,
+    basename="orderAndDishes",
+)
+router.register(
+    "stop-list",
+    StopListViewSet,
+    basename="stopList",
 )
 router.register(
     "clients",

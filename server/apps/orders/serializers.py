@@ -122,20 +122,21 @@ class OrderAndDishSerializer(BaseSerializer):
         ])
 
     def validate(self, attrs: OrderedDict) -> OrderedDict:
-        if (
-            self._user.employee.role == Employee.Roles.WAITER and
-            not self.check_fields_by_waiter(self.instance, attrs)
-        ):
-            raise serializers.ValidationError(
-                "Официант может изменить только комментарий к заказу",
-            )
-        if (
-            self._user.employee.role == Employee.Roles.COOK and
-            not self.check_fields_by_cook(self.instance, attrs)
-        ):
-            raise serializers.ValidationError(
-                "Повар может изменить только статус заказа",
-            )
+        if self.instance:
+            if (
+                self._user.employee.role == Employee.Roles.WAITER and
+                not self.check_fields_by_waiter(self.instance, attrs)
+            ):
+                raise serializers.ValidationError(
+                    "Официант может изменить только комментарий к заказу",
+                )
+            if (
+                self._user.employee.role == Employee.Roles.COOK and
+                not self.check_fields_by_cook(self.instance, attrs)
+            ):
+                raise serializers.ValidationError(
+                    "Повар может изменить только статус заказа",
+                )
         return attrs
 
 

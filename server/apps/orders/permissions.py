@@ -39,8 +39,6 @@ class DishCategoryPermissions(permissions.BasePermission):
 class OrderPermissions(permissions.BasePermission):
 
     def has_permission(self, request, view) -> bool:
-        if not request.user.is_authenticated:
-            return False
         if all([
             request.method == "GET",
             view.action == "list",
@@ -103,17 +101,16 @@ class RestaurantAndOrdersPermissions(permissions.BasePermission):
 class StopListPermission(permissions.BasePermission):
 
     def has_permission(self, request, view) -> bool:
-        if not request.user.is_authenticated:
-            return False
         if request.user.is_client:
             return False
-        if view.action == "list" and any([
+        if request.method == "GET" and any([
             check_role_employee(request.user, Employee.Roles.COOK),
             check_role_employee(request.user, Employee.Roles.WAITER),
         ]):
             return True
         if request.method == "POST":
             return check_role_employee(request.user, Employee.Roles.COOK)
+        return check_role_employee(request.user, Employee.Roles.COOK)
 
     def has_object_permission(self, request, view, obj) -> bool:
         if request.method == "DELETE":
@@ -123,21 +120,15 @@ class StopListPermission(permissions.BasePermission):
 class OrderAndDishesPermission(permissions.BasePermission):
 
     def has_permission(self, request, view) -> bool:
-        if not request.user.is_authenticated:
-            return False
         if request.user.is_client:
             return False
         return True
 
     def has_object_permission(self, request, view, obj) -> bool:
         if request.method in ("PATCH", "PUT"):
-            if obj.order.client:
-                return obj.order.client.user == request.user
             return any([
                 check_role_employee(request.user, Employee.Roles.COOK),
                 check_role_employee(request.user, Employee.Roles.WAITER),
             ])
         if request.method == "DELETE":
-            if obj.order.client:
-                return obj.order.client.user == request.user
             return check_role_employee(request.user, Employee.Roles.WAITER)
