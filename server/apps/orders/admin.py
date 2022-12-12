@@ -71,3 +71,12 @@ class RestaurantAndOrderAdmin(admin.ModelAdmin):
         "restaurant",
         "place_number",
     )
+
+
+@admin.register(models.StopList)
+class StopListAdmin(admin.ModelAdmin):
+    """Class representation of StopList model in admin panel."""
+
+    list_display = (
+        "id",
+    )
