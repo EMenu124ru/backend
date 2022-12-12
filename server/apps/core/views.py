@@ -29,3 +29,25 @@ class CRUDViewSet(
     """CRUD ViewSet for `create`, `destroy`, `retrieve` and `update` actions."""
 
     pass
+
+
+class CreateReadDeleteViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    """CreateReadDeleteViewSet ViewSet for `create`, `read`, `destroy` actions."""
+
+    pagination_class = PaginationObject
+
+
+class CreateUpdateDestroyViewSet(
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    """CreateUpdateDestroy ViewSet for `create` and `update` and `destroy` actions."""
+
+    pass

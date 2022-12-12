@@ -13,14 +13,14 @@ def manage(context, service="django", command="", compose="dev"):
 def makemigrations(context, command=""):
     """Run makemigrations command and chown created migrations."""
     common.success("Django: Make migrations")
-    manage(context, f"makemigrations {command}")
+    manage(context, command=f"makemigrations {command}")
 
 
 @task
 def migrate(context, app_name=""):
     """Run ``migrate`` command."""
     common.success("Django: Apply migrations")
-    manage(context, f"migrate {app_name}")
+    manage(context, command=f"migrate {app_name}")
 
 
 @task
@@ -42,16 +42,16 @@ def createsuperuser(
 
 
 @task
-def resetdb(context, apply_migrations=True, compose="dev"):
+def resetdb(context, apply_migrations=True):
     """Reset database to initial state (including test DB)."""
     common.success("Reset database to its initial state")
-    manage(context, "drop_test_database --noinput")
-    manage(context, "reset_db -c --noinput")
+    manage(context, command="drop_test_database --noinput")
+    manage(context, command="reset_db -c --noinput")
     if not apply_migrations:
         return
     makemigrations(context)
     migrate(context)
-    createsuperuser(context, compose)
+    createsuperuser(context)
 
 
 @task
