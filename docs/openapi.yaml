@@ -1002,7 +1002,14 @@ components:
         dishes:
           type: array
           items:
-            $ref: "#/components/schemas/DishBase"
+            type: object
+            properties:
+              id:
+                type: number
+              dish:
+                type: number
+              comment:
+                type: string
 
     OrderCreateBase:
       type: object
@@ -1019,7 +1026,12 @@ components:
         dishes:
           type: array
           items:
-            type: number
+            type: object
+            properties:
+              dish:
+                type: number
+              comment:
+                type: string
 
     CategoryBase:
       type: object
