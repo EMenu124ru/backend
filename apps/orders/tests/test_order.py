@@ -182,7 +182,7 @@ def test_update_order_by_client(
             "client": client.pk,
             "place_number": order.place_number,
             "dishes": [dish.id for dish in dishes],
-            "comment": new_comment,
+            "comment": order.comment,
         },
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -337,3 +337,28 @@ def test_remove_order_by_not_auth(
         ),
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_remove_order_by_hostess(
+    hostess,
+    api_client,
+) -> None:
+    client = ClientFactory.create()
+    dishes = DishFactory.create_batch(
+        size=DISHES_COUNT,
+    )
+    waiter = ClientFactory.create()
+    sum_dishes_prices = sum([dish.price for dish in dishes])
+    order = OrderFactory.create(
+        client=client,
+        employee=waiter,
+        price=sum_dishes_prices,
+    )
+    api_client.force_authenticate(user=hostess.user)
+    api_client.delete(
+        reverse_lazy(
+            "api:orders-detail",
+            kwargs={"pk": order.pk},
+        ),
+    )
+    assert order not in Order.objects.all()
