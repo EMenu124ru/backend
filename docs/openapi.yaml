@@ -24,7 +24,11 @@ tags:
   - name: restaurants
     description: "Restaurant namespace"
   - name: restaurantAndOrders
-    description: "restaurantAndOrders namespace"
+    description: "RestaurantAndOrders namespace"
+  - name: orderAndDishes
+    description: "OrderAndDishes namespace"
+  - name: stopList
+    description: "StopList namespace"
 
 paths:
   "/api/v1/clients/login/":
@@ -64,6 +68,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id клиента"
           required: true
       security:
         - bearerAuth: []
@@ -86,6 +91,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id клиента"
           required: true
       security:
         - bearerAuth: []
@@ -112,6 +118,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id клиента"
           required: true
       security:
         - bearerAuth: []
@@ -185,7 +192,14 @@ paths:
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       responses:
         "200":
@@ -205,6 +219,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id категории"
           required: true
       security:
         - bearerAuth: []
@@ -227,6 +242,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id категории"
           required: true
       security:
         - bearerAuth: []
@@ -253,6 +269,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id категории"
           required: true
       security:
         - bearerAuth: []
@@ -277,13 +294,21 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id категории"
           required: true
         - in: query
           name: page
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       security:
         - bearerAuth: []
@@ -328,7 +353,14 @@ paths:
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       responses:
         "200":
@@ -348,6 +380,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id заказа"
           required: true
       security:
         - bearerAuth: []
@@ -370,6 +403,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id заказа"
           required: true
       security:
         - bearerAuth: []
@@ -396,6 +430,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id заказа"
           required: true
       security:
         - bearerAuth: []
@@ -440,7 +475,14 @@ paths:
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       responses:
         "200":
@@ -460,6 +502,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id блюда"
           required: true
       security:
         - bearerAuth: []
@@ -482,6 +525,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id блюда"
           required: true
       security:
         - bearerAuth: []
@@ -508,6 +552,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id блюда"
           required: true
       security:
         - bearerAuth: []
@@ -531,13 +576,21 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id блюда"
           required: true
         - in: query
           name: page
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       security:
         - bearerAuth: []
@@ -562,13 +615,21 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id блюда"
           required: true
         - in: query
           name: page
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       security:
         - bearerAuth: []
@@ -611,6 +672,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id фото блюда"
           required: true
       security:
         - bearerAuth: []
@@ -655,7 +717,14 @@ paths:
           schema:
             type: number
             nullable: true
-          description: "Страница"
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
           required: false
       responses:
         "200":
@@ -676,6 +745,7 @@ paths:
           schema:
             type: number
           required: true
+          description: "Id бронирования"
       security:
         - bearerAuth: []
       responses:
@@ -697,6 +767,7 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id бронирования"
           required: true
       security:
         - bearerAuth: []
@@ -723,6 +794,149 @@ paths:
           in: path
           schema:
             type: number
+          description: "Id бронирования"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/order-and-dishes/":
+    post:
+      tags:
+        - orderAndDishes
+      summary: "Create orderAndDishes"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/OrderAndDishesRequestBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/OrderAndDishesCreate201"
+        "400":
+          $ref: "#/components/responses/OrderAndDishesCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+  "/api/v1/order-and-dishes/{orderAndDishes_id}/":
+    patch:
+      tags:
+        - orderAndDishes
+      summary: "Update orderAndDishes"
+      parameters:
+        - name: orderAndDishes_id
+          in: path
+          schema:
+            type: number
+          description: "Id связки ресторана и заказа"
+          required: true
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/OrderAndDishesRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/OrderAndDishes200"
+        "400":
+          $ref: "#/components/responses/OrderAndDishesCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+    delete:
+      tags:
+        - orderAndDishes
+      summary: "Delete orderAndDishes"
+      parameters:
+        - name: orderAndDishes_id
+          in: path
+          schema:
+            type: number
+          description: "Id связки ресторана и заказа"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/stop-list/":
+    post:
+      tags:
+        - stopList
+      summary: "Create stopList item"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/StopListRequestBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/StopListCreate201"
+        "400":
+          $ref: "#/components/responses/StopListCreate400"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+    get:
+      tags:
+        - stopList
+      summary: "Get list stopList items"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            nullable: true
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
+          required: false
+      responses:
+        "200":
+          $ref: "#/components/responses/StopListList200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+
+  "/api/v1/stop-list/{stopList_id}/":
+    delete:
+      tags:
+        - stopList
+      summary: "Delete stopList"
+      parameters:
+        - name: stopList_id
+          in: path
+          schema:
+            type: number
+          description: "Id элемента из стоп листа"
           required: true
       security:
         - bearerAuth: []
@@ -765,8 +979,6 @@ components:
           type: string
         last_name:
           type: string
-        username:
-          type: string
         password:
           type: string
         phone_number:
@@ -787,12 +999,17 @@ components:
           type: number
         client:
           type: number
-        place_number:
-          type: number
         dishes:
           type: array
           items:
-            $ref: "#/components/schemas/DishBase"
+            type: object
+            properties:
+              id:
+                type: number
+              dish:
+                type: number
+              comment:
+                type: string
 
     OrderCreateBase:
       type: object
@@ -806,12 +1023,15 @@ components:
         client:
           type: number
           nullable: true
-        place_number:
-          type: number
         dishes:
           type: array
           items:
-            type: number
+            type: object
+            properties:
+              dish:
+                type: number
+              comment:
+                type: string
 
     CategoryBase:
       type: object
@@ -924,6 +1144,8 @@ components:
           $ref: "#/components/schemas/OrderCreateBase"
         restaurant:
           type: number
+        place_number:
+          type: number
 
     RestaurantAndOrdersBase:
       type: object
@@ -937,6 +1159,54 @@ components:
           $ref: "#/components/schemas/OrderBase"
         restaurant:
           type: number
+        place_number:
+          type: number
+
+    OrderAndDishesCreateBase:
+      type: object
+      properties:
+        status:
+          type: string
+        order:
+          type: number
+          description: "Id заказа"
+        dish:
+          type: number
+          description: "Id блюда"
+        comment:
+          type: string
+
+    OrderAndDishesBase:
+      type: object
+      properties:
+        status:
+          type: string
+        order:
+          $ref: "#/components/schemas/OrderBase"
+        dish:
+          $ref: "#/components/schemas/DishBase"
+        comment:
+          type: string
+
+    StopListCreateBase:
+      type: object
+      properties:
+        dish:
+          type: number
+          description: "Id блюда"
+        restaurant:
+          type: number
+          description: "Id ресторана"
+
+    StopListBase:
+      type: object
+      properties:
+        dish:
+          type: number
+          description: "Id блюда"
+        restaurant:
+          type: number
+          description: "Id ресторана"
 
   requestBodies:
     LoginRequestBodyClient:
@@ -1037,6 +1307,20 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/RestaurantAndOrdersCreateBase"
+      required: true
+
+    OrderAndDishesRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderAndDishesCreateBase"
+      required: true
+
+    StopListRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/StopListCreateBase"
       required: true
 
   responses:
@@ -1325,3 +1609,39 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/RestaurantAndOrdersBase"
+
+    OrderAndDishesCreate201:
+      description: "OrderAndDishes create"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestaurantAndOrdersBase"
+
+    OrderAndDishesCreate400:
+      description: "OrderAndDishes created error"
+
+    OrderAndDishes200:
+      description: "OrderAndDishes get"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderAndDishesBase"
+
+    StopListCreate201:
+      description: "StopList create"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/StopListBase"
+
+    StopListCreate400:
+      description: "StopList created error"
+
+    StopListList200:
+      description: "StopList get"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/StopListBase"

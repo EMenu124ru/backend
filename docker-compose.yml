@@ -1,67 +1,40 @@
 version: '3'
 
 volumes:
-  emenu_local_postgres_data: {}
-  emenu_local_postgres_data_backups: {}
+  postgres_data:
 
 services:
-  django: &django
+  django:
+    container_name: django
     build:
-      context: .
-      dockerfile: ./compose/local/django/Dockerfile
-    image: emenu_local_django
-    container_name: emenu_local_django
-    platform: linux/x86_64
+      context: ./server
+      dockerfile: ./Dockerfile
+      args:
+        MODE: "--with dev"
     depends_on:
       - postgres
-      - redis
     volumes:
-      - .:/app:z
-    env_file:
-      - ./.envs/.local/.django
-      - ./.envs/.local/.postgres
+      - ./server:/server
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     ports:
       - "8000:8000"
-    command: /start
+    command: python manage.py runserver 0.0.0.0:8000
 
   postgres:
-    build:
-      context: .
-      dockerfile: ./compose/production/postgres/Dockerfile
-    image: emenu_production_postgres
-    container_name: emenu_local_postgres
+    container_name: postgres
+    image: postgres:14.4
+    ports:
+      - "5432:5432"
     volumes:
-      - emenu_local_postgres_data:/var/lib/postgresql/data:Z
-      - emenu_local_postgres_data_backups:/backups:z
-    env_file:
-      - ./.envs/.local/.postgres
-
-  redis:
-    image: redis:6
-    container_name: emenu_local_redis
-
-  celeryworker:
-    <<: *django
-    image: emenu_local_celeryworker
-    container_name: emenu_local_celeryworker
-    depends_on:
-      - redis
-      - postgres
-    ports: []
-    command: /start-celeryworker
-
-  celerybeat:
-    <<: *django
-    image: emenu_local_celerybeat
-    container_name: emenu_local_celerybeat
-    depends_on:
-      - redis
-      - postgres
-    ports: []
-    command: /start-celerybeat
+       - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
 
   swagger-editor:
     image: swaggerapi/swagger-editor
-    container_name: "swagger-editor"
+    container_name: swagger-editor
     ports:
       - "80:8080"
