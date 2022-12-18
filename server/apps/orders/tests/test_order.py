@@ -5,6 +5,7 @@ from rest_framework import status
 from apps.orders.factories import DishFactory, OrderAndDishesFactory, OrderFactory
 from apps.orders.models import Order
 from apps.users.factories import ClientFactory, EmployeeFactory
+from apps.users.models import Employee
 
 pytestmark = pytest.mark.django_db
 
@@ -47,44 +48,6 @@ def test_create_order_by_waiter(
     ).exists()
 
 
-def test_update_order_by_waiter(
-    waiter,
-    api_client,
-) -> None:
-    client = ClientFactory.create()
-    dishes = DishFactory.create_batch(
-        size=DISHES_COUNT,
-    )
-    sum_dishes_prices = sum([dish.price for dish in dishes])
-    order = OrderFactory.create(
-        client=client,
-        employee=waiter,
-        price=sum_dishes_prices,
-    )
-    api_client.force_authenticate(user=waiter.user)
-    new_comment = "Sample comment"
-    response = api_client.put(
-        reverse_lazy(
-            "api:orders-detail",
-            kwargs={"pk": order.pk},
-        ),
-        data={
-            "status": order.status,
-            "price": sum_dishes_prices,
-            "client": client.pk,
-            "place_number": order.place_number,
-            "dishes": [dish.id for dish in dishes],
-            "comment": new_comment,
-        },
-    )
-    assert response.status_code == status.HTTP_200_OK
-    assert Order.objects.filter(
-        comment=new_comment,
-        status=order.status,
-        price=sum_dishes_prices,
-    ).exists()
-
-
 def test_update_order_by_cook_failed(
     cook,
     waiter,
@@ -110,44 +73,6 @@ def test_update_order_by_cook_failed(
         },
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-
-def test_update_order_by_waiter(
-    waiter,
-    api_client,
-) -> None:
-    client = ClientFactory.create()
-    dishes = DishFactory.create_batch(
-        size=DISHES_COUNT,
-    )
-    sum_dishes_prices = sum([dish.price for dish in dishes])
-    order = OrderFactory.create(
-        client=client,
-        employee=waiter,
-        price=sum_dishes_prices,
-    )
-    api_client.force_authenticate(user=waiter.user)
-    new_comment = "Sample comment"
-    response = api_client.put(
-        reverse_lazy(
-            "api:orders-detail",
-            kwargs={"pk": order.pk},
-        ),
-        data={
-            "status": order.status,
-            "price": sum_dishes_prices,
-            "client": client.pk,
-            "place_number": order.place_number,
-            "dishes": [dish.id for dish in dishes],
-            "comment": new_comment,
-        },
-    )
-    assert response.status_code == status.HTTP_200_OK
-    assert Order.objects.filter(
-        comment=new_comment,
-        status=order.status,
-        price=sum_dishes_prices,
-    ).exists()
 
 
 def test_update_order_by_cook_success(
@@ -313,7 +238,6 @@ def test_update_order_by_client(
             "status": order.status,
             "price": sum_dishes_prices,
             "client": client.pk,
-            "place_number": order.place_number,
             "dishes": [dish.id for dish in dishes],
             "comment": order.comment,
         },
@@ -483,26 +407,42 @@ def test_remove_order_by_not_auth(
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_remove_order_by_hostess(
-    hostess,
-    api_client,
-) -> None:
-    client = ClientFactory.create()
-    dishes = DishFactory.create_batch(
-        size=DISHES_COUNT,
-    )
-    waiter = ClientFactory.create()
-    sum_dishes_prices = sum([dish.price for dish in dishes])
-    order = OrderFactory.create(
-        client=client,
-        employee=waiter,
-        price=sum_dishes_prices,
-    )
-    api_client.force_authenticate(user=hostess.user)
-    api_client.delete(
-        reverse_lazy(
-            "api:orders-detail",
-            kwargs={"pk": order.pk},
-        ),
-    )
-    assert order not in Order.objects.all()
+# def test_create_order_by_hostess(
+#     hostess,
+#     api_client,
+# ) -> None:
+#     client = ClientFactory.create()
+#     dishes = DishFactory.create_batch(
+#         size=DISHES_COUNT,
+#     )
+#     waiter = EmployeeFactory.create(role=Employee.Roles.WAITER)
+#     sum_dishes_prices = sum([dish.price for dish in dishes])
+#     order = OrderFactory.create(
+#         client=client,
+#         employee=waiter,
+#         price=sum_dishes_prices,
+#     )
+#     api_client.force_authenticate(user=hostess.user)
+#     response = api_client.post(
+#         reverse_lazy("api:orders-list"),
+#         data={
+#             "status": order.status,
+#             "price": sum_dishes_prices,
+#             "comment": order.comment,
+#             "client": client.pk,
+#             "dishes": [
+#                 {"dish": dish.id, "comment": "some comment"}
+#                 for dish in dishes
+#             ],
+#         },
+#         format='json',
+#     )
+#     assert response.status_code == status.HTTP_201_CREATED
+#     assert Order.objects.filter(
+#         status=order.status,
+#         price=sum_dishes_prices,
+#         comment=order.comment,
+#         client=client.pk,
+#         employee=waiter.pk,
+#     ).exists()
+#     assert order not in Order.objects.all()

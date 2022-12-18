@@ -55,8 +55,7 @@ class OrderPermissions(permissions.BasePermission):
                 return obj.client.user == request.user
             return check_role_employee(request.user, Employee.Roles.WAITER)
         if request.method == "DELETE" and (
-            check_role_employee(request.user, Employee.Roles.WAITER) or
-            check_role_employee(request.user, Employee.Roles.HOSTESS)
+            check_role_employee(request.user, Employee.Roles.WAITER)
         ):
             return True
         if request.method in ("PUT", "PATCH"):
