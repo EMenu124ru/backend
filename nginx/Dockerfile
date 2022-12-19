@@ -4,10 +4,8 @@ RUN apt-get update && \
     apt-get install --no-install-recommends -y build-essential
 
 COPY ./server/ /server/
-RUN ls
 
 WORKDIR /server/
-RUN ls
 
 RUN pip install poetry && \
     poetry config virtualenvs.create false && \
