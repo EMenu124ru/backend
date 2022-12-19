@@ -11,7 +11,7 @@ WORKDIR ${APP_HOME}
 
 RUN pip install poetry && \
     poetry config virtualenvs.create false && \
-    poetry install
+    poetry install --no-interaction --no-ansi
 
 RUN python ./manage.py collectstatic --noinput
 

@@ -21,8 +21,8 @@ services:
     container_name: django
     image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_django:latest
     build:
-      context: ./server
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: ./server/Dockerfile
       args:
         MODE: "--without dev"
     depends_on:

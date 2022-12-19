@@ -9,7 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 RUN apt-get update && \
     apt-get install --no-install-recommends -y libpq-dev build-essential
 
-COPY . ${APP_HOME}
+COPY ./server ${APP_HOME}
 RUN ls
 
 WORKDIR ${APP_HOME}
