@@ -55,8 +55,7 @@ class OrderPermissions(permissions.BasePermission):
                 return obj.client.user == request.user
             return check_role_employee(request.user, Employee.Roles.WAITER)
         if request.method == "DELETE" and (
-            check_role_employee(request.user, Employee.Roles.WAITER) or
-            check_role_employee(request.user, Employee.Roles.HOSTESS)
+            check_role_employee(request.user, Employee.Roles.WAITER)
         ):
             return True
         if request.method in ("PUT", "PATCH"):
@@ -75,8 +74,9 @@ class RestaurantAndOrdersPermissions(permissions.BasePermission):
             request.user.is_client,
         ]):
             return False
+        if request.user.is_client:
+            return True
         return any([
-            request.user.is_client,
             request.user.employee.role == Employee.Roles.HOSTESS,
             request.user.employee.role == Employee.Roles.WAITER,
         ])
@@ -87,10 +87,9 @@ class RestaurantAndOrdersPermissions(permissions.BasePermission):
                 obj.order.client.user == request.user
                 or not request.user.is_client
             )
-        if (
-            request.method in ("PUT", "PATCH", "DELETE")
-            and not request.user.is_client
-        ):
+        if request.method in ("PUT", "PATCH", "DELETE"):
+            if request.user.is_client:
+                return False
             return any([
                 request.user.employee.role == Employee.Roles.HOSTESS,
                 request.user.employee.role == Employee.Roles.WAITER,

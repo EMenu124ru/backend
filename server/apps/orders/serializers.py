@@ -290,8 +290,12 @@ class RestaurantAndOrderSerializer(BaseSerializer):
         order_dict = validated_data.pop("order")
         order = None
         if order_dict is not None:
-            order_dict["dishes"] = [dish.id for dish in order_dict["dishes"]]
-            order_dict["employee"] = self._user.employee.id
+            if self._user.is_client:
+                order_dict["client"] = self._user.client.id
+            else:
+                order_dict["employee"] = self._user.employee.id
+            for dish in order_dict["dishes"]:
+                dish["dish"] = dish["dish"].id
             serializer = OrderSerializer(data=order_dict)
             serializer.is_valid(raise_exception=True)
             serializer.save()

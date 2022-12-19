@@ -212,6 +212,34 @@ def test_read_orders_by_client(
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
+def test_update_order_by_client(
+    client,
+    api_client,
+) -> None:
+    employee = EmployeeFactory.create()
+    dishes = DishFactory.create_batch(
+        size=DISHES_COUNT,
+    )
+    sum_dishes_prices = sum([dish.price for dish in dishes])
+    order = OrderFactory.create(
+        client=client,
+        employee=employee,
+        price=sum_dishes_prices,
+    )
+    api_client.force_authenticate(user=client.user)
+    new_comment = "Sample comment"
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orders-detail",
+            kwargs={"pk": order.pk},
+        ),
+        data={
+            "comment": new_comment,
+        },
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
 def test_read_order_by_client_failed(
     client,
     api_client,
