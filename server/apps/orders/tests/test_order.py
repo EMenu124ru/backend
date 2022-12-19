@@ -5,7 +5,6 @@ from rest_framework import status
 from apps.orders.factories import DishFactory, OrderAndDishesFactory, OrderFactory
 from apps.orders.models import Order
 from apps.users.factories import ClientFactory, EmployeeFactory
-from apps.users.models import Employee
 
 pytestmark = pytest.mark.django_db
 
@@ -229,17 +228,13 @@ def test_update_order_by_client(
     )
     api_client.force_authenticate(user=client.user)
     new_comment = "Sample comment"
-    response = api_client.put(
+    response = api_client.patch(
         reverse_lazy(
             "api:orders-detail",
             kwargs={"pk": order.pk},
         ),
         data={
-            "status": order.status,
-            "price": sum_dishes_prices,
-            "client": client.pk,
-            "dishes": [dish.id for dish in dishes],
-            "comment": order.comment,
+            "comment": new_comment,
         },
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -405,44 +400,3 @@ def test_remove_order_by_not_auth(
         ),
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-
-# def test_create_order_by_hostess(
-#     hostess,
-#     api_client,
-# ) -> None:
-#     client = ClientFactory.create()
-#     dishes = DishFactory.create_batch(
-#         size=DISHES_COUNT,
-#     )
-#     waiter = EmployeeFactory.create(role=Employee.Roles.WAITER)
-#     sum_dishes_prices = sum([dish.price for dish in dishes])
-#     order = OrderFactory.create(
-#         client=client,
-#         employee=waiter,
-#         price=sum_dishes_prices,
-#     )
-#     api_client.force_authenticate(user=hostess.user)
-#     response = api_client.post(
-#         reverse_lazy("api:orders-list"),
-#         data={
-#             "status": order.status,
-#             "price": sum_dishes_prices,
-#             "comment": order.comment,
-#             "client": client.pk,
-#             "dishes": [
-#                 {"dish": dish.id, "comment": "some comment"}
-#                 for dish in dishes
-#             ],
-#         },
-#         format='json',
-#     )
-#     assert response.status_code == status.HTTP_201_CREATED
-#     assert Order.objects.filter(
-#         status=order.status,
-#         price=sum_dishes_prices,
-#         comment=order.comment,
-#         client=client.pk,
-#         employee=waiter.pk,
-#     ).exists()
-#     assert order not in Order.objects.all()

@@ -1,14 +1,18 @@
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
 import pytz
 from django.urls import reverse_lazy
 from rest_framework import status
-from apps.orders.factories import RestaurantAndOrderFactory, OrderFactory, DishFactory
-from apps.users.factories import EmployeeFactory, ClientFactory
-from apps.restaurants.factories import RestaurantFactory
+
+from apps.orders.factories import DishFactory, OrderFactory, RestaurantAndOrderFactory
 from apps.orders.models import RestaurantAndOrder
+from apps.restaurants.factories import RestaurantFactory
+from apps.users.factories import ClientFactory
 
 pytestmark = pytest.mark.django_db
+
+DISH_COUNT = 4
 
 
 def test_create_rest_and_order_by_waiter(
@@ -16,16 +20,22 @@ def test_create_rest_and_order_by_waiter(
     api_client,
 ) -> None:
     order = OrderFactory.build()
-    restaurant = RestaurantFactory.build()
+    restaurant = RestaurantFactory.create()
     rest_and_order = RestaurantAndOrderFactory.build(
-        order=order,
         restaurant=restaurant,
     )
+    order = order.__dict__
+    order["dishes"] = [
+        {"dish": dish.id, "comment": "Some comment"}
+        for dish in DishFactory.create_batch(size=DISH_COUNT)
+    ]
+    order.pop("_state")
+    order.pop("id")
     api_client.force_authenticate(user=waiter.user)
     response = api_client.post(
         reverse_lazy("api:restaurantAndOrders-list"),
         data={
-            "order": rest_and_order.order.pk,
+            "order": order,
             "restaurant": rest_and_order.restaurant.pk,
             "arrival_time": rest_and_order.arrival_time,
             "place_number": rest_and_order.place_number,
@@ -34,7 +44,7 @@ def test_create_rest_and_order_by_waiter(
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert RestaurantAndOrder.objects.filter(
-        order=order.pk,
+        order=response.data["order"]["id"],
         restaurant=restaurant.pk,
         arrival_time=rest_and_order.arrival_time,
         place_number=rest_and_order.place_number,
@@ -45,12 +55,7 @@ def test_read_rest_and_order_by_waiter(
     waiter,
     api_client,
 ) -> None:
-    order = OrderFactory.create()
-    restaurant = RestaurantFactory.create()
-    rest_and_order = RestaurantAndOrderFactory.create(
-        order=order,
-        restaurant=restaurant,
-    )
+    rest_and_order = RestaurantAndOrderFactory.create()
     api_client.force_authenticate(user=waiter.user)
     response = api_client.get(
         reverse_lazy(
@@ -71,23 +76,22 @@ def test_update_rest_and_order_by_waiter(
         order=order,
         restaurant=restaurant,
     )
-    new_order = OrderFactory.create()
     api_client.force_authenticate(user=waiter.user)
+    new_place_number = rest_and_order.place_number + 1
     response = api_client.patch(
         reverse_lazy(
             "api:restaurantAndOrders-detail",
             kwargs={"pk": rest_and_order.pk},
         ),
         data={
-            "order": new_order,
+            "place_number": new_place_number,
         },
+        format='json',
     )
     assert response.status_code == status.HTTP_200_OK
     assert RestaurantAndOrder.objects.filter(
-        order=new_order.pk,
-        restaurant=restaurant.pk,
-        arrival_time=rest_and_order.arrival_time,
-        place_number=rest_and_order.place_number,
+        id=rest_and_order.pk,
+        place_number=new_place_number,
     ).exists()
 
 
@@ -120,26 +124,31 @@ def test_create_rest_and_order_by_client(
     client,
     api_client,
 ) -> None:
-    order = OrderFactory.create()
+    order = OrderFactory.build()
     restaurant = RestaurantFactory.create()
     rest_and_order = RestaurantAndOrderFactory.build(
-        order=order,
         restaurant=restaurant,
     )
     api_client.force_authenticate(user=client.user)
+    order = order.__dict__
+    order["dishes"] = [
+        {"dish": dish.id, "comment": "Some comment"}
+        for dish in DishFactory.create_batch(size=DISH_COUNT)
+    ]
+    order.pop("_state")
+    order.pop("id")
     response = api_client.post(
         reverse_lazy("api:restaurantAndOrders-list"),
         data={
-            "order": rest_and_order.order.pk,
+            "order": order,
             "restaurant": rest_and_order.restaurant.pk,
             "arrival_time": rest_and_order.arrival_time,
             "place_number": rest_and_order.place_number,
         },
         format='json',
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert not RestaurantAndOrder.objects.filter(
-        order=order.pk,
+    assert response.status_code == status.HTTP_201_CREATED
+    assert RestaurantAndOrder.objects.filter(
         restaurant=restaurant.pk,
         arrival_time=rest_and_order.arrival_time,
         place_number=rest_and_order.place_number,
@@ -234,7 +243,7 @@ def test_read_rest_and_order_by_client_failed(
             kwargs={"pk": rest_and_order.pk},
         ),
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_create_rest_and_order_by_hostess_failed(
@@ -307,24 +316,21 @@ def test_update_rest_and_order_by_hostess_failed(
         order=order,
         restaurant=restaurant,
     )
-    new_order = OrderFactory.create()
     api_client.force_authenticate(user=hostess.user)
+    place_number = rest_and_order.place_number + 1
     response = api_client.patch(
         reverse_lazy(
             "api:restaurantAndOrders-detail",
             kwargs={"pk": rest_and_order.pk},
         ),
         data={
-            "order": new_order,
+            "place_number": place_number,
         },
     )
-    # эмм пишет, что все норм поменялось, так не должно быть
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert RestaurantAndOrder.objects.filter(
-        order=order,
-        restaurant=restaurant,
-        arrival_time=rest_and_order.arrival_time,
-        place_number=rest_and_order.place_number,
+    assert not RestaurantAndOrder.objects.filter(
+        id=rest_and_order.pk,
+        place_number=place_number,
     ).exists()
 
 
@@ -358,6 +364,32 @@ def test_update_rest_and_order_by_hostess_success(
     ).exists()
 
 
+def test_remove_rest_and_order_by_hostess(
+    hostess,
+    api_client,
+) -> None:
+    order = OrderFactory.create()
+    restaurant = RestaurantFactory.create()
+    rest_and_order = RestaurantAndOrderFactory.create(
+        order=order,
+        restaurant=restaurant,
+    )
+    api_client.force_authenticate(user=hostess.user)
+    response = api_client.delete(
+        reverse_lazy(
+            "api:restaurantAndOrders-detail",
+            kwargs={"pk": rest_and_order.pk},
+        ),
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert not RestaurantAndOrder.objects.filter(
+        order=order,
+        restaurant=restaurant,
+        arrival_time=rest_and_order.arrival_time,
+        place_number=rest_and_order.place_number,
+    ).exists()
+
+
 def test_create_rest_and_order_by_unauthorised(
     api_client,
 ) -> None:
@@ -378,12 +410,6 @@ def test_create_rest_and_order_by_unauthorised(
         format='json',
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    assert not RestaurantAndOrder.objects.filter(
-        order=order.pk,
-        restaurant=restaurant.pk,
-        arrival_time=rest_and_order.arrival_time,
-        place_number=rest_and_order.place_number,
-    ).exists()
 
 
 def test_read_rest_and_order_by_unauthorised(
