@@ -10,10 +10,8 @@ RUN apt-get update && \
     apt-get install --no-install-recommends -y libpq-dev build-essential
 
 COPY ./server ${APP_HOME}
-RUN ls
 
 WORKDIR ${APP_HOME}
-RUN ls
 
 RUN pip install poetry && \
     poetry config virtualenvs.create false && \
