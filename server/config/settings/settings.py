@@ -13,7 +13,7 @@ SECRET_KEY = os.getenv(
     default="qaEhm3Sc0WuO93idsME1e7vmiwWpuLqTJX6PRRyBpgUUDPQPqhBObwZ6UgqT6OuG",
 )
 TIME_ZONE = "Asia/Krasnoyarsk"
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ru"
 SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
