@@ -56,6 +56,15 @@ def chef(django_db_setup, django_db_blocker):
 
 
 @pytest.fixture
+def sous_chef(django_db_setup, django_db_blocker):
+    """Module-level fixture for employee."""
+    with django_db_blocker.unblock():
+        created_employee = EmployeeFactory(role=Employee.Roles.SOUS_CHEF)
+        yield created_employee
+        created_employee.delete()
+
+
+@pytest.fixture
 def manager(django_db_setup, django_db_blocker):
     """Module-level fixture for employee."""
     with django_db_blocker.unblock():

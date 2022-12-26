@@ -61,6 +61,7 @@ class Employee(models.Model):
         BARTENDER = "BARTENDER", "Бармен"
         COOK = "COOK", "Повар"
         CHEF = "CHEF", "Шеф-повар"
+        SOUS_CHEF = "SOUS_CHEF", "Су-Шеф"
         MANAGER = "MANAGER", "Управляющий"
         HOSTESS = "HOSTESS", "Хостес"
 

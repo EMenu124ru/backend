@@ -4,6 +4,8 @@ from rest_framework import status
 
 from apps.orders.factories import DishFactory, OrderAndDishesFactory, OrderFactory
 from apps.orders.models import Dish, Order, OrderAndDishes
+from apps.users.factories import EmployeeFactory
+from apps.users.models import Employee
 
 pytestmark = pytest.mark.django_db
 
@@ -76,6 +78,104 @@ def test_update_order_and_dishes_by_cook_success(
         dish=order_and_dishes.dish,
         comment=order_and_dishes.comment,
     ).exists()
+
+
+def test_update_order_and_dishes_by_chef_success(
+    chef,
+    api_client,
+) -> None:
+    order_and_dishes = OrderAndDishesFactory.create(
+        status=OrderAndDishes.Statuses.COOKING,
+    )
+    api_client.force_authenticate(user=chef.user)
+    new_employee = EmployeeFactory.create(role=Employee.Roles.COOK)
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orderAndDishes-detail",
+            kwargs={"pk": order_and_dishes.pk},
+        ),
+        data={
+            "employee": new_employee,
+        },
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert OrderAndDishes.objects.filter(
+        id=order_and_dishes.pk,
+        employee=new_employee.pk,
+        order=order_and_dishes.order,
+        dish=order_and_dishes.dish,
+        comment=order_and_dishes.comment,
+    ).exists()
+
+
+def test_update_order_and_dishes_by_sous_chef_success(
+    sous_chef,
+    api_client,
+) -> None:
+    order_and_dishes = OrderAndDishesFactory.create(
+        status=OrderAndDishes.Statuses.COOKING,
+    )
+    api_client.force_authenticate(user=sous_chef.user)
+    new_employee = EmployeeFactory.create(role=Employee.Roles.COOK)
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orderAndDishes-detail",
+            kwargs={"pk": order_and_dishes.pk},
+        ),
+        data={
+            "employee": new_employee,
+        },
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert OrderAndDishes.objects.filter(
+        id=order_and_dishes.pk,
+        employee=new_employee.pk,
+        order=order_and_dishes.order,
+        dish=order_and_dishes.dish,
+        comment=order_and_dishes.comment,
+    ).exists()
+
+
+def test_update_order_and_dishes_by_chef_failed(
+    chef,
+    api_client,
+) -> None:
+    order_and_dishes = OrderAndDishesFactory.create(
+        status=OrderAndDishes.Statuses.COOKING,
+    )
+    api_client.force_authenticate(user=chef.user)
+    new_status = OrderAndDishes.Statuses.DELIVERIED
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orderAndDishes-detail",
+            kwargs={"pk": order_and_dishes.pk},
+        ),
+        data={
+            "status": new_status,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_update_order_and_dishes_by_sous_chef_failed(
+    sous_chef,
+    api_client,
+) -> None:
+    order_and_dishes = OrderAndDishesFactory.create(
+        status=OrderAndDishes.Statuses.COOKING,
+    )
+    api_client.force_authenticate(user=sous_chef.user)
+    new_status = OrderAndDishes.Statuses.DELIVERIED
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orderAndDishes-detail",
+            kwargs={"pk": order_and_dishes.pk},
+        ),
+        data={
+            "status": new_status,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_update_order_and_dishes_by_cook_failed(

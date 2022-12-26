@@ -175,6 +175,15 @@ class OrderAndDishes(models.Model):
         related_name="orders",
         verbose_name="Блюдо",
     )
+    employee = models.ForeignKey(
+        "users.Employee",
+        on_delete=models.SET_NULL,
+        default=None,
+        blank=True,
+        null=True,
+        related_name="dishes",
+        verbose_name="Исполняющий сотрудник",
+    )
     comment = models.TextField(
         default="",
         verbose_name="Комментарий",

@@ -1,9 +1,7 @@
 from collections import OrderedDict
 from decimal import Decimal
 
-from rest_framework import serializers
-
-from apps.core.serializers import BaseSerializer
+from apps.core.serializers import BaseSerializer, serializers
 from apps.restaurants.models import Restaurant
 from apps.users.models import Client, Employee
 
@@ -86,6 +84,10 @@ class OrderAndDishSerializer(BaseSerializer):
     order = serializers.PrimaryKeyRelatedField(
         queryset=models.Order.objects.all(),
     )
+    employee = serializers.PrimaryKeyRelatedField(
+        queryset=Employee.objects.all(),
+        required=False,
+    )
 
     class Meta:
         model = models.OrderAndDishes
@@ -95,6 +97,7 @@ class OrderAndDishSerializer(BaseSerializer):
             "order",
             "dish",
             "comment",
+            "employee",
         )
 
     def check_fields_by_cook(
@@ -104,6 +107,30 @@ class OrderAndDishSerializer(BaseSerializer):
     ) -> bool:
         data = validated_data.copy()
         data.pop("status", None)
+        return all([
+            instance.__getattribute__(key) == value
+            for key, value in data.items()
+        ])
+
+    def check_fields_by_chef(
+        self,
+        instance: models.Order,
+        validated_data: OrderedDict,
+    ) -> bool:
+        data = validated_data.copy()
+        data.pop("employee", None)
+        return all([
+            instance.__getattribute__(key) == value
+            for key, value in data.items()
+        ])
+
+    def check_fields_by_sous_chef(
+        self,
+        instance: models.Order,
+        validated_data: OrderedDict,
+    ) -> bool:
+        data = validated_data.copy()
+        data.pop("employee", None)
         return all([
             instance.__getattribute__(key) == value
             for key, value in data.items()
@@ -136,6 +163,15 @@ class OrderAndDishSerializer(BaseSerializer):
             ):
                 raise serializers.ValidationError(
                     "Повар может изменить только статус заказа",
+                )
+            if any([
+                self._user.employee.role == Employee.Roles.CHEF and
+                not self.check_fields_by_chef(self.instance, attrs),
+                self._user.employee.role == Employee.Roles.SOUS_CHEF and
+                not self.check_fields_by_sous_chef(self.instance, attrs)
+            ]):
+                raise serializers.ValidationError(
+                    "Шеф и су-шеф могут менять только работника, который будет готовить блюдо",
                 )
         return attrs
 

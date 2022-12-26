@@ -127,6 +127,8 @@ class OrderAndDishesPermission(permissions.BasePermission):
         if request.method in ("PATCH", "PUT"):
             return any([
                 check_role_employee(request.user, Employee.Roles.COOK),
+                check_role_employee(request.user, Employee.Roles.CHEF),
+                check_role_employee(request.user, Employee.Roles.SOUS_CHEF),
                 check_role_employee(request.user, Employee.Roles.WAITER),
             ])
         if request.method == "DELETE":
