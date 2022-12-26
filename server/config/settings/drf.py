@@ -10,6 +10,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    "EXCEPTION_HANDLER": "apps.core.exception_handler",
 }
 
 if cors_origins := os.getenv('CORS_ALLOWED_ORIGINS'):
