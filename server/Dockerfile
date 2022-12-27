@@ -6,11 +6,10 @@ ARG APP_HOME=/server
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-RUN mkdir ${APP_HOME} && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install --no-install-recommends -y libpq-dev build-essential
 
-COPY . ${APP_HOME}
+COPY ./server ${APP_HOME}
 
 WORKDIR ${APP_HOME}
 
