@@ -4,7 +4,10 @@ from rest_framework.exceptions import ErrorDetail
 from rest_framework.views import exception_handler
 
 
-def check_errors_dict(key: str, lst_errors: dict) -> Union[str, list]:
+def check_errors_dict(
+    key: str,
+    lst_errors: Union[list, dict],
+) -> Union[str, list]:
     """Function for recursive error traversal"""
     errors = []
     if isinstance(lst_errors, dict):
