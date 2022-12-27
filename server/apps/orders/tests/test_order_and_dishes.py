@@ -95,7 +95,7 @@ def test_update_order_and_dishes_by_chef_success(
             kwargs={"pk": order_and_dishes.pk},
         ),
         data={
-            "employee": new_employee,
+            "employee": new_employee.pk,
         },
     )
     assert response.status_code == status.HTTP_200_OK
@@ -123,7 +123,7 @@ def test_update_order_and_dishes_by_sous_chef_success(
             kwargs={"pk": order_and_dishes.pk},
         ),
         data={
-            "employee": new_employee,
+            "employee": new_employee.pk,
         },
     )
     assert response.status_code == status.HTTP_200_OK
