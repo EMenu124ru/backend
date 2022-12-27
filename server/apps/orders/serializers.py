@@ -206,7 +206,7 @@ class OrderSerializer(BaseSerializer):
                 models.OrderAndDishes(
                     order=order,
                     dish=item["dish"],
-                    comment=item["comment"],
+                    comment=item.get("comment", ""),
                 )
                 for item in dishes
             ],

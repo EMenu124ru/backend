@@ -18,7 +18,7 @@ def test_create_dish_images_by_manager(
     dish_images = DishImagesFactory.build_batch(size=COUNT_IMAGES)
     data = {
         "images": [image.image for image in dish_images],
-        "dish": dish.id,
+        "dish": dish.pk,
     }
     api_client.force_authenticate(user=manager.user)
     response = api_client.post(

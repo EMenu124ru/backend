@@ -86,14 +86,21 @@ class DishViewSet(BaseViewSet):
         return Dish.objects.all()
 
     def create(self, request, *args, **kwargs):
-        images = request.data.get("images", [])
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         dish = Dish.objects.get(id=serializer.data["id"])
-        DishImages.objects.bulk_create(
-            [DishImages(image=image, dish=dish) for image in images],
-        )
+        if request.data.get("images", None) is not None:
+            serializers = [
+                DishImageSerializer(data={
+                    "image": image,
+                    "dish": dish.pk,
+                })
+                for image in request.data.pop("images", [])
+            ]
+            for serializer in serializers:
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
         return response.Response(
             data=DishSerializer(dish).data,
             status=status.HTTP_201_CREATED,
