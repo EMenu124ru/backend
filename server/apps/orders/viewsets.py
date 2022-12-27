@@ -47,7 +47,7 @@ class CategoryViewSet(BaseViewSet):
         if self.action == "dishes":
             return Category.objects.prefetch_related(
                 "dishes",
-            ).get(id=self.request.parser_context["kwargs"]["pk"]).dishes.all()
+            ).get(id=self.kwargs["pk"]).dishes.all()
         return Category.objects.all()
 
     @decorators.action(methods=("GET",), detail=True)
@@ -75,12 +75,12 @@ class DishViewSet(BaseViewSet):
         if self.action == "reviews":
             return Dish.objects.prefetch_related(
                 "reviews",
-            ).get(id=self.request.parser_context["kwargs"]["pk"]).reviews.all()
+            ).get(id=self.kwargs["pk"]).reviews.all()
         if self.action == "orders":
             orders = Dish.objects.prefetch_related(
                 "orders",
             ).get(
-                id=self.request.parser_context["kwargs"]["pk"],
+                id=self.kwargs["pk"],
             ).orders.all().values_list("order", flat=True)
             return Order.objects.filter(id__in=orders)
         return Dish.objects.all()
