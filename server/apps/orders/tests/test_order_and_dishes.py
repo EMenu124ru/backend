@@ -86,6 +86,7 @@ def test_update_order_and_dishes_by_chef_success(
 ) -> None:
     order_and_dishes = OrderAndDishesFactory.create(
         status=OrderAndDishes.Statuses.COOKING,
+        employee=None,
     )
     api_client.force_authenticate(user=chef.user)
     new_employee = EmployeeFactory.create(role=Employee.Roles.COOK)
@@ -114,6 +115,7 @@ def test_update_order_and_dishes_by_sous_chef_success(
 ) -> None:
     order_and_dishes = OrderAndDishesFactory.create(
         status=OrderAndDishes.Statuses.COOKING,
+        employee=None,
     )
     api_client.force_authenticate(user=sous_chef.user)
     new_employee = EmployeeFactory.create(role=Employee.Roles.COOK)

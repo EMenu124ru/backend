@@ -102,7 +102,7 @@ class OrderAndDishSerializer(BaseSerializer):
 
     def check_fields_by_cook(
         self,
-        instance: models.Order,
+        instance: models.OrderAndDishes,
         validated_data: OrderedDict,
     ) -> bool:
         data = validated_data.copy()
@@ -114,7 +114,7 @@ class OrderAndDishSerializer(BaseSerializer):
 
     def check_fields_by_chef(
         self,
-        instance: models.Order,
+        instance: models.OrderAndDishes,
         validated_data: OrderedDict,
     ) -> bool:
         data = validated_data.copy()
@@ -126,7 +126,7 @@ class OrderAndDishSerializer(BaseSerializer):
 
     def check_fields_by_sous_chef(
         self,
-        instance: models.Order,
+        instance: models.OrderAndDishes,
         validated_data: OrderedDict,
     ) -> bool:
         data = validated_data.copy()
@@ -138,7 +138,7 @@ class OrderAndDishSerializer(BaseSerializer):
 
     def check_fields_by_waiter(
         self,
-        instance: models.Order,
+        instance: models.OrderAndDishes,
         validated_data: OrderedDict,
     ) -> bool:
         data = validated_data.copy()
