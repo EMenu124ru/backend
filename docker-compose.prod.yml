@@ -5,6 +5,7 @@ volumes:
 
 services:
   nginx:
+    restart: always
     container_name: nginx
     image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/nginx:latest
     build:
@@ -18,6 +19,7 @@ services:
       - ./server/media:/nginx/media/
 
   django:
+    restart: always
     container_name: django
     image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_django:latest
     build:
@@ -39,6 +41,7 @@ services:
     command: gunicorn config.wsgi -c ./config/gunicorn.py
 
   postgres:
+    restart: always
     container_name: postgresql
     image: postgres:14.4
     volumes:

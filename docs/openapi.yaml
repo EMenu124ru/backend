@@ -1109,11 +1109,11 @@ components:
         short_description:
           type: string
         price:
-          type: number
+          type: string
         compound:
           type: string
         weight:
-          type: number
+          type: string
         images:
           type: array
           items:
@@ -1173,6 +1173,10 @@ components:
         dish:
           type: number
           description: "Id блюда"
+        employee:
+          type: number
+          description: "Id исполняющего работника"
+          nullable: true
         comment:
           type: string
 
@@ -1187,6 +1191,10 @@ components:
           $ref: "#/components/schemas/DishBase"
         comment:
           type: string
+        employee:
+          type: number
+          description: "Id исполняющего работника"
+          nullable: true
 
     StopListCreateBase:
       type: object

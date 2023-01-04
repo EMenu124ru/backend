@@ -156,7 +156,7 @@ class OrderAndDishes(models.Model):
         WAITING_FOR_COOKING = "WAITING_FOR_COOKING", "Ожидает готовки"
         COOKING = "COOKING", "Готовится"
         DONE = "DONE", "Готово"
-        DELIVERIED = "DELIVERIED", "Выдано"
+        DELIVERED = "DELIVERED", "Выдано"
 
     status = models.TextField(
         choices=Statuses.choices,

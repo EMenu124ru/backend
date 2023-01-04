@@ -12,7 +12,9 @@ from apps.orders.viewsets import (
 )
 from apps.users.viewsets import ClientViewSet
 
-router = DefaultRouter() if settings.DEBUG else SimpleRouter()
+router = (DefaultRouter if settings.DEBUG else SimpleRouter)(
+    trailing_slash=False
+)
 router.register(
     "categories",
     CategoryViewSet,

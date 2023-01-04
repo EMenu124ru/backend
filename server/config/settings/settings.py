@@ -20,6 +20,7 @@ USE_L10N = True
 USE_TZ = True
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
+APPEND_SLASH = False
 
 if allowed_hosts := os.getenv('ALLOWED_HOSTS'):
     ALLOWED_HOSTS = [
