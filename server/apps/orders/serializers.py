@@ -20,6 +20,11 @@ class CategorySerializer(BaseSerializer):
 
 class DishImageSerializer(BaseSerializer):
 
+    dish = serializers.PrimaryKeyRelatedField(
+        queryset=models.Dish.objects.all(),
+        write_only=True,
+    )
+
     class Meta:
         model = models.DishImages
         fields = (
@@ -27,9 +32,6 @@ class DishImageSerializer(BaseSerializer):
             "dish",
             "image",
         )
-        extra_kwargs = {
-            'dish': {'write_only': True},
-        }
 
 
 class DishSerializer(BaseSerializer):
