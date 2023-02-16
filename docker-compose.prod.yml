@@ -46,7 +46,24 @@ services:
     image: postgres:14.4
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./dumps:/dumps
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
+
+  postgres-backup:
+    image: rmiddle/pg_dump:latest
+    container_name: postgres-backup
+    links:
+      - postgres
+    environment:
+      - PGUSER=${POSTGRES_USER}
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+      - PGDB=${POSTGRES_DB}
+      - PGHOST=${POSTGRES_HOST}
+      - CRON_SCHEDULE=0 0 * * 0
+      - DELETE_OLDER_THAN=3
+    volumes:
+      - ./dumps:/dump
+    command: dump-cron
