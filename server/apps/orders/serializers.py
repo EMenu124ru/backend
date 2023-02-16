@@ -27,9 +27,9 @@ class DishImageSerializer(BaseSerializer):
             "dish",
             "image",
         )
-        write_only_fields = (
-            "dish",
-        )
+        extra_kwargs = {
+            'dish': {'write_only': True},
+        }
 
 
 class DishSerializer(BaseSerializer):

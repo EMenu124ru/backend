@@ -6,6 +6,7 @@ from apps.core.views import (
     CreateReadDeleteViewSet,
     CreateUpdateDestroyViewSet,
 )
+from apps.reviews.serializers import ReviewSerializer
 
 from .models import (
     Category,
@@ -60,8 +61,8 @@ class DishViewSet(BaseViewSet):
     permission_classes = (DishCategoryPermissions,)
 
     def get_serializer_class(self):
-        # if self.action == "reviews":
-        #     return ReviewSerializer
+        if self.action == "reviews":
+            return ReviewSerializer
         if self.action == "orders":
             return OrderSerializer
         return DishSerializer

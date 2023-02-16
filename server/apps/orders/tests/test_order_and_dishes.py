@@ -61,7 +61,7 @@ def test_update_order_and_dishes_by_cook_success(
         status=OrderAndDishes.Statuses.COOKING,
     )
     api_client.force_authenticate(user=cook.user)
-    new_status = OrderAndDishes.Statuses.DELIVERIED
+    new_status = OrderAndDishes.Statuses.DELIVERED
     response = api_client.patch(
         reverse_lazy(
             "api:orderAndDishes-detail",
@@ -146,7 +146,7 @@ def test_update_order_and_dishes_by_chef_failed(
         status=OrderAndDishes.Statuses.COOKING,
     )
     api_client.force_authenticate(user=chef.user)
-    new_status = OrderAndDishes.Statuses.DELIVERIED
+    new_status = OrderAndDishes.Statuses.DELIVERED
     response = api_client.patch(
         reverse_lazy(
             "api:orderAndDishes-detail",
@@ -167,7 +167,7 @@ def test_update_order_and_dishes_by_sous_chef_failed(
         status=OrderAndDishes.Statuses.COOKING,
     )
     api_client.force_authenticate(user=sous_chef.user)
-    new_status = OrderAndDishes.Statuses.DELIVERIED
+    new_status = OrderAndDishes.Statuses.DELIVERED
     response = api_client.patch(
         reverse_lazy(
             "api:orderAndDishes-detail",
@@ -292,7 +292,7 @@ def test_update_order_and_dishes_by_waiter_failed(
         status=OrderAndDishes.Statuses.COOKING,
     )
     api_client.force_authenticate(user=waiter.user)
-    new_status = OrderAndDishes.Statuses.DELIVERIED
+    new_status = OrderAndDishes.Statuses.DELIVERED
     response = api_client.patch(
         reverse_lazy(
             "api:orderAndDishes-detail",
@@ -363,7 +363,7 @@ def test_update_order_and_dishes_by_client(
         status=OrderAndDishes.Statuses.COOKING,
     )
     api_client.force_authenticate(user=client.user)
-    new_status = OrderAndDishes.Statuses.DELIVERIED
+    new_status = OrderAndDishes.Statuses.DELIVERED
     response = api_client.patch(
         reverse_lazy(
             "api:orderAndDishes-detail",
@@ -428,7 +428,7 @@ def test_update_order_and_dishes_by_not_auth(
     order_and_dishes = OrderAndDishesFactory.create(
         status=OrderAndDishes.Statuses.COOKING,
     )
-    new_status = OrderAndDishes.Statuses.DELIVERIED
+    new_status = OrderAndDishes.Statuses.DELIVERED
     response = api_client.patch(
         reverse_lazy(
             "api:orderAndDishes-detail",

@@ -10,6 +10,7 @@ from apps.orders.viewsets import (
     RestaurantAndOrderViewSet,
     StopListViewSet,
 )
+from apps.reviews.viewsets import ReviewImageViewSet, ReviewViewSet
 from apps.users.viewsets import ClientViewSet
 
 router = (DefaultRouter if settings.DEBUG else SimpleRouter)(
@@ -49,6 +50,16 @@ router.register(
     "stop-list",
     StopListViewSet,
     basename="stopList",
+)
+router.register(
+    "reviews",
+    ReviewViewSet,
+    basename="reviews",
+)
+router.register(
+    "review-images",
+    ReviewImageViewSet,
+    basename="review-images",
 )
 router.register(
     "clients",
