@@ -16,6 +16,9 @@ class ReviewViewSet(CRUDViewSet):
             image.image.storage.delete(image.image.path)
         instance.delete()
 
+    def perform_create(self, serializer) -> None:
+        serializer.save(client=self.request.user.client)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

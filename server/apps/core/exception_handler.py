@@ -37,10 +37,13 @@ def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
     if response is not None:
         errors = []
-        for key, value in response.data.items():
-            if isinstance(value, list) or isinstance(value, dict):
-                errors.extend(check_errors_dict(key, value))
-            else:
-                errors.append(value)
+        if isinstance(response.data, list):
+            errors.append(response.data[0])
+        elif isinstance(response.data, dict):
+            for key, value in response.data.items():
+                if isinstance(value, list) or isinstance(value, dict):
+                    errors.extend(check_errors_dict(key, value))
+                else:
+                    errors.append(value)
         response.data = {"message": "\n".join(map(str, set(errors)))}
     return response

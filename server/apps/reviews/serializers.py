@@ -1,7 +1,8 @@
 from typing import OrderedDict
 
 from apps.core.serializers import BaseSerializer, serializers
-from apps.users.models import Client
+from apps.orders.models import Dish
+from apps.restaurants.models import Restaurant
 from apps.users.serializers import ClientSerializer
 
 from . import models
@@ -25,8 +26,15 @@ class ReviewImagesSerializer(BaseSerializer):
 
 class ReviewSerializer(BaseSerializer):
 
-    client = serializers.PrimaryKeyRelatedField(
-        queryset=Client.objects.all(),
+    dish = serializers.PrimaryKeyRelatedField(
+        queryset=Dish.objects.all(),
+        required=False,
+        write_only=True,
+    )
+    restaurant = serializers.PrimaryKeyRelatedField(
+        queryset=Restaurant.objects.all(),
+        required=False,
+        write_only=True,
     )
 
     class Meta:
@@ -35,8 +43,26 @@ class ReviewSerializer(BaseSerializer):
             "id",
             "mark",
             "review",
-            "client",
+            "dish",
+            "restaurant",
         )
+
+    def create(self, validated_data: OrderedDict) -> models.Review:
+        if (
+            validated_data.get("dish", None) is None and
+            validated_data.get("restaurant", None) is None
+        ):
+            raise serializers.ValidationError(
+                "Нет объекта для присвоения ему отзыва",
+            )
+        object_for_add = (
+            validated_data.pop("dish")
+            if "dish" in validated_data
+            else validated_data.pop("restaurant")
+        )
+        review = super().create(validated_data)
+        object_for_add.reviews.add(review)
+        return review
 
     def to_representation(self, instance: models.Review) -> OrderedDict:
         data = super().to_representation(instance)

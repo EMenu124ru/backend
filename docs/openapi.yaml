@@ -1280,7 +1280,10 @@ components:
           type: string
         mark:
           type: string
-        client:
+        dish:
+          type: number
+          nullable: true
+        restaurant:
           type: number
           nullable: true
         images:
