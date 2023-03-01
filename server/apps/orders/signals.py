@@ -1,7 +1,8 @@
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.db.models import Q
-from apps.orders.models import OrderAndDishes, Order
+
+from apps.orders.models import Order, OrderAndDishes
 
 
 @receiver(post_save, sender=OrderAndDishes)

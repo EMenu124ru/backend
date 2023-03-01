@@ -2,12 +2,13 @@ import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
 
-from apps.orders.factories import DishFactory, OrderFactory, OrderAndDishesFactory
+from apps.orders.factories import DishFactory, OrderAndDishesFactory, OrderFactory
 from apps.orders.models import Order, OrderAndDishes
 
 pytestmark = pytest.mark.django_db
 
 DISHES_NUMBER = 5
+
 
 def test_change_order_status_by_changing_dish_status_success(
     cook,
