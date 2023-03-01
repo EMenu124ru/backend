@@ -52,7 +52,7 @@ def test_change_order_status_by_adding_new_dish(
     dishes = DishFactory.create_batch(size=DISHES_NUMBER)
     order = OrderFactory.create(
         price=sum([dish.price for dish in dishes]),
-        status=Order.Statuses.WAITING_FOR_COOKING,
+        status=Order.Statuses.WAITING_FOR_DELIVERY,
     )
     order_and_dishes = []
     for dish in dishes:
@@ -60,7 +60,7 @@ def test_change_order_status_by_adding_new_dish(
             OrderAndDishesFactory.create(
                 order=order,
                 dish=dish,
-                status=OrderAndDishes.Statuses.WAITING_FOR_COOKING,
+                status=OrderAndDishes.Statuses.DONE,
             ),
         )
     api_client.force_authenticate(user=cook.user)
