@@ -15,3 +15,4 @@ def change_order_status_based_on_dishes(instance, created, **kwargs) -> None:
         is_all_ready = False
     if is_all_ready:
         instance.order.status = Order.Statuses.WAITING_FOR_DELIVERY
+    instance.order.save()
