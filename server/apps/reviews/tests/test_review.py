@@ -27,7 +27,7 @@ def test_create_review_by_manager(
             "mark": review.mark,
         },
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_update_review_by_manager(
@@ -46,7 +46,7 @@ def test_update_review_by_manager(
             "mark": new_mark,
         },
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_read_review_by_manager(
@@ -173,11 +173,7 @@ def test_update_review_other_client_by_client(
             "mark": new_mark,
         },
     )
-    assert response.status_code == status.HTTP_200_OK
-    assert Review.objects.filter(
-        id=review.pk,
-        mark=new_mark,
-    ).exists()
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_remove_review_by_client(
@@ -207,7 +203,7 @@ def test_remove_review_other_client_by_client(
             kwargs={"pk": review.pk},
         ),
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_create_review_by_not_auth(
@@ -238,7 +234,7 @@ def test_update_review_by_not_auth(
             "mark": new_mark,
         },
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_read_review_by_not_auth(
@@ -264,4 +260,4 @@ def test_remove_review_by_not_auth(
             kwargs={"pk": review.pk},
         ),
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED

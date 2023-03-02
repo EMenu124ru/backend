@@ -22,10 +22,13 @@ def test_create_review_images_by_manager(
     }
     api_client.force_authenticate(user=manager.user)
     response = api_client.post(
-        reverse_lazy("api:review-images-list"),
+        reverse_lazy(
+            "api:reviews-images",
+            kwargs={"pk": review.pk}
+        ),
         data=data,
     )
-    assert response.status_code == status.HTTP_201_CREATED
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_delete_review_images_by_manager(
@@ -37,6 +40,7 @@ def test_delete_review_images_by_manager(
         size=COUNT_IMAGES,
         review=review,
     )
+    ids = [image.id for image in review_images]
     api_client.force_authenticate(user=manager.user)
     for image in review_images:
         api_client.delete(
@@ -45,9 +49,7 @@ def test_delete_review_images_by_manager(
                 kwargs={"pk": image.pk},
             ),
         )
-    assert not ReviewImages.objects.filter(
-        id__in=[image.id for image in review_images]
-    ).exists()
+    assert not ReviewImages.objects.filter(id__in=ids)
     assert not Review.objects.get(id=review.id).images.all().exists()
 
 
@@ -63,7 +65,10 @@ def test_create_review_images_by_client(
     }
     api_client.force_authenticate(user=client.user)
     response = api_client.post(
-        reverse_lazy("api:review-images-list"),
+        reverse_lazy(
+            "api:reviews-images",
+            kwargs={"pk": review.pk}
+        ),
         data=data,
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -111,10 +116,10 @@ def test_delete_review_images_other_client_by_client(
                 kwargs={"pk": image.pk},
             ),
         )
-    assert not ReviewImages.objects.filter(
+    assert ReviewImages.objects.filter(
         id__in=[image.id for image in review_images]
     ).exists()
-    assert not Review.objects.get(id=review.id).images.all().exists()
+    assert Review.objects.get(id=review.id).images.exists()
 
 
 def test_create_review_images_by_not_auth(
@@ -127,10 +132,13 @@ def test_create_review_images_by_not_auth(
         "review": review.id,
     }
     response = api_client.post(
-        reverse_lazy("api:review-images-list"),
+        reverse_lazy(
+            "api:reviews-images",
+            kwargs={"pk": review.pk}
+        ),
         data=data,
     )
-    assert response.status_code == status.HTTP_201_CREATED
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_delete_review_images_by_not_auth(

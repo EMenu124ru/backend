@@ -1,20 +1,17 @@
-from rest_framework import response, status, decorators
+from rest_framework import decorators, response, status
 
-from apps.core.views import CreateDestroyViewSet, CRUDViewSet, DestroyViewSet
+from apps.core.views import CRUDViewSet, DestroyViewSet
 
 from .models import Review, ReviewImages
+from .permissions import ReviewImagePermissions, ReviewPermissions, permissions
 from .serializers import ReviewImagesSerializer, ReviewSerializer
-from .permissions import ReviewPermissions, ReviewImagePermissions, permissions
 
 
 class ReviewViewSet(CRUDViewSet):
 
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
-    permission_classes = (
-        permissions.IsAuthenticated,
-        ReviewPermissions,
-    )
+    permission_classes = (ReviewPermissions, )
 
     def perform_destroy(self, instance) -> None:
         for image in instance.images.all():
@@ -76,6 +73,5 @@ class ReviewImageViewSet(DestroyViewSet):
 
     queryset = ReviewImages.objects.all()
     permission_classes = (
-        permissions.IsAuthenticated,
-        ReviewImagePermissions,
+        permissions.IsAuthenticated & ReviewImagePermissions,
     )

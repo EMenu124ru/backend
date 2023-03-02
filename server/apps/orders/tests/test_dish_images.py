@@ -22,7 +22,10 @@ def test_create_dish_images_by_manager(
     }
     api_client.force_authenticate(user=manager.user)
     response = api_client.post(
-        reverse_lazy("api:dish-images-list"),
+        reverse_lazy(
+            "api:dishes-images",
+            kwargs={"pk": dish.pk},
+        ),
         data=data,
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -62,7 +65,10 @@ def test_create_dish_images_by_waiter(
     }
     api_client.force_authenticate(user=waiter.user)
     response = api_client.post(
-        reverse_lazy("api:dish-images-list"),
+        reverse_lazy(
+            "api:dishes-images",
+            kwargs={"pk": dish.pk},
+        ),
         data=data,
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -100,7 +106,10 @@ def test_create_dish_images_by_client(
     }
     api_client.force_authenticate(user=client.user)
     response = api_client.post(
-        reverse_lazy("api:dish-images-list"),
+        reverse_lazy(
+            "api:dishes-images",
+            kwargs={"pk": dish.pk},
+        ),
         data=data,
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -136,7 +145,10 @@ def test_create_dish_images_by_not_auth(
         "dish": dish.id,
     }
     response = api_client.post(
-        reverse_lazy("api:dish-images-list"),
+        reverse_lazy(
+            "api:dishes-images",
+            kwargs={"pk": dish.pk},
+        ),
         data=data,
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED

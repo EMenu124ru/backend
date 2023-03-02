@@ -2,9 +2,9 @@ from rest_framework import decorators, permissions, response, status
 
 from apps.core.views import (
     BaseViewSet,
-    CreateDestroyViewSet,
     CreateReadDeleteViewSet,
     CreateUpdateDestroyViewSet,
+    DestroyViewSet,
 )
 from apps.reviews.serializers import ReviewSerializer
 
@@ -115,15 +115,13 @@ class DishViewSet(BaseViewSet):
     def orders(self, request, *args, **kwargs) -> response.Response:
         return super().list(request, *args, **kwargs)
 
-
-class DishImageViewSet(CreateDestroyViewSet):
-
-    queryset = DishImages.objects.all()
-    permission_classes = (
-        permissions.IsAuthenticated & DishCategoryPermissions,
-    )
-
-    def create(self, request, *args, **kwargs):
+    @decorators.action(methods=("POST",), detail=True)
+    def images(self, request, *args, **kwargs):
+        if request.data.get("images", None) is None:
+            return response.Response(
+                data={"message": "Изображения отсутствуют"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         serializers = [
             DishImageSerializer(data={
                 "image": image,
@@ -142,6 +140,14 @@ class DishImageViewSet(CreateDestroyViewSet):
             ).data,
             status=status.HTTP_201_CREATED,
         )
+
+
+class DishImageViewSet(DestroyViewSet):
+
+    queryset = DishImages.objects.all()
+    permission_classes = (
+        permissions.IsAuthenticated & DishCategoryPermissions,
+    )
 
 
 class OrderViewSet(BaseViewSet):
