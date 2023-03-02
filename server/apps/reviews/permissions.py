@@ -10,17 +10,17 @@ class ReviewPermissions(permissions.BasePermission):
         if request.method == "GET":
             return True
         if request.user.is_authenticated:
+            if all([
+                request.method == "POST",
+                request.user.is_client,
+            ]):
+                return True
             if any([
                 check_role_employee(request.user, Employee.Roles.MANAGER),
                 request.user.is_staff,
                 request.user.is_client,
             ]):
                 return True
-        if all([
-            request.method == "POST",
-            request.user.is_client,
-        ]):
-            return True
         return False
     
     def has_object_permission(self, request, view, obj) -> bool:
@@ -30,7 +30,7 @@ class ReviewPermissions(permissions.BasePermission):
             request.user == obj.client.user,
         ]):
             return True
-        if request.method in ("DELETE") and any([
+        if request.method == "DELETE" and any([
             check_role_employee(request.user, Employee.Roles.MANAGER),
             request.user.is_staff,
         ]):
