@@ -1,15 +1,20 @@
-from rest_framework import response, status
+from rest_framework import response, status, decorators
 
-from apps.core.views import CreateDestroyViewSet, CRUDViewSet
+from apps.core.views import CreateDestroyViewSet, CRUDViewSet, DestroyViewSet
 
 from .models import Review, ReviewImages
 from .serializers import ReviewImagesSerializer, ReviewSerializer
+from .permissions import ReviewPermissions, ReviewImagePermissions, permissions
 
 
 class ReviewViewSet(CRUDViewSet):
 
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
+    permission_classes = (
+        permissions.IsAuthenticated,
+        ReviewPermissions,
+    )
 
     def perform_destroy(self, instance) -> None:
         for image in instance.images.all():
@@ -40,23 +45,24 @@ class ReviewViewSet(CRUDViewSet):
             status=status.HTTP_201_CREATED,
         )
 
-
-class ReviewImageViewSet(CreateDestroyViewSet):
-
-    queryset = ReviewImages.objects.all()
-
-    def create(self, request, *args, **kwargs):
+    @decorators.action(methods=("POST",), detail=True)
+    def images(self, request, *args, **kwargs):
+        if request.data.get("images", None) is None:
+            return response.Response(
+                data={"message": "Изображения отсутствуют"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         serializers = [
             ReviewImagesSerializer(data={
                 "image": image,
-                "review": request.data.get("review"),
+                "review": self.kwargs["pk"],
             })
             for image in request.data.pop("images")
         ]
         for serializer in serializers:
             serializer.is_valid(raise_exception=True)
             serializer.save()
-        review = Review.objects.get(id=request.data.get("review"))
+        review = Review.objects.get(id=self.kwargs["pk"])
         return response.Response(
             ReviewImagesSerializer(
                 review.images.all(),
@@ -64,3 +70,12 @@ class ReviewImageViewSet(CreateDestroyViewSet):
             ).data,
             status=status.HTTP_201_CREATED,
         )
+
+
+class ReviewImageViewSet(DestroyViewSet):
+
+    queryset = ReviewImages.objects.all()
+    permission_classes = (
+        permissions.IsAuthenticated,
+        ReviewImagePermissions,
+    )

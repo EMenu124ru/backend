@@ -51,3 +51,11 @@ class CreateUpdateDestroyViewSet(
     """CreateUpdateDestroy ViewSet for `create` and `update` and `destroy` actions."""
 
     pass
+
+
+class DestroyViewSet(
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    """Destroy ViewSet for `destroy` action."""
+    pass
