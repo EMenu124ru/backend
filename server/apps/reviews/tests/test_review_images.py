@@ -49,7 +49,7 @@ def test_delete_review_images_by_manager(
                 kwargs={"pk": image.pk},
             ),
         )
-    assert not ReviewImages.objects.filter(id__in=ids)
+    assert not ReviewImages.objects.filter(id__in=ids).exists()
     assert not Review.objects.get(id=review.id).images.all().exists()
 
 

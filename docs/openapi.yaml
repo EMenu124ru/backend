@@ -645,11 +645,19 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/dish-images/":
+  "/api/v1/dishes/{dish_id}/images":
     post:
       tags:
+        - dishes
         - dish-images
       summary: "Create dish image"
+      parameters:
+        - name: dish_id
+          in: path
+          schema:
+            type: number
+          description: "Id блюда"
+          required: true
       security:
         - bearerAuth: []
       requestBody:
@@ -1045,11 +1053,19 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/review-images/":
+  "/api/v1/reviews/{review_id}/images/":
     post:
       tags:
+        - reviews
         - review-images
       summary: "Create review-images"
+      parameters:
+        - name: review_id
+          in: path
+          schema:
+            type: number
+          description: "Id отзыва"
+          required: true
       security:
         - bearerAuth: []
       requestBody:
@@ -1208,8 +1224,6 @@ components:
           type: array
           items:
             type: string
-        dish:
-          type: number
 
     DishBase:
       type: object
@@ -1260,10 +1274,10 @@ components:
     ReviewImageCreateBase:
       type: object
       properties:
-        image:
-          type: string
-        review:
-          type: number
+        images:
+          type: array
+          items:
+            type: string
 
     ReviewImageBase:
       type: object
