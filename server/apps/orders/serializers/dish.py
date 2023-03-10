@@ -1,7 +1,8 @@
 from collections import OrderedDict
 
 from apps.core.serializers import BaseSerializer, serializers
-from apps.orders.models import Dish, Category
+from apps.orders.models import Category, Dish
+
 from .category import CategorySerializer
 from .dish_image import DishImageSerializer
 

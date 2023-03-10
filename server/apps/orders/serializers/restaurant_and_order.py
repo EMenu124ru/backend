@@ -1,9 +1,10 @@
 from collections import OrderedDict
 
 from apps.core.serializers import BaseSerializer, serializers
+from apps.orders.models import Order, RestaurantAndOrder
 from apps.restaurants.models import Restaurant
-from apps.users.models import Client, Employee
-from apps.orders.models import RestaurantAndOrder, Order
+from apps.users.models import Employee
+
 from .order import OrderSerializer
 
 

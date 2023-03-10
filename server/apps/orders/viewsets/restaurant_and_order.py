@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from apps.core.views import BaseViewSet
+from apps.core.viewsets import BaseViewSet
 from apps.orders.models import RestaurantAndOrder
 from apps.orders.permissions import RestaurantAndOrderPermission
 from apps.orders.serializers import RestaurantAndOrderSerializer

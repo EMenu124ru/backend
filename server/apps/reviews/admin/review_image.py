@@ -4,7 +4,7 @@ from apps.reviews.models import ReviewImage
 
 
 @admin.register(ReviewImage)
-class ReviewImagesAdmin(admin.ModelAdmin):
+class ReviewImageAdmin(admin.ModelAdmin):
     """Class representation of ReviewImage model in admin panel."""
 
     list_display = (

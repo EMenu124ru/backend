@@ -3,8 +3,8 @@ from random import randint
 from apps.orders.factories import (
     CategoryFactory,
     DishFactory,
-    DishImagesFactory,
-    OrderAndDishesFactory,
+    DishImageFactory,
+    OrderAndDishFactory,
     OrderFactory,
     RestaurantAndOrderFactory,
 )
@@ -72,7 +72,7 @@ def run():
         ))
         dishes[-1].reviews.add(review)
     for dish in dishes:
-        DishImagesFactory.create_batch(
+        DishImageFactory.create_batch(
             dish=dish,
             size=IMAGES_PER_REVIEW_COUNT,
         )
@@ -83,7 +83,7 @@ def run():
             employee=employees[i],
         ))
         for dish in dishes[i: i + 2]:
-            OrderAndDishesFactory.create(
+            OrderAndDishFactory.create(
                 order=orders[-1],
                 dish=dish,
             )

@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from rest_framework import status
 
 from apps.reviews.factories import ReviewFactory, ReviewImageFactory
-from apps.reviews.models import Review, ReviewImages
+from apps.reviews.models import Review, ReviewImage
 
 pytestmark = pytest.mark.django_db
 
@@ -15,7 +15,7 @@ def test_create_review_images_by_manager(
     api_client,
 ) -> None:
     review = ReviewFactory.create()
-    review_images = ReviewImagesFactory.build_batch(size=COUNT_IMAGES)
+    review_images = ReviewImageFactory.build_batch(size=COUNT_IMAGES)
     data = {
         "images": [image.image for image in review_images],
         "review": review.pk,
@@ -36,7 +36,7 @@ def test_delete_review_images_by_manager(
     api_client,
 ) -> None:
     review = ReviewFactory.create()
-    review_images = ReviewImagesFactory.create_batch(
+    review_images = ReviewImageFactory.create_batch(
         size=COUNT_IMAGES,
         review=review,
     )
@@ -49,7 +49,7 @@ def test_delete_review_images_by_manager(
                 kwargs={"pk": image.pk},
             ),
         )
-    assert not ReviewImages.objects.filter(id__in=ids).exists()
+    assert not ReviewImage.objects.filter(id__in=ids).exists()
     assert not Review.objects.get(id=review.id).images.all().exists()
 
 
@@ -58,7 +58,7 @@ def test_create_review_images_by_client(
     api_client,
 ) -> None:
     review = ReviewFactory.create(client=client)
-    review_images = ReviewImagesFactory.build_batch(size=COUNT_IMAGES)
+    review_images = ReviewImageFactory.build_batch(size=COUNT_IMAGES)
     data = {
         "images": [image.image for image in review_images],
         "review": review.id,
@@ -81,7 +81,7 @@ def test_delete_review_images_by_client(
     api_client,
 ) -> None:
     review = ReviewFactory.create(client=client)
-    review_images = ReviewImagesFactory.create_batch(
+    review_images = ReviewImageFactory.create_batch(
         size=COUNT_IMAGES,
         review=review,
     )
@@ -93,7 +93,7 @@ def test_delete_review_images_by_client(
                 kwargs={"pk": image.pk},
             ),
         )
-    assert not ReviewImages.objects.filter(
+    assert not ReviewImage.objects.filter(
         id__in=[image.id for image in review_images]
     ).exists()
     assert not Review.objects.get(id=review.id).images.all().exists()
@@ -104,7 +104,7 @@ def test_delete_review_images_other_client_by_client(
     api_client,
 ) -> None:
     review = ReviewFactory.create()
-    review_images = ReviewImagesFactory.create_batch(
+    review_images = ReviewImageFactory.create_batch(
         size=COUNT_IMAGES,
         review=review,
     )
@@ -116,7 +116,7 @@ def test_delete_review_images_other_client_by_client(
                 kwargs={"pk": image.pk},
             ),
         )
-    assert ReviewImages.objects.filter(
+    assert ReviewImage.objects.filter(
         id__in=[image.id for image in review_images]
     ).exists()
     assert Review.objects.get(id=review.id).images.exists()
@@ -126,7 +126,7 @@ def test_create_review_images_by_not_auth(
     api_client,
 ) -> None:
     review = ReviewFactory.create()
-    review_images = ReviewImagesFactory.build_batch(size=COUNT_IMAGES)
+    review_images = ReviewImageFactory.build_batch(size=COUNT_IMAGES)
     data = {
         "images": [image.image for image in review_images],
         "review": review.id,
@@ -145,7 +145,7 @@ def test_delete_review_images_by_not_auth(
     api_client,
 ) -> None:
     review = ReviewFactory.create()
-    review_images = ReviewImagesFactory.create_batch(
+    review_images = ReviewImageFactory.create_batch(
         size=COUNT_IMAGES,
         review=review,
     )
@@ -156,7 +156,7 @@ def test_delete_review_images_by_not_auth(
                 kwargs={"pk": image.pk},
             ),
         )
-    assert ReviewImages.objects.filter(
+    assert ReviewImage.objects.filter(
         id__in=[image.id for image in review_images]
     ).exists()
     assert Review.objects.get(id=review.id).images.all().exists()

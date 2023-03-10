@@ -2,8 +2,9 @@ from collections import OrderedDict
 from decimal import Decimal
 
 from apps.core.serializers import BaseSerializer, serializers
+from apps.orders.models import Dish, Order, OrderAndDish
 from apps.users.models import Client, Employee
-from apps.orders.models import OrderAndDish, Dish, Order
+
 from .order_and_dish import DishCommentSerializer
 
 

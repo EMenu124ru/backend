@@ -1,7 +1,6 @@
 from apps.core.serializers import BaseSerializer, serializers
+from apps.orders.models import Dish, StopList
 from apps.restaurants.models import Restaurant
-
-from apps.orders.models import StopList, Dish
 
 
 class StopListSerializer(BaseSerializer):

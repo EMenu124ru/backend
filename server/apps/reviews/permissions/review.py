@@ -1,8 +1,8 @@
 from rest_framework import permissions
 
 from apps.reviews.models import Review
-from apps.users.models import Employee
 from apps.users.functions import check_role_employee
+from apps.users.models import Employee
 
 
 class ReviewPermissions(permissions.BasePermission):

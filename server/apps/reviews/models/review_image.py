@@ -1,7 +1,5 @@
 from django.db import models
 
-from .review import Review
-
 
 def get_directory_path(instance, filename) -> str:
     return f"reviews/{instance.review.id}/{filename}"
@@ -13,7 +11,7 @@ class ReviewImage(models.Model):
         verbose_name="Картинка"
     )
     review = models.ForeignKey(
-        Review,
+        "reviews.Review",
         on_delete=models.CASCADE,
         related_name="images",
         verbose_name="Отзыв",
@@ -24,4 +22,4 @@ class ReviewImage(models.Model):
         verbose_name_plural = "Картинки"
 
     def __str__(self) -> str:
-        return f"ReviewImages {self.image} {self.review}"
+        return f"ReviewImage {self.image} {self.review}"

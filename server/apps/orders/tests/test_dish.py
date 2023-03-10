@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
 
-from apps.orders.factories import CategoryFactory, DishFactory, DishImagesFactory
+from apps.orders.factories import CategoryFactory, DishFactory, DishImageFactory
 from apps.orders.models import Dish
 
 pytestmark = pytest.mark.django_db
@@ -47,7 +47,7 @@ def test_create_dish_by_manager_with_images(
     api_client,
 ) -> None:
     dish = DishFactory.build()
-    dish_images = DishImagesFactory.build_batch(size=DISH_IMAGES_COUNT)
+    dish_images = DishImageFactory.build_batch(size=DISH_IMAGES_COUNT)
     images = [dish_image.image for dish_image in dish_images]
     category = CategoryFactory.create()
     api_client.force_authenticate(user=manager.user)

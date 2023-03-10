@@ -1,4 +1,4 @@
-from .review_image import ReviewImagesAdmin
 from .review import ReviewAdmin
+from .review_image import ReviewImageAdmin
 
-__all__ = (ReviewImagesAdmin, ReviewAdmin)
+__all__ = (ReviewImageAdmin, ReviewAdmin)

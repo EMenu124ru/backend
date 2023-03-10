@@ -1,9 +1,8 @@
 from collections import OrderedDict
 
 from apps.core.serializers import BaseSerializer, serializers
-from apps.users.models import Client, Employee
-
-from apps.orders.models import OrderAndDish, Dish, Order
+from apps.orders.models import Dish, Order, OrderAndDish
+from apps.users.models import Employee
 
 
 class DishCommentSerializer(BaseSerializer):

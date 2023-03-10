@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
-from apps.users.models import Employee
 from apps.users.functions import check_role_employee
+from apps.users.models import Employee
 
 
 class ReviewImagePermissions(permissions.BasePermission):

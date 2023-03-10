@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from apps.core.views import BaseViewSet
+from apps.core.viewsets import BaseViewSet
 from apps.orders.models import Order
 from apps.orders.permissions import OrderPermission
 from apps.orders.serializers import OrderSerializer

@@ -1,5 +1,5 @@
-from .user import UserAdmin
-from .employee import EmployeeAdmin
 from .client import ClientAdmin
+from .employee import EmployeeAdmin
+from .user import UserAdmin
 
 __all__ = (UserAdmin, ClientAdmin, EmployeeAdmin)

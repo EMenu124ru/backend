@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from apps.core.views import CreateUpdateDestroyViewSet
+from apps.core.viewsets import CreateUpdateDestroyViewSet
 from apps.orders.models import OrderAndDish
 from apps.orders.permissions import OrderAndDishPermission
 from apps.orders.serializers import OrderAndDishSerializer

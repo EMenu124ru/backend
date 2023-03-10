@@ -1,13 +1,12 @@
 from rest_framework import decorators, response, status
 
-from apps.core.views import CRUDViewSet, DestroyViewSet
-
-from apps.reviews.models import Review, ReviewImage
-from apps.reviews.permissions import ReviewPermissions, permissions
+from apps.core.viewsets import CreateReadUpdateDestroyViewSet
+from apps.reviews.models import Review
+from apps.reviews.permissions import ReviewPermissions
 from apps.reviews.serializers import ReviewImageSerializer, ReviewSerializer
 
 
-class ReviewViewSet(CRUDViewSet):
+class ReviewViewSet(CreateReadUpdateDestroyViewSet):
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
     permission_classes = (ReviewPermissions,)

@@ -1,17 +1,10 @@
 from rest_framework import decorators, response, status
 
-from apps.core.views import BaseViewSet
-from apps.reviews.serializers import ReviewSerializer
-from apps.orders.models import (
-    Dish,
-    Order,
-)
+from apps.core.viewsets import BaseViewSet
+from apps.orders.models import Dish, Order
 from apps.orders.permissions import DishPermission
-from apps.orders.serializers import (
-    DishSerializer,
-    OrderSerializer,
-    DishImageSerializer,
-)
+from apps.orders.serializers import DishImageSerializer, DishSerializer, OrderSerializer
+from apps.reviews.serializers import ReviewSerializer
 
 
 class DishViewSet(BaseViewSet):

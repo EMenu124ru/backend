@@ -1,12 +1,9 @@
 from rest_framework import decorators, response
 
-from apps.core.views import BaseViewSet
+from apps.core.viewsets import BaseViewSet
 from apps.orders.models import Category
 from apps.orders.permissions import CategoryPermission
-from apps.orders.serializers import (
-    CategorySerializer,
-    DishSerializer,
-)
+from apps.orders.serializers import CategorySerializer, DishSerializer
 
 
 class CategoryViewSet(BaseViewSet):

@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from apps.core.views import DestroyViewSet
+from apps.core.viewsets import DestroyViewSet
 from apps.orders.models import DishImage
 from apps.orders.permissions import DishPermission
 

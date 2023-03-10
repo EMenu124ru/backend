@@ -1,5 +1,5 @@
 from apps.core.serializers import BaseSerializer, serializers
-from apps.reviews.models import ReviewImage, Review
+from apps.reviews.models import Review, ReviewImage
 
 
 class ReviewImageSerializer(BaseSerializer):

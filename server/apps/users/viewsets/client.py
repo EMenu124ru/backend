@@ -1,12 +1,12 @@
 from rest_framework import decorators, response, status
 
-from apps.core.views import CRUDViewSet
+from apps.core.viewsets import CreateReadUpdateDestroyViewSet
 from apps.users.models import Client
-from apps.users.serializers import ClientSerializer, ClientAuthSerializer
 from apps.users.permissions import IsCurrentUser
+from apps.users.serializers import ClientAuthSerializer, ClientSerializer
 
 
-class ClientViewSet(CRUDViewSet):
+class ClientViewSet(CreateReadUpdateDestroyViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = (IsCurrentUser,)
