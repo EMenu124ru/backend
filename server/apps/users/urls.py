@@ -1,9 +1,9 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import views
+from apps.users.views import EmployeeAuthAPIView
 
 urlpatterns = [
-    path("login/", views.EmployeeAuthAPIView.as_view()),
-    path('', TokenRefreshView.as_view()),
+    path("staff/login/", EmployeeAuthAPIView.as_view()),
+    path('token/refresh/', TokenRefreshView.as_view()),
 ]

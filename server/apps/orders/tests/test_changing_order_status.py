@@ -2,8 +2,8 @@ import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
 
-from apps.orders.factories import DishFactory, OrderAndDishesFactory, OrderFactory
-from apps.orders.models import Order, OrderAndDishes
+from apps.orders.factories import DishFactory, OrderAndDishFactory, OrderFactory
+from apps.orders.models import Order, OrderAndDish
 
 pytestmark = pytest.mark.django_db
 
@@ -22,10 +22,10 @@ def test_change_order_status_by_changing_dish_status_success(
     order_and_dishes = []
     for dish in dishes:
         order_and_dishes.append(
-            OrderAndDishesFactory.create(
+            OrderAndDishFactory.create(
                 order=order,
                 dish=dish,
-                status=OrderAndDishes.Statuses.WAITING_FOR_COOKING,
+                status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
             ),
         )
     api_client.force_authenticate(user=cook.user)
@@ -35,13 +35,13 @@ def test_change_order_status_by_changing_dish_status_success(
             kwargs={"pk": order_and_dishes[0].pk},
         ),
         data={
-            "status": OrderAndDishes.Statuses.COOKING,
+            "status": OrderAndDish.Statuses.COOKING,
         },
     )
     assert response.status_code == status.HTTP_200_OK
-    assert OrderAndDishes.objects.filter(
+    assert OrderAndDish.objects.filter(
         id=order_and_dishes[0].pk,
-        status=OrderAndDishes.Statuses.COOKING,
+        status=OrderAndDish.Statuses.COOKING,
         order__status=Order.Statuses.COOKING,
     ).exists()
 
@@ -58,10 +58,10 @@ def test_change_order_status_by_adding_new_dish(
     order_and_dishes = []
     for dish in dishes:
         order_and_dishes.append(
-            OrderAndDishesFactory.create(
+            OrderAndDishFactory.create(
                 order=order,
                 dish=dish,
-                status=OrderAndDishes.Statuses.DONE,
+                status=OrderAndDish.Statuses.DONE,
             ),
         )
     api_client.force_authenticate(user=cook.user)
@@ -71,13 +71,13 @@ def test_change_order_status_by_adding_new_dish(
         data={
             "order": order.pk,
             "dish": new_dish.pk,
-            "status": OrderAndDishes.Statuses.COOKING,
+            "status": OrderAndDish.Statuses.COOKING,
         },
     )
     assert response.status_code == status.HTTP_201_CREATED
-    assert OrderAndDishes.objects.filter(
+    assert OrderAndDish.objects.filter(
         dish=new_dish.pk,
-        status=OrderAndDishes.Statuses.COOKING,
+        status=OrderAndDish.Statuses.COOKING,
         order__status=Order.Statuses.COOKING,
     ).exists()
 
@@ -94,10 +94,10 @@ def test_change_order_status_by_changing_dish_status_failed(
     order_and_dishes = []
     for dish in dishes:
         order_and_dishes.append(
-            OrderAndDishesFactory.create(
+            OrderAndDishFactory.create(
                 order=order,
                 dish=dish,
-                status=OrderAndDishes.Statuses.WAITING_FOR_COOKING,
+                status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
             ),
         )
     api_client.force_authenticate(user=client.user)
@@ -107,12 +107,12 @@ def test_change_order_status_by_changing_dish_status_failed(
             kwargs={"pk": order_and_dishes[0].pk},
         ),
         data={
-            "status": OrderAndDishes.Statuses.COOKING,
+            "status": OrderAndDish.Statuses.COOKING,
         },
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert not OrderAndDishes.objects.filter(
+    assert not OrderAndDish.objects.filter(
         id=order_and_dishes[0].pk,
-        status=OrderAndDishes.Statuses.COOKING,
+        status=OrderAndDish.Statuses.COOKING,
         order__status=Order.Statuses.COOKING,
     ).exists()

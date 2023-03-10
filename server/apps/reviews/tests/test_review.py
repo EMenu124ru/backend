@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from rest_framework import status
 
 from apps.orders.factories import DishFactory
-from apps.reviews.factories import ReviewFactory, ReviewImagesFactory
+from apps.reviews.factories import ReviewFactory, ReviewImageFactory
 from apps.reviews.models import Review
 
 pytestmark = pytest.mark.django_db
@@ -109,7 +109,7 @@ def test_create_review_by_client_with_images(
 ) -> None:
     review = ReviewFactory.build()
     dish = DishFactory.create()
-    review_images = ReviewImagesFactory.build_batch(size=REVIEW_IMAGES_COUNT)
+    review_images = ReviewImageFactory.build_batch(size=REVIEW_IMAGES_COUNT)
     images = [review_image.image for review_image in review_images]
     api_client.force_authenticate(user=client.user)
     response = api_client.post(

@@ -1,7 +1,17 @@
-from .category import CategoryFactory  # noqa F401
-from .dish import DishFactory  # noqa F401
-from .dish_images import DishImagesFactory  # noqa F401
-from .order import OrderFactory  # noqa F401
-from .order_and_dishes import OrderAndDishesFactory  # noqa F401
-from .restaurant_and_order import RestaurantAndOrderFactory  # noqa F401
-from .stop_list import StopListFactory  # noqa F401
+from .category import CategoryFactory
+from .dish import DishFactory
+from .dish_image import DishImageFactory
+from .order import OrderFactory
+from .order_and_dish import OrderAndDishFactory
+from .restaurant_and_order import RestaurantAndOrderFactory
+from .stop_list import StopListFactory
+
+__all__ = (
+    CategoryFactory,
+    DishFactory,
+    DishImageFactory,
+    OrderFactory,
+    OrderAndDishFactory,
+    RestaurantAndOrderFactory,
+    StopListFactory,
+)

@@ -1,2 +1,4 @@
-from .restaurant import RestaurantFactory  # noqa F401
-from .schedule import ScheduleFactory  # noqa F401
+from .restaurant import RestaurantFactory
+from .schedule import ScheduleFactory
+
+__all__ = (RestaurantFactory, ScheduleFactory)

@@ -9,7 +9,7 @@ from apps.orders.factories import (
     RestaurantAndOrderFactory,
 )
 from apps.restaurants.factories import RestaurantFactory, ScheduleFactory
-from apps.reviews.factories import ReviewFactory, ReviewImagesFactory
+from apps.reviews.factories import ReviewFactory, ReviewImageFactory
 from apps.users.factories import ClientFactory, EmployeeFactory, UserFactory
 
 USERS_COUNT = 10
@@ -37,7 +37,7 @@ def run():
         client = clients[randint(0, CLIENTS_COUNT - 1)]
         rest_reviews.append(ReviewFactory.create(client=client))
     for review in rest_reviews:
-        ReviewImagesFactory.create_batch(
+        ReviewImageFactory.create_batch(
             review=review,
             size=IMAGES_PER_REVIEW_COUNT,
         )
@@ -57,7 +57,7 @@ def run():
         client = clients[randint(0, CLIENTS_COUNT - 1)]
         dish_reviews.append(ReviewFactory.create(client=client))
     for review in dish_reviews:
-        ReviewImagesFactory.create_batch(
+        ReviewImageFactory.create_batch(
             review=review,
             size=IMAGES_PER_REVIEW_COUNT,
         )

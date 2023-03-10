@@ -111,10 +111,7 @@ TEMPLATES = [
 
 # ADMIN
 # ------------------------------------------------------------------------------
-ADMIN_URL = os.getenv(
-    "DJANGO_ADMIN_URL",
-    "admin/",
-)
+ADMIN_URL = os.getenv("DJANGO_ADMIN_URL", "admin/")
 
 LOGGING = {
     "version": 1,

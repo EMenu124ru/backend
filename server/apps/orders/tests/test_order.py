@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
 
-from apps.orders.factories import DishFactory, OrderAndDishesFactory, OrderFactory
+from apps.orders.factories import DishFactory, OrderAndDishFactory, OrderFactory
 from apps.orders.models import Order
 from apps.users.factories import ClientFactory, EmployeeFactory
 
@@ -61,7 +61,7 @@ def test_update_order_by_cook_failed(
     )
     api_client.force_authenticate(user=cook.user)
     for dish in dishes:
-        OrderAndDishesFactory.create(dish=dish, order=order)
+        OrderAndDishFactory.create(dish=dish, order=order)
     response = api_client.patch(
         reverse_lazy(
             "api:orders-detail",

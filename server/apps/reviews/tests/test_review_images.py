@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
 
-from apps.reviews.factories import ReviewFactory, ReviewImagesFactory
+from apps.reviews.factories import ReviewFactory, ReviewImageFactory
 from apps.reviews.models import Review, ReviewImages
 
 pytestmark = pytest.mark.django_db

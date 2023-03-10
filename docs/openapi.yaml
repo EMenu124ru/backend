@@ -18,18 +18,18 @@ tags:
   - name: dishes
     description: "Dish namespace"
   - name: dish-images
-    description: "Dish images namespace"
+    description: "Dish image namespace"
   - name: reviews
     description: "Review namespace"
   - name: review-images
-    description: "Review images namespace"
+    description: "Review image namespace"
   - name: restaurants
     description: "Restaurant namespace"
   - name: restaurantAndOrders
-    description: "RestaurantAndOrders namespace"
+    description: "RestaurantAndOrder namespace"
   - name: orderAndDishes
-    description: "OrderAndDishes namespace"
-  - name: stopList
+    description: "OrderAndDishe namespace"
+  - name: stopLists
     description: "StopList namespace"
 
 paths:
@@ -73,7 +73,7 @@ paths:
           description: "Id клиента"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "200":
           $ref: "#/components/responses/Client200"
@@ -96,7 +96,7 @@ paths:
           description: "Id клиента"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/SignUpRequestBodyClient"
       responses:
@@ -123,7 +123,7 @@ paths:
           description: "Id клиента"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "204":
           description: "No Content"
@@ -169,7 +169,7 @@ paths:
         - categories
       summary: "Create category"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/CategoryCreateBody"
       responses:
@@ -187,7 +187,7 @@ paths:
         - categories
       summary: "Get list categories"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - in: query
           name: page
@@ -224,7 +224,7 @@ paths:
           description: "Id категории"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "200":
           $ref: "#/components/responses/Category200"
@@ -247,7 +247,7 @@ paths:
           description: "Id категории"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/CategoryCreateBody"
       responses:
@@ -274,7 +274,7 @@ paths:
           description: "Id категории"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "204":
           description: "No Content"
@@ -313,7 +313,7 @@ paths:
           description: "Количество элементов на странице"
           required: false
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "200":
           $ref: "#/components/responses/DishList200"
@@ -330,7 +330,7 @@ paths:
         - orders
       summary: "Create order"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/OrderCreateBody"
       responses:
@@ -348,7 +348,7 @@ paths:
         - orders
       summary: "Get list orders"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - in: query
           name: page
@@ -385,7 +385,7 @@ paths:
           description: "Id заказа"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "200":
           $ref: "#/components/responses/Order200"
@@ -408,7 +408,7 @@ paths:
           description: "Id заказа"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/OrderCreateBody"
       responses:
@@ -435,7 +435,7 @@ paths:
           description: "Id заказа"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "204":
           description: "No Content"
@@ -452,7 +452,7 @@ paths:
         - dishes
       summary: "Create dish"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/DishCreateBody"
       responses:
@@ -470,7 +470,7 @@ paths:
         - dishes
       summary: "Get list dishes"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - in: query
           name: page
@@ -507,7 +507,7 @@ paths:
           description: "Id блюда"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "200":
           $ref: "#/components/responses/Dish200"
@@ -530,7 +530,7 @@ paths:
           description: "Id блюда"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/DishCreateBody"
       responses:
@@ -557,7 +557,7 @@ paths:
           description: "Id блюда"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "204":
           description: "No Content"
@@ -595,7 +595,7 @@ paths:
           description: "Количество элементов на странице"
           required: false
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "200":
           $ref: "#/components/responses/OrderList200"
@@ -634,7 +634,7 @@ paths:
           description: "Количество элементов на странице"
           required: false
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "200":
           $ref: "#/components/responses/ReviewList200"
@@ -659,12 +659,12 @@ paths:
           description: "Id блюда"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/DishImageCreateBody"
       responses:
         "201":
-          $ref: "#/components/responses/DishImages200"
+          $ref: "#/components/responses/DishImage200"
         "400":
           $ref: "#/components/responses/DishImageCreate400"
         "401":
@@ -685,7 +685,7 @@ paths:
           description: "Id фото блюда"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "204":
           description: "No Content"
@@ -702,7 +702,7 @@ paths:
         - restaurantAndOrders
       summary: "Create restaurantAndOrders"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/RestaurantAndOrdersRequestBody"
       responses:
@@ -720,7 +720,7 @@ paths:
         - restaurantAndOrders
       summary: "Get list restaurantAndOrders"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - in: query
           name: page
@@ -757,7 +757,7 @@ paths:
           required: true
           description: "Id бронирования"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "200":
           $ref: "#/components/responses/RestaurantAndOrders200"
@@ -780,7 +780,7 @@ paths:
           description: "Id бронирования"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/RestaurantAndOrdersRequestBody"
       responses:
@@ -807,7 +807,7 @@ paths:
           description: "Id бронирования"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "204":
           description: "No Content"
@@ -824,7 +824,7 @@ paths:
         - orderAndDishes
       summary: "Create orderAndDishes"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/OrderAndDishesRequestBody"
       responses:
@@ -850,7 +850,7 @@ paths:
           description: "Id связки ресторана и заказа"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/OrderAndDishesRequestBody"
       responses:
@@ -877,7 +877,7 @@ paths:
           description: "Id связки ресторана и заказа"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "204":
           description: "No Content"
@@ -894,7 +894,7 @@ paths:
         - stopList
       summary: "Create stopList item"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/StopListRequestBody"
       responses:
@@ -912,7 +912,7 @@ paths:
         - stopList
       summary: "Get list stopList items"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - in: query
           name: page
@@ -949,7 +949,7 @@ paths:
           description: "Id элемента из стоп листа"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "204":
           description: "No Content"
@@ -966,7 +966,7 @@ paths:
         - reviews
       summary: "Create reviews"
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/ReviewCreateBody"
       responses:
@@ -992,7 +992,7 @@ paths:
           description: "Id отзыва"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "200":
           $ref: "#/components/responses/Review200"
@@ -1015,7 +1015,7 @@ paths:
           description: "Id отзыва"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         $ref: "#/components/requestBodies/ReviewCreateBody"
       responses:
@@ -1042,7 +1042,7 @@ paths:
           description: "Id отзыва"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "204":
           description: "No Content"
@@ -1058,7 +1058,7 @@ paths:
       tags:
         - reviews
         - review-images
-      summary: "Create review-images"
+      summary: "Create review-image"
       parameters:
         - name: review_id
           in: path
@@ -1067,14 +1067,14 @@ paths:
           description: "Id отзыва"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
-        $ref: "#/components/requestBodies/ReviewImagesCreateBody"
+        $ref: "#/components/requestBodies/ReviewImageCreateBody"
       responses:
         "201":
-          $ref: "#/components/responses/ReviewImagesCreate201"
+          $ref: "#/components/responses/ReviewImageCreate201"
         "400":
-          $ref: "#/components/responses/ReviewImagesCreate400"
+          $ref: "#/components/responses/ReviewImageCreate400"
         "401":
           description: "Unauthorized"
         "403":
@@ -1093,7 +1093,7 @@ paths:
           description: "Id картинки"
           required: true
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         "204":
           description: "No Content"
@@ -1411,7 +1411,7 @@ components:
             $ref: "#/components/schemas/ReviewCreateBase"
       required: true
 
-    ReviewImagesCreateBody:
+    ReviewImageCreateBody:
       content:
         application/json:
           schema:
@@ -1737,7 +1737,7 @@ components:
     DishImageCreate400:
       description: "Dish image created error"
 
-    DishImages200:
+    DishImage200:
       description: "Dish image get"
       content:
         application/json:
@@ -1790,7 +1790,7 @@ components:
                 items:
                   $ref: "#/components/schemas/ReviewBase"
 
-    ReviewImagesCreate201:
+    ReviewImageCreate201:
       description: "Review image create"
       content:
         application/json:
@@ -1799,7 +1799,7 @@ components:
             items:
               $ref: "#/components/schemas/ReviewImageBase"
 
-    ReviewImagesCreate400:
+    ReviewImageCreate400:
       description: "Review image error create"
 
     RestaurantAndOrdersList200:

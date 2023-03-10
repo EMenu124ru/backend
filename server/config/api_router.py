@@ -1,11 +1,12 @@
 from django.conf import settings
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from apps.orders.viewsets import (
     CategoryViewSet,
     DishImageViewSet,
     DishViewSet,
-    OrderAndDishesViewSet,
+    OrderAndDishViewSet,
     OrderViewSet,
     RestaurantAndOrderViewSet,
     StopListViewSet,
@@ -43,7 +44,7 @@ router.register(
 )
 router.register(
     "order-and-dishes",
-    OrderAndDishesViewSet,
+    OrderAndDishViewSet,
     basename="orderAndDishes",
 )
 router.register(
@@ -68,4 +69,6 @@ router.register(
 )
 
 app_name = "api"
-urlpatterns = router.urls
+urlpatterns = [
+    path("", include("apps.users.urls")),
+] + router.urls
