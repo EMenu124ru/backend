@@ -1,9 +1,10 @@
 from rest_framework import decorators, response, status
 
 from apps.core.viewsets import BaseViewSet
-from apps.orders.models import Dish, Order
+from apps.orders.models import Dish, Order, OrderAndDish
 from apps.orders.permissions import DishPermission
 from apps.orders.serializers import DishImageSerializer, DishSerializer, OrderSerializer
+from apps.reviews.models import Review
 from apps.reviews.serializers import ReviewSerializer
 
 
@@ -24,15 +25,13 @@ class DishViewSet(BaseViewSet):
 
     def get_queryset(self):
         if self.action == "reviews":
-            return Dish.objects.prefetch_related(
-                "reviews",
-            ).get(id=self.kwargs["pk"]).reviews.all()
+            return Review.objects.filter(
+                dish=self.kwargs["pk"],
+            )
         if self.action == "orders":
-            orders = Dish.objects.prefetch_related(
-                "orders",
-            ).get(
-                id=self.kwargs["pk"],
-            ).orders.all().values_list("order", flat=True)
+            orders = OrderAndDish.objects.filter(
+                dish_id=self.kwargs["pk"],
+            ).values_list("order_id", flat=True)
             return Order.objects.filter(id__in=orders)
         return Dish.objects.all()
 

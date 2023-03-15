@@ -1,7 +1,7 @@
 from rest_framework import decorators, response
 
 from apps.core.viewsets import BaseViewSet
-from apps.orders.models import Category
+from apps.orders.models import Category, Dish
 from apps.orders.permissions import CategoryPermission
 from apps.orders.serializers import CategorySerializer, DishSerializer
 
@@ -16,9 +16,7 @@ class CategoryViewSet(BaseViewSet):
 
     def get_queryset(self):
         if self.action == "dishes":
-            return Category.objects.prefetch_related(
-                "dishes",
-            ).get(id=self.kwargs["pk"]).dishes.all()
+            return Dish.objects.filter(category_id=self.kwargs["pk"])
         return Category.objects.all()
 
     @decorators.action(methods=("GET",), detail=True)
