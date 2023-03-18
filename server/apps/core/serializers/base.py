@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 
-class BaseSerializer(serializers.ModelSerializer):
+class BaseModelSerializer(serializers.ModelSerializer):
     """Serializer with common logic."""
 
     def __init__(self, *args, **kwargs):

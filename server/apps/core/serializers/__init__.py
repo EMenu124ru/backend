@@ -1,6 +1,6 @@
-from .base_serializer import BaseSerializer, serializers
+from .base import BaseModelSerializer, serializers
 
 __all__ = (
-    BaseSerializer,
+    BaseModelSerializer,
     serializers,
 )

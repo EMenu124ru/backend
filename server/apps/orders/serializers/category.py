@@ -1,8 +1,8 @@
-from apps.core.serializers import BaseSerializer
+from apps.core.serializers import BaseModelSerializer
 from apps.orders.models import Category
 
 
-class CategorySerializer(BaseSerializer):
+class CategorySerializer(BaseModelSerializer):
     class Meta:
         model = Category
         fields = (

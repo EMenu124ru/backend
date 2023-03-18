@@ -1,8 +1,8 @@
-from apps.core.serializers import BaseSerializer, serializers
+from apps.core.serializers import BaseModelSerializer, serializers
 from apps.reviews.models import Review, ReviewImage
 
 
-class ReviewImageSerializer(BaseSerializer):
+class ReviewImageSerializer(BaseModelSerializer):
     review = serializers.PrimaryKeyRelatedField(
         queryset=Review.objects.all(),
         write_only=True,

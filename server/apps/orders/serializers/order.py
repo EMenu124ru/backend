@@ -1,14 +1,14 @@
 from collections import OrderedDict
 from decimal import Decimal
 
-from apps.core.serializers import BaseSerializer, serializers
+from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import Dish, Order, OrderAndDish
 from apps.users.models import Client, Employee
 
 from .order_and_dish import DishCommentSerializer
 
 
-class OrderSerializer(BaseSerializer):
+class OrderSerializer(BaseModelSerializer):
     employee = serializers.PrimaryKeyRelatedField(
         queryset=Employee.objects.all(),
         allow_null=True,

@@ -1,11 +1,11 @@
 from collections import OrderedDict
 
-from apps.core.serializers import BaseSerializer, serializers
+from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import Dish, Order, OrderAndDish
 from apps.users.models import Employee
 
 
-class DishCommentSerializer(BaseSerializer):
+class DishCommentSerializer(BaseModelSerializer):
 
     dish = serializers.PrimaryKeyRelatedField(
         queryset=Dish.objects.all(),
@@ -20,7 +20,7 @@ class DishCommentSerializer(BaseSerializer):
         )
 
 
-class OrderAndDishSerializer(BaseSerializer):
+class OrderAndDishSerializer(BaseModelSerializer):
 
     dish = serializers.PrimaryKeyRelatedField(
         queryset=Dish.objects.all(),

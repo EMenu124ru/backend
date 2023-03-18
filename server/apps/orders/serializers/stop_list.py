@@ -1,9 +1,9 @@
-from apps.core.serializers import BaseSerializer, serializers
+from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import Dish, StopList
 from apps.restaurants.models import Restaurant
 
 
-class StopListSerializer(BaseSerializer):
+class StopListSerializer(BaseModelSerializer):
     dish = serializers.PrimaryKeyRelatedField(
         queryset=Dish.objects.all(),
     )

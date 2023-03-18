@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from apps.core.serializers import BaseSerializer, serializers
+from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import Order, RestaurantAndOrder
 from apps.restaurants.models import Restaurant
 from apps.users.models import Employee
@@ -8,7 +8,7 @@ from apps.users.models import Employee
 from .order import OrderSerializer
 
 
-class RestaurantAndOrderSerializer(BaseSerializer):
+class RestaurantAndOrderSerializer(BaseModelSerializer):
     restaurant = serializers.PrimaryKeyRelatedField(
         queryset=Restaurant.objects.all(),
     )

@@ -1,13 +1,13 @@
 from collections import OrderedDict
 
-from apps.core.serializers import BaseSerializer, serializers
+from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import Category, Dish
 
 from .category import CategorySerializer
 from .dish_image import DishImageSerializer
 
 
-class DishSerializer(BaseSerializer):
+class DishSerializer(BaseModelSerializer):
     category = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),
     )

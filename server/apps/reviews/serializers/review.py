@@ -1,6 +1,6 @@
 from typing import OrderedDict
 
-from apps.core.serializers import BaseSerializer, serializers
+from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import Dish
 from apps.restaurants.models import Restaurant
 from apps.reviews.models import Review
@@ -9,7 +9,7 @@ from apps.users.serializers import ClientSerializer
 from .review_image import ReviewImageSerializer
 
 
-class ReviewSerializer(BaseSerializer):
+class ReviewSerializer(BaseModelSerializer):
     dish = serializers.PrimaryKeyRelatedField(
         queryset=Dish.objects.all(),
         required=False,

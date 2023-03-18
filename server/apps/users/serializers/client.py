@@ -1,6 +1,6 @@
-from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from apps.core.serializers import BaseModelSerializer, serializers
 from apps.users.models import Client, User
 
 
@@ -39,7 +39,7 @@ class ClientAuthSerializer(serializers.Serializer):
         return attrs
 
 
-class ClientSerializer(serializers.ModelSerializer):
+class ClientSerializer(BaseModelSerializer):
     first_name = serializers.CharField(source="user.first_name")
     last_name = serializers.CharField(source="user.last_name")
     password = serializers.CharField(source="user.password", write_only=True)
