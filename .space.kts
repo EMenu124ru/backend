@@ -61,7 +61,6 @@ job("Run npm test and publish") {
           apt update
           apt install -y sshpass
           apt update
-          ls -lrt
           chmod +x pull-run.sh 
           sshpass -p "${"$"}SSH_PASS" ssh -o StrictHostKeyChecking=no root@${"$"}SSH_IP "cd ~/EMenuBackend; ./pull-run.sh"
         """
