@@ -1104,6 +1104,79 @@ paths:
         "404":
           description: "Not Found"
 
+  "/api/v1/restaurants/":
+    get:
+      tags:
+        - restaurants
+      summary: "Get list restaurants"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            nullable: true
+          description: "Номер страницы"
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: number
+            nullable: true
+          description: "Количество элементов на странице"
+          required: false
+      responses:
+        "200":
+          $ref: "#/components/responses/RestaurantList200"
+        "401":
+          description: "Unauthorized"
+
+  "/api/v1/restaurants/{restaurant_id}/":
+    get:
+      tags:
+        - restaurants
+      summary: "Get restaurant"
+      parameters:
+        - name: restaurant_id
+          in: path
+          schema:
+            type: number
+          required: true
+          description: "Id ресторана"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/Restaurant200"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not Found"
+
+  "/api/v1/restaurants/{restaurant_id}/reviews/":
+    get:
+      tags:
+        - restaurants
+        - reviews
+      summary: "Get reviews of restaurant"
+      parameters:
+        - name: restaurant_id
+          in: path
+          schema:
+            type: number
+          required: true
+          description: "Id ресторана"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ReviewList200"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not Found"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1348,6 +1421,44 @@ components:
           type: number
         place_number:
           type: number
+
+    ScheduleBase:
+      type: object
+      properties:
+        id:
+          type: number
+        week_day:
+          type: number
+        time_open:
+          type: string
+          format: time
+        time_close:
+          type: string
+          format: time
+
+    PlanBase:
+      type: object
+      properties:
+        id:
+          type: number
+        plan:
+          type: string
+
+    RestaurantBase:
+      type: object
+      properties:
+        id:
+          type: number
+        address:
+          type: string
+        schedules:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScheduleBase"
+        plans:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlanBase"
 
     OrderAndDishCreateBase:
       type: object
@@ -1884,3 +1995,18 @@ components:
             items:
               $ref: "#/components/schemas/StopListBase"
 
+    RestaurantList200:
+      description: "Restaurants list get"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/RestaurantBase"
+
+    Restaurant200:
+      description: "Restaurant get"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestaurantBase"

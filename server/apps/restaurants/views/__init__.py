@@ -1,3 +1,11 @@
-from .restaurant import RestaurantListAPIView, RestaurantRetrieveAPIView
+from .restaurant import (
+    RestaurantListAPIView,
+    RestaurantRetrieveAPIView,
+    ReviewsRestaurantAPIView,
+)
 
-__all__ = (RestaurantListAPIView, RestaurantRetrieveAPIView)
+__all__ = (
+    RestaurantListAPIView,
+    RestaurantRetrieveAPIView,
+    ReviewsRestaurantAPIView,
+)
