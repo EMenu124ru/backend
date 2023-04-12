@@ -10,4 +10,12 @@ class RestaurantAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "address",
+        "get_schedule",
+        "get_plans",
     )
+
+    def get_schedule(self, obj):
+        return obj.schedules.all()
+
+    def get_plans(self, obj):
+        return [plan.plan for plan in obj.plans.all()]

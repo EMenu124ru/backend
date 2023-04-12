@@ -71,4 +71,5 @@ router.register(
 app_name = "api"
 urlpatterns = [
     path("", include("apps.users.urls")),
+    path("restaurants/", include("apps.restaurants.urls")),
 ] + router.urls
