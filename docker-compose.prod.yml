@@ -23,10 +23,11 @@ services:
     container_name: django
     image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_django:latest
     build:
-      context: .
-      dockerfile: ./server/Dockerfile
+      context: ./server/
+      dockerfile: Dockerfile
       args:
-        MODE: "--without dev"
+        MODE: "--with dev"
+        APP_HOME: "/server"
     depends_on:
       - postgres
     expose:

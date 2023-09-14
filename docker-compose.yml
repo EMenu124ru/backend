@@ -7,10 +7,11 @@ services:
   django:
     container_name: django
     build:
-      context: .
-      dockerfile: ./server/Dockerfile
+      context: ./server/
+      dockerfile: Dockerfile
       args:
         MODE: "--with dev"
+        APP_HOME: "/server"
     depends_on:
       - postgres
     volumes:
