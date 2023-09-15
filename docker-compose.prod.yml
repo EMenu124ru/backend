@@ -7,7 +7,7 @@ services:
   nginx:
     restart: always
     container_name: nginx
-    image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/nginx:latest
+    image: ghcr.io/emenu124ru/nginx:latest
     build:
       context: .
       dockerfile: ./nginx/Dockerfile
@@ -21,7 +21,7 @@ services:
   django:
     restart: always
     container_name: django
-    image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_django:latest
+    image: ghcr.io/emenu124ru/django:latest
     build:
       context: ./server/
       dockerfile: Dockerfile
