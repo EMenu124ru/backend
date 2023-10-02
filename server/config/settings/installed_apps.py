@@ -10,10 +10,13 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    "daphne",
     "django_extensions",
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 LOCAL_APPS = [

@@ -13,10 +13,32 @@ services:
       dockerfile: ./nginx/Dockerfile
     depends_on:
       - django
+      - daphne
     ports:
       - 80:80
     volumes:
       - ./server/media:/nginx/media/
+  
+  daphne:
+    restart: always
+    container_name: daphne
+    image: ghcr.io/emenu124ru/daphne:latest
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+      args:
+        MODE: "--without dev"
+        APP_HOME: "/server"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - REDIS_URL=${REDIS_URL}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+    expose:
+      - 8080
+    command: daphne -b 0.0.0.0 -p 8080 config.asgi:application
 
   django:
     restart: always
@@ -26,7 +48,7 @@ services:
       context: ./server/
       dockerfile: Dockerfile
       args:
-        MODE: "--with dev"
+        MODE: "--without dev"
         APP_HOME: "/server"
     depends_on:
       - postgres
