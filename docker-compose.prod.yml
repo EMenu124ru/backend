@@ -68,3 +68,15 @@ services:
     volumes:
       - ./dumps:/dump
     command: dump-cron
+  
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    expose:
+      - 8080
+    volumes:
+      - ./docs/openapi.yaml:/openapi.yaml
+    environment:
+      - SWAGGER_JSON=/openapi.yaml
+    depends_on:
+      - nginx
