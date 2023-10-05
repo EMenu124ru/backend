@@ -5,9 +5,9 @@ volumes:
 
 services:
   nginx:
+    image: ghcr.io/emenu124ru/nginx:latest
     restart: always
     container_name: nginx
-    image: ghcr.io/emenu124ru/nginx:latest
     build:
       context: .
       dockerfile: ./nginx/Dockerfile
@@ -20,9 +20,9 @@ services:
       - ./server/media:/nginx/media/
   
   daphne:
+    image: ghcr.io/emenu124ru/django:latest
     restart: always
     container_name: daphne
-    image: ghcr.io/emenu124ru/daphne:latest
     build:
       context: ./server/
       dockerfile: Dockerfile
@@ -36,14 +36,15 @@ services:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - REDIS_URL=${REDIS_URL}
       - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
     expose:
       - 8080
     command: daphne -b 0.0.0.0 -p 8080 config.asgi:application
 
   django:
+    image: ghcr.io/emenu124ru/django:latest
     restart: always
     container_name: django
-    image: ghcr.io/emenu124ru/django:latest
     build:
       context: ./server/
       dockerfile: Dockerfile
@@ -52,6 +53,7 @@ services:
         APP_HOME: "/server"
     depends_on:
       - postgres
+      - redis
     expose:
       - 8000
     volumes:

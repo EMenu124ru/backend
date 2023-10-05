@@ -15,7 +15,7 @@ actions:
         is_system: true
         description: Connect will be triggered only on connection request and handled by backend.
     response_to_user:
-      event: restaurant_users_retrieve
+      event: employee_orders_retrieve
       orders:
         type: array
         items:
