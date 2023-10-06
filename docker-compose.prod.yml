@@ -14,6 +14,7 @@ services:
     depends_on:
       - django
       - daphne
+      - alexandria
     ports:
       - 80:80
     volumes:
@@ -38,8 +39,8 @@ services:
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
     expose:
-      - 8080
-    command: daphne -b 0.0.0.0 -p 8080 config.asgi:application
+      - 8008
+    command: daphne -b 0.0.0.0 -p 8008 config.asgi:application
 
   django:
     image: ghcr.io/emenu124ru/django:latest
@@ -64,6 +65,13 @@ services:
       - DJANGO_ADMIN_URL=${DJANGO_ADMIN_URL}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
     command: gunicorn config.wsgi -c ./config/gunicorn.py
+
+  redis:
+    container_name: redis
+    restart: always
+    image: redis:6
+    expose:
+      - 6379
 
   postgres:
     restart: always
@@ -92,3 +100,13 @@ services:
     volumes:
       - ./dumps:/dump
     command: dump-cron
+
+  alexandria:
+    image: raisultan/alexandria:0.1
+    container_name: alexandria
+    volumes:
+      - ./docs/ws.yml:/ws.yml
+    ports:
+      - "8080:8080"
+    environment:
+      - ALEXANDRIA_YAML=/ws.yml

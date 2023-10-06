@@ -891,7 +891,7 @@ paths:
   "/api/v1/stop-list/":
     post:
       tags:
-        - stopList
+        - stopLists
       summary: "Create stopList item"
       security:
         - bearerAuth: []
@@ -909,7 +909,7 @@ paths:
 
     get:
       tags:
-        - stopList
+        - stopLists
       summary: "Get list stopList items"
       security:
         - bearerAuth: []
@@ -939,7 +939,7 @@ paths:
   "/api/v1/stop-list/{stopList_id}/":
     delete:
       tags:
-        - stopList
+        - stopLists
       summary: "Delete stopList"
       parameters:
         - name: stopList_id
