@@ -15,6 +15,7 @@ services:
       - django
       - daphne
       - alexandria
+      - swagger-ui
     ports:
       - 80:80
     volumes:
