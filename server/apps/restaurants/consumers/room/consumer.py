@@ -16,6 +16,8 @@ class RestaurantConsumer(
 
     ACTION_MAP = {
         Actions.EMPLOYEE_ORDERS_LIST: RestaurantActionsMixin.employee_orders_list,
+        Actions.CREATE_ORDER: RestaurantActionsMixin.create_order,
+        Actions.EDIT_ORDER: RestaurantActionsMixin.create_order,
     }
 
     async def connect(self):
