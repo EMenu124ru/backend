@@ -1234,7 +1234,7 @@ components:
               id:
                 type: number
               dish:
-                type: number
+                $ref: "#/components/schemas/DishBase"
               comment:
                 type: string
 

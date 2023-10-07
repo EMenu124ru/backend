@@ -1,7 +1,10 @@
 from collections import OrderedDict
 
+from django.shortcuts import get_object_or_404
+
 from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import Dish, Order, OrderAndDish
+from apps.orders.serializers import DishSerializer
 from apps.users.models import Employee
 
 
@@ -18,6 +21,16 @@ class DishCommentSerializer(BaseModelSerializer):
             "dish",
             "comment",
         )
+
+    def to_representation(self, instance: Order) -> OrderedDict:
+        data = super().to_representation(instance)
+        dish_id = data.pop("dish")
+        dish = get_object_or_404(Dish, id=dish_id)
+        new_info = {
+            "dish": DishSerializer(dish).data,
+        }
+        data.update(new_info)
+        return data
 
 
 class OrderAndDishSerializer(BaseModelSerializer):

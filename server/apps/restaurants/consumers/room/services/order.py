@@ -9,4 +9,7 @@ class OrderService:
     @staticmethod
     @database_sync_to_async
     def get_orders_list(orders: QuerySet) -> list:
-        return OrderSerializer(orders, many=True).data
+        orders = OrderSerializer(orders, many=True).data
+        for order in orders:
+            order['price'] = float(order['price'])
+        return orders
