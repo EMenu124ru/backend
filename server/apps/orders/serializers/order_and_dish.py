@@ -6,6 +6,7 @@ from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import Dish, Order, OrderAndDish
 from apps.orders.serializers import DishSerializer
 from apps.users.models import Employee
+from apps.users.serializers import EmployeeSerializer
 
 
 class DishCommentSerializer(BaseModelSerializer):
@@ -51,6 +52,7 @@ class OrderAndDishSerializer(BaseModelSerializer):
         fields = (
             "id",
             "status",
+
             "order",
             "dish",
             "comment",
@@ -131,3 +133,18 @@ class OrderAndDishSerializer(BaseModelSerializer):
                     "Шеф и су-шеф могут менять только работника, который будет готовить блюдо",
                 )
         return attrs
+
+    def to_representation(self, instance: Order) -> OrderedDict:
+        data = super().to_representation(instance)
+        dish = Dish.objects.get(pk=data.pop("dish"))
+        employee = None
+
+        if (employee_id := data.pop("employee")) is not None:
+            employee = Employee.objects.get(pk=employee_id)
+
+        new_info = {
+            "dish": DishSerializer(dish).data,
+            "employee":  None if not employee else EmployeeSerializer(employee).data,
+        }
+        data.update(new_info)
+        return data

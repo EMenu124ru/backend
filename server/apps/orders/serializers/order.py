@@ -2,10 +2,11 @@ from collections import OrderedDict
 from decimal import Decimal
 
 from apps.core.serializers import BaseModelSerializer, serializers
-from apps.orders.models import Dish, Order, OrderAndDish
+from apps.orders.models import Order, OrderAndDish
 from apps.users.models import Client, Employee
+from apps.users.serializers import ClientSerializer, EmployeeSerializer
 
-from .order_and_dish import DishCommentSerializer
+from .order_and_dish import DishCommentSerializer, OrderAndDishSerializer
 
 
 class OrderSerializer(BaseModelSerializer):
@@ -90,11 +91,25 @@ class OrderSerializer(BaseModelSerializer):
     def to_representation(self, instance: Order) -> OrderedDict:
         data = super().to_representation(instance)
         dishes = instance.dishes.values("id", "dish", "comment")
+        employee, client = None, None
+        if (employee_id := data.pop("employee")) is not None:
+            employee = Employee.objects.get(pk=employee_id)
+
+        if (client_id := data.pop("client")) is not None:
+            client = Client.objects.get(pk=client_id)
+
+        order_and_dishes = []
         for item in dishes:
-            item["dish"] = Dish.objects.get(id=item["dish"])
+            order_and_dish = OrderAndDish.objects.get(
+                dish_id=item["dish"],
+                order_id=instance.id,
+            )
+            order_and_dishes.append(order_and_dish)
         new_info = {
-            "dishes": DishCommentSerializer(dishes, many=True).data,
+            "dishes": OrderAndDishSerializer(order_and_dishes, many=True).data,
             "price": instance.price,
+            "employee":  None if not employee else EmployeeSerializer(employee).data,
+            "client": None if not client else ClientSerializer(client).data,
         }
         data.update(new_info)
         return data

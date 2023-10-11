@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.urls import include, path
+from django.urls import include, re_path
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from apps.orders.viewsets import (
@@ -14,62 +14,60 @@ from apps.orders.viewsets import (
 from apps.reviews.viewsets import ReviewImageViewSet, ReviewViewSet
 from apps.users.viewsets import ClientViewSet
 
-router = (DefaultRouter if settings.DEBUG else SimpleRouter)(
-    trailing_slash=False
-)
+router = (DefaultRouter if settings.DEBUG else SimpleRouter)()
 router.register(
-    "categories",
+    r"categories/?",
     CategoryViewSet,
     basename="categories",
 )
 router.register(
-    "dishes",
+    r"dishes/?",
     DishViewSet,
     basename="dishes",
 )
 router.register(
-    "orders",
+    r"orders/?",
     OrderViewSet,
     basename="orders",
 )
 router.register(
-    "dish-images",
+    r"dish-images/?",
     DishImageViewSet,
     basename="dish-images",
 )
 router.register(
-    "restaurant-and-orders",
+    r"restaurant-and-orders/?",
     RestaurantAndOrderViewSet,
     basename="restaurantAndOrders",
 )
 router.register(
-    "order-and-dishes",
+    r"order-and-dishes/?",
     OrderAndDishViewSet,
     basename="orderAndDishes",
 )
 router.register(
-    "stop-list",
+    r"stop-list/?",
     StopListViewSet,
     basename="stopList",
 )
 router.register(
-    "reviews",
+    r"reviews/?",
     ReviewViewSet,
     basename="reviews",
 )
 router.register(
-    "review-images",
+    r"review-images/?",
     ReviewImageViewSet,
     basename="review-images",
 )
 router.register(
-    "clients",
+    r"clients/?",
     ClientViewSet,
     basename="clients",
 )
 
 app_name = "api"
 urlpatterns = [
-    path("", include("apps.users.urls")),
-    path("restaurants/", include("apps.restaurants.urls")),
+    re_path("", include("apps.users.urls")),
+    re_path(r"restaurants/?", include("apps.restaurants.urls")),
 ] + router.urls

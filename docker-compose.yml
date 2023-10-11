@@ -6,6 +6,7 @@ volumes:
 services:
   django:
     container_name: django
+    restart: always
     build:
       context: ./server/
       dockerfile: Dockerfile
@@ -15,20 +16,21 @@ services:
     depends_on:
       - postgres
       - redis
+    ports:
+      - "8000:8000"
     volumes:
       - ./server:/server
     environment:
       - REDIS_URL=${REDIS_URL}
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-    ports:
-      - "8000:8000"
     command: python manage.py runserver 0.0.0.0:8000
 
   postgres:
-    container_name: postgres
     image: postgres:14.4
+    container_name: postgres
+    restart: always
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
        - postgres_data:/var/lib/postgresql/data
     environment:
@@ -37,24 +39,26 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
   
   redis:
+    image: redis:6
     container_name: redis
     restart: always
-    image: redis:6
     expose:
       - 6379
 
   swagger-editor:
     image: swaggerapi/swagger-editor
     container_name: swagger-editor
-    ports:
-      - "8080:8080"
-
-  alexandria:
     restart: always
-    image: raisultan/alexandria:0.1
-    volumes:
-      - ./docs/ws.yml:/ws.yml
     ports:
       - "5050:8080"
+
+  alexandria:
+    image: raisultan/alexandria:0.1
+    container_name: alexandria
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./docs/ws.yml:/ws.yml
     environment:
       - ALEXANDRIA_YAML=/ws.yml

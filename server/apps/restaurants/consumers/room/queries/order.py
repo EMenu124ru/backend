@@ -21,7 +21,7 @@ class OrderQueries:
             employee__restaurant_id=restaurant_id,
             status__in=access_status,
         ).all()
-    
+
     @staticmethod
     @database_sync_to_async
     def get_order(order_id: int) -> Order:

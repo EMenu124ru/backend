@@ -27,10 +27,10 @@ class ClientAuthSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if (
-                client :=
-                Client.objects.filter(
-                    phone_number=attrs['phone_number'],
-                ).first()
+            client :=
+            Client.objects.filter(
+                phone_number=attrs['phone_number'],
+            ).first()
         ):
             if not client.user.check_password(attrs['password']):
                 raise serializers.ValidationError(

@@ -6,8 +6,6 @@ authors = ["Nazar <odddellarobea@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10.5"
-invoke = "1.7.3"
-rich = "12.6.0"
 ipdb = "0.13.9"
 Werkzeug = "2.2.2"
 watchfiles = "0.16.1"

@@ -1,3 +1,3 @@
-from .employee import EmployeeAuthAPIView
+from .employee import EmployeeAuthAPIView, EmployeeRetrieveAPIView
 
-__all__ = (EmployeeAuthAPIView,)
+__all__ = (EmployeeAuthAPIView, EmployeeRetrieveAPIView)

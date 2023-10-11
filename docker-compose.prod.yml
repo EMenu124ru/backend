@@ -6,8 +6,8 @@ volumes:
 services:
   nginx:
     image: ghcr.io/emenu124ru/nginx:latest
-    restart: always
     container_name: nginx
+    restart: always
     build:
       context: .
       dockerfile: ./nginx/Dockerfile
@@ -23,8 +23,8 @@ services:
   
   daphne:
     image: ghcr.io/emenu124ru/django:latest
-    restart: always
     container_name: daphne
+    restart: always
     build:
       context: ./server/
       dockerfile: Dockerfile
@@ -34,20 +34,22 @@ services:
     depends_on:
       - postgres
       - redis
+    expose:
+      - 8008
+    volumes:
+      - ./server/media:/server/media/
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - REDIS_URL=${REDIS_URL}
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - DJANGO_ADMIN_URL=${DJANGO_ADMIN_URL}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
-    expose:
-      - 8008
     command: daphne -b 0.0.0.0 -p 8008 config.asgi:application
 
   django:
     image: ghcr.io/emenu124ru/django:latest
-    restart: always
     container_name: django
+    restart: always
     build:
       context: ./server/
       dockerfile: Dockerfile
@@ -69,16 +71,18 @@ services:
     command: gunicorn config.wsgi -c ./config/gunicorn.py
 
   redis:
+    image: redis:6
     container_name: redis
     restart: always
-    image: redis:6
     expose:
       - 6379
 
   postgres:
-    restart: always
-    container_name: postgresql
     image: postgres:14.4
+    container_name: postgresql
+    restart: always
+    expose:
+      - ${POSTGRES_PORT}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./dumps:/dumps
@@ -90,6 +94,7 @@ services:
   postgres-backup:
     image: rmiddle/pg_dump:latest
     container_name: postgres-backup
+    restart: always
     links:
       - postgres
     environment:
@@ -106,10 +111,10 @@ services:
   alexandria:
     image: raisultan/alexandria:0.1
     container_name: alexandria
+    expose:
+      - 8080
     volumes:
       - ./docs/ws.yml:/ws.yml
-    ports:
-      - "8080:8080"
     environment:
       - ALEXANDRIA_YAML=/ws.yml
 
