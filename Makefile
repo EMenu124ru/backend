@@ -39,10 +39,10 @@ docker-rund:  ##@Application Run application server in daemon
 	docker-compose up -d
 
 docker-run-prod:  ##@Application Run application server in prod
-	docker compose -f docker-compose.prod.yml up --build --remove-orphans
+	docker-compose -f docker-compose.prod.yml up --build --remove-orphans
 
 docker-rund-prod:  ##@Application Run application server in prod in daemon
-	docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+	docker-compose -f docker-compose.prod.yml up -d --build --remove-orphans
 
 docker-down:  ##@Application Stop application in docker
 	docker-compose down --remove-orphans
@@ -51,10 +51,10 @@ docker-downv:  ##@Application Stop application in docker and remove volumes
 	docker-compose down -v --remove-orphans
 
 docker-down-prod:  ##@Application Stop application in docker in prod
-	docker compose -f docker-compose.prod.yml down --remove-orphans
+	docker-compose -f docker-compose.prod.yml down --remove-orphans
 
 docker-downv-prod:  ##@Application Stop application in docker and remove volumes in prod
-	docker compose -f docker-compose.prod.yml down -v --remove-orphans
+	docker-compose -f docker-compose.prod.yml down -v --remove-orphans
 
 docker-django-run:  ##@Application Run django container with command
 	docker-compose run --rm django $(args)
