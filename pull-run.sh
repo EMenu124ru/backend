@@ -1,5 +1,4 @@
-docker-compose -f ./docker-compose.prod.yml down --remove-orphans
-docker system prune -f
-docker-compose -f ./docker-compose.prod.yml pull
-docker-compose -f ./docker-compose.prod.yml up -d --build
-docker-compose -f ./docker-compose.prod.yml run django python manage.py migrate
+make docker-down-prod
+make docker-clean
+make docker-run-buildd
+make migrate-prod

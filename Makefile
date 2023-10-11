@@ -94,9 +94,12 @@ linters:  ##@Linters Run linters
 	make docker-django-run "flake8 . --config=./setup.cfg"
 
 docker-clean:  ##@Application Remove all docker objects
+	docker system prune -f
+
+docker-clean-all:  ##@Application Remove all unused docker objects
 	docker system prune --all -f
 
-docker-cleanv:  ##@Application Remove all docker objects with volumes
+docker-clean-allv:  ##@Application Remove all docker objects with volumes
 	docker system prune --all --volumes -f
 
 docker-stop:  ##@Application Stop all docker containers
