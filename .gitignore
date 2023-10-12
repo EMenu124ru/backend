@@ -177,6 +177,9 @@ ehthumbs_vista.db
 # Dump file
 *.stackdump
 
+# DB Backup
+dumps
+
 # Folder config file
 Desktop.ini
 

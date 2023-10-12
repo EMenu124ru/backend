@@ -4,7 +4,7 @@ from typing import Optional
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from rest_framework.exceptions import ValidationError
 
-from apps.common.mixins.consumers import ActionHandlerMixin
+from apps.core.mixins.consumers import ActionHandlerMixin
 
 
 class BaseConsumer(

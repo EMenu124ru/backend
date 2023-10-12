@@ -1,0 +1,306 @@
+info:
+  title: EMenu
+  version: 0.1.0
+
+server:
+  url: ws://0.0.0.0:8000/ws/restaurant/<restaurant_id>/?token=<user_access_token>
+  description: <restaurant_id> - Exist restaurant.
+
+actions:
+  connect:
+    description: Successful connection to chat.
+    actor:
+      type: object
+      properties:
+        is_system: true
+        description: Connect will be triggered only on connection request and handled by backend.
+    response_to_user:
+      event: list_orders
+      orders:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            status:
+              type: string
+            comment:
+              type: string
+            employee:
+              type: object
+              properties:
+                id:
+                  type: number
+                role:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+            client:
+              type: object
+              properties:
+                id:
+                  type: number
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                bonuses:
+                  type: number
+              nullable: true
+            dishes:
+              type: object
+              properties:
+                id:
+                  type: number
+                status:
+                  type: string
+                order:
+                  type: number
+                dish:
+                  type: object
+                  properties:
+                    id: 
+                      type: number
+                    category:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    short_description:
+                      type: string
+                    price:
+                      type: string
+                    compound:
+                      type: string
+                    weight:
+                      type: string
+                    images:
+                      type: array
+                      items:
+                        id:
+                          type: number
+                        image:
+                          type: string
+                comment:
+                  type: string
+                employee:
+                  type: string
+            price:
+              type: string
+
+  create_order:
+    description: Create new order.
+    actor:
+      type: object
+      properties:
+        is_system: false
+    data:
+      type: object
+      properties:
+        status:
+          type: string
+          nullable: true
+        comment:
+          type: string
+        client:
+          type: number
+          nullable: true
+        dishes:
+          type: array
+          items:
+            type: object
+            properties:
+              dish:
+                type: integer
+              comment:
+                type: string
+    response_to_group:
+      event: new_order
+      orders:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            status:
+              type: string
+            comment:
+              type: string
+            employee:
+              type: object
+              properties:
+                id:
+                  type: number
+                role:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+            client:
+              type: object
+              properties:
+                id:
+                  type: number
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                bonuses:
+                  type: number
+              nullable: true
+            dishes:
+              type: object
+              properties:
+                id:
+                  type: number
+                status:
+                  type: string
+                order:
+                  type: number
+                dish:
+                  type: object
+                  properties:
+                    id: 
+                      type: number
+                    category:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    short_description:
+                      type: string
+                    price:
+                      type: string
+                    compound:
+                      type: string
+                    weight:
+                      type: string
+                    images:
+                      type: array
+                      items:
+                        id:
+                          type: number
+                        image:
+                          type: string
+                comment:
+                  type: string
+                employee:
+                  type: string
+            price:
+              type: string
+
+  edit_order:
+    description: Change order fields.
+    actor:
+      type: object
+      properties:
+        is_system: false
+    data:
+      type: object
+      properties:
+        status:
+          type: string
+        comment:
+          type: string
+        client:
+          type: number
+          nullable: true
+    response_to_group:
+      event: order_changed
+      orders:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            status:
+              type: string
+            comment:
+              type: string
+            employee:
+              type: object
+              properties:
+                id:
+                  type: number
+                role:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+            client:
+              type: object
+              properties:
+                id:
+                  type: number
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                bonuses:
+                  type: number
+              nullable: true
+            dishes:
+              type: object
+              properties:
+                id:
+                  type: number
+                status:
+                  type: string
+                order:
+                  type: number
+                dish:
+                  type: object
+                  properties:
+                    id: 
+                      type: number
+                    category:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    short_description:
+                      type: string
+                    price:
+                      type: string
+                    compound:
+                      type: string
+                    weight:
+                      type: string
+                    images:
+                      type: array
+                      items:
+                        id:
+                          type: number
+                        image:
+                          type: string
+                comment:
+                  type: string
+                employee:
+                  type: string
+            price:
+              type: string

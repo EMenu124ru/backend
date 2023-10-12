@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from apps.restaurants.views import (
     RestaurantListAPIView,
@@ -8,6 +8,6 @@ from apps.restaurants.views import (
 
 urlpatterns = [
     path("", RestaurantListAPIView.as_view(), name="restaurants-list"),
-    path("<int:pk>", RestaurantRetrieveAPIView.as_view(), name="restaurants-detail"),
-    path("<int:pk>/reviews", ReviewsRestaurantAPIView.as_view(), name="restaurants-reviews"),
+    re_path(r"(?P<pk>[0-9]+)/$", RestaurantRetrieveAPIView.as_view(), name="restaurants-detail"),
+    re_path(r"(?P<pk>[0-9]+)/reviews/$", ReviewsRestaurantAPIView.as_view(), name="restaurants-reviews"),
 ]

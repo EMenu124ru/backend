@@ -5,30 +5,60 @@ volumes:
 
 services:
   nginx:
-    restart: always
+    image: ghcr.io/emenu124ru/nginx:latest
     container_name: nginx
-    image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/nginx:latest
+    restart: always
     build:
       context: .
       dockerfile: ./nginx/Dockerfile
     depends_on:
       - django
+      - daphne
+      - alexandria
+      - swagger-ui
     ports:
       - 80:80
     volumes:
       - ./server/media:/nginx/media/
-
-  django:
+  
+  daphne:
+    image: ghcr.io/emenu124ru/django:latest
+    container_name: daphne
     restart: always
-    container_name: django
-    image: ikit-ki20-161-b.registry.jetbrains.space/p/team-course-project-2022-2023/backend/emenu_production_django:latest
     build:
-      context: .
-      dockerfile: ./server/Dockerfile
+      context: ./server/
+      dockerfile: Dockerfile
       args:
         MODE: "--without dev"
+        APP_HOME: "/server"
     depends_on:
       - postgres
+      - redis
+    expose:
+      - 8008
+    volumes:
+      - ./server/media:/server/media/
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - REDIS_URL=${REDIS_URL}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - DJANGO_ADMIN_URL=${DJANGO_ADMIN_URL}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+    command: daphne -b 0.0.0.0 -p 8008 config.asgi:application
+
+  django:
+    image: ghcr.io/emenu124ru/django:latest
+    container_name: django
+    restart: always
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+      args:
+        MODE: "--without dev"
+        APP_HOME: "/server"
+    depends_on:
+      - postgres
+      - redis
     expose:
       - 8000
     volumes:
@@ -40,10 +70,19 @@ services:
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
     command: gunicorn config.wsgi -c ./config/gunicorn.py
 
-  postgres:
+  redis:
+    image: redis:6
+    container_name: redis
     restart: always
-    container_name: postgresql
+    expose:
+      - 6379
+
+  postgres:
     image: postgres:14.4
+    container_name: postgresql
+    restart: always
+    expose:
+      - ${POSTGRES_PORT}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./dumps:/dumps
@@ -55,6 +94,7 @@ services:
   postgres-backup:
     image: rmiddle/pg_dump:latest
     container_name: postgres-backup
+    restart: always
     links:
       - postgres
     environment:
@@ -67,3 +107,24 @@ services:
     volumes:
       - ./dumps:/dump
     command: dump-cron
+
+  alexandria:
+    image: raisultan/alexandria:0.1
+    container_name: alexandria
+    expose:
+      - 8080
+    volumes:
+      - ./docs/ws.yml:/ws.yml
+    environment:
+      - ALEXANDRIA_YAML=/ws.yml
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    expose:
+      - 5050
+    volumes:
+      - ./docs/openapi.yaml:/openapi.yaml
+    environment:
+      - SWAGGER_JSON=/openapi.yaml
+      - PORT=5050

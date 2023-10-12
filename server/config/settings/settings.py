@@ -10,7 +10,7 @@ ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
-    default="qaEhm3Sc0WuO93idsME1e7vmiwWpuLqTJX6PRRyBpgUUDPQPqhBObwZ6UgqT6OuG",
+    "qaEhm3Sc0WuO93idsME1e7vmiwWpuLqTJX6PRRyBpgUUDPQPqhBObwZ6UgqT6OuG",
 )
 TIME_ZONE = "Asia/Krasnoyarsk"
 LANGUAGE_CODE = "ru"
@@ -20,7 +20,7 @@ USE_L10N = True
 USE_TZ = True
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
-APPEND_SLASH = False
+ASGI_APPLICATION = "config.routing.application"
 
 if allowed_hosts := os.getenv('ALLOWED_HOSTS'):
     ALLOWED_HOSTS = [
@@ -40,6 +40,15 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         "LOCATION": "",
     }
+}
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('redis', 6379)],
+        },
+    },
 }
 
 # AUTHENTICATION
