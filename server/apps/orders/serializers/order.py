@@ -90,7 +90,6 @@ class OrderSerializer(BaseModelSerializer):
 
     def to_representation(self, instance: Order) -> OrderedDict:
         data = super().to_representation(instance)
-        dishes = instance.dishes.values("id", "dish", "comment")
         employee, client = None, None
         if (employee_id := data.pop("employee")) is not None:
             employee = Employee.objects.get(pk=employee_id)
@@ -98,13 +97,7 @@ class OrderSerializer(BaseModelSerializer):
         if (client_id := data.pop("client")) is not None:
             client = Client.objects.get(pk=client_id)
 
-        order_and_dishes = []
-        for item in dishes:
-            order_and_dish = OrderAndDish.objects.get(
-                dish_id=item["dish"],
-                order_id=instance.id,
-            )
-            order_and_dishes.append(order_and_dish)
+        order_and_dishes = OrderAndDish.objects.filter(order_id=instance.id)
         new_info = {
             "dishes": OrderAndDishSerializer(order_and_dishes, many=True).data,
             "price": instance.price,

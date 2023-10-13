@@ -10,7 +10,7 @@ class Order(models.Model):
         IN_PROCESS_DELIVERY = "IN_PROCESS_DELIVERY", "В процессе доставки"
         DELIVERED = "DELIVERED", "Доставлен"
         FINISHED = "FINISHED", "Закрыт"
-        CANCEL = "CANCEL", "Отменен"
+        CANCELED = "CANCELED", "Отменен"
         PAID = "PAID", "Оплачен"
 
     status = models.TextField(

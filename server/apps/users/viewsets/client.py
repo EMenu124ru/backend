@@ -23,3 +23,19 @@ class ClientViewSet(CreateReadUpdateDestroyViewSet):
             data=serializer.data,
             status=status.HTTP_200_OK,
         )
+
+    @decorators.action(methods=("GET",), detail=False)
+    def me(self, request, *args, **kwargs) -> response.Response:
+        if not request.user.is_authenticated:
+            return response.Response(
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        if not request.user.is_client:
+            return response.Response(
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        serializer = ClientSerializer(request.user.client)
+        return response.Response(
+            data=serializer.data,
+            status=status.HTTP_200_OK,
+        )

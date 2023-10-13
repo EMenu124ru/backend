@@ -1,3 +1,3 @@
 from .client import IsCurrentUser
 
-__all__ = (IsCurrentUser,)
+__all__ = (IsCurrentUser, )

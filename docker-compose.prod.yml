@@ -38,13 +38,14 @@ services:
       - 8008
     volumes:
       - ./server/media:/server/media/
+      - ./logs/:/server/logs/
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - REDIS_URL=${REDIS_URL}
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - DJANGO_ADMIN_URL=${DJANGO_ADMIN_URL}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
-    command: daphne -b 0.0.0.0 -p 8008 config.asgi:application
+    command: daphne -b 0.0.0.0 -p 8008 config.asgi:application --access-log ./logs/daphne_logs.log -v 3
 
   django:
     image: ghcr.io/emenu124ru/django:latest
@@ -63,12 +64,13 @@ services:
       - 8000
     volumes:
       - ./server/media:/server/media/
+      - ./logs/:/server/logs/
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - DJANGO_ADMIN_URL=${DJANGO_ADMIN_URL}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
-    command: gunicorn config.wsgi -c ./config/gunicorn.py
+    command: gunicorn config.wsgi -c ./config/gunicorn.py --capture-output --log-file ./logs/django_logs.log --log-level 'debug' 
 
   redis:
     image: redis:6

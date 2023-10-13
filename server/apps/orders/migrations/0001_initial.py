@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
             name='Order',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.TextField(choices=[('WAITING_FOR_COOKING', 'Передано на кухню'), ('COOKING', 'Готовится'), ('WAITING_FOR_DELIVERY', 'Ожидает доставки/готово к выдаче'), ('IN_PROCESS_DELIVERY', 'В процессе доставки'), ('DELIVERED', 'Доставлен'), ('FINISHED', 'Закрыт'), ('CANCEL', 'Отменен'), ('PAID', 'Оплачен')], default='WAITING_FOR_COOKING', verbose_name='Статус заказа')),
+                ('status', models.TextField(choices=[('WAITING_FOR_COOKING', 'Передано на кухню'), ('COOKING', 'Готовится'), ('WAITING_FOR_DELIVERY', 'Ожидает доставки/готово к выдаче'), ('IN_PROCESS_DELIVERY', 'В процессе доставки'), ('DELIVERED', 'Доставлен'), ('FINISHED', 'Закрыт'), ('CANCELED', 'Отменен'), ('PAID', 'Оплачен')], default='WAITING_FOR_COOKING', verbose_name='Статус заказа')),
                 ('price', models.DecimalField(decimal_places=2, max_digits=11, validators=[django.core.validators.MinValueValidator(0)], verbose_name='Цена')),
                 ('comment', models.TextField(default='', verbose_name='Комментарий')),
             ],
@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
             name='OrderAndDish',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.TextField(choices=[('WAITING_FOR_COOKING', 'Ожидает готовки'), ('COOKING', 'Готовится'), ('DONE', 'Готово'), ('DELIVERED', 'Выдано')], default='WAITING_FOR_COOKING', verbose_name='Статус блюда')),
+                ('status', models.TextField(choices=[('WAITING_FOR_COOKING', 'Ожидает готовки'), ('COOKING', 'Готовится'), ('DONE', 'Готово'), ('CANCELED', 'Отменен'), ('DELIVERED', 'Выдано')], default='WAITING_FOR_COOKING', verbose_name='Статус блюда')),
                 ('comment', models.TextField(default='', verbose_name='Комментарий')),
             ],
             options={
