@@ -38,10 +38,10 @@ docker-run:  ##@Application Run application server
 docker-rund:  ##@Application Run application server in daemon
 	docker-compose up -d
 
-docker-run-prod:  ##@Application Run application server in prod
+docker-run-build-prod:  ##@Application Run application server in prod
 	docker-compose -f docker-compose.prod.yml up --build --remove-orphans
 
-docker-rund-prod:  ##@Application Run application server in prod in daemon
+docker-run-buildd-prod:  ##@Application Run application server in prod in daemon
 	docker-compose -f docker-compose.prod.yml up -d --build --remove-orphans
 
 docker-down:  ##@Application Stop application in docker
@@ -75,7 +75,7 @@ createsuperuser:  ##@Application Create superuser
 	make docker-django-run "python manage.py createsuperuser"
 
 migrate-prod:  ##@Application Apply migrations in prod
-	make docker-django-run "python manage.py migrate"
+	make docker-django-run-prod "python manage.py migrate"
 
 shell:  ##@Application Run django shell
 	make docker-django-run "python manage.py shell"
