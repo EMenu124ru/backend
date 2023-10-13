@@ -2,10 +2,10 @@ name: CI-CD
 
 on:
   pull_request:
-    branches: ["main", "develop"]
+    branches: ["main"]
 
   push:
-    branches: ["main", "develop"]
+    branches: ["main"]
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}
