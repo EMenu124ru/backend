@@ -25,8 +25,7 @@ class DishCommentSerializer(BaseModelSerializer):
 
     def to_representation(self, instance: Order) -> OrderedDict:
         data = super().to_representation(instance)
-        dish_id = data.pop("dish")
-        dish = get_object_or_404(Dish, id=dish_id)
+        dish = get_object_or_404(Dish, id=data.pop("dish"))
         new_info = {
             "dish": DishSerializer(dish).data,
         }
@@ -52,7 +51,6 @@ class OrderAndDishSerializer(BaseModelSerializer):
         fields = (
             "id",
             "status",
-
             "order",
             "dish",
             "comment",

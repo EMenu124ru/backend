@@ -1,5 +1,9 @@
 openapi: 3.0.2
 
+servers:
+  - description: API
+    url: http://0.0.0.0:8000/
+
 info:
   title: EMenu
   version: 0.1.0
@@ -33,7 +37,7 @@ tags:
     description: "StopList namespace"
 
 paths:
-  "/api/v1/clients/login/":
+  "/api/v1/clients/login":
     post:
       tags:
         - auth
@@ -47,7 +51,7 @@ paths:
         "400":
           $ref: "#/components/responses/TokenObtain400"
 
-  "/api/v1/staff/login/":
+  "/api/v1/staff/login":
     post:
       tags:
         - auth
@@ -61,18 +65,11 @@ paths:
         "400":
           $ref: "#/components/responses/TokenObtain400"
   
-  "/api/v1/staff/{employee_id}/":
+  "/api/v1/staff/me":
     get:
       tags:
         - employees
-      summary: "Login employee"
-      parameters:
-        - name: employee_id
-          in: path
-          schema:
-            type: number
-          description: "Id сотрудника"
-          required: true
+      summary: "Retrieve employee"
       security:
         - bearerAuth: []
       responses:
@@ -85,7 +82,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/auth/token/refresh/":
+  "/api/v1/auth/token/refresh":
     post:
       tags:
         - auth
@@ -100,7 +97,7 @@ paths:
         "400":
           $ref: "#/components/responses/TokenRefresh400"
 
-  "/api/v1/clients/":
+  "/api/v1/clients":
     post:
       tags:
         - clients
@@ -112,8 +109,25 @@ paths:
           $ref: "#/components/responses/ClientCreate201"
         "400":
           $ref: "#/components/responses/ClientCreate400"
+  
+  "/api/v1/clients/me":
+    get:
+      tags:
+        - clients
+      summary: "Get client"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/Client200"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
 
-  "/api/v1/clients/{client_id}/":
+  "/api/v1/clients/{client_id}":
     get:
       tags:
         - clients
@@ -187,7 +201,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/categories/":
+  "/api/v1/categories":
     post:
       tags:
         - categories
@@ -210,8 +224,6 @@ paths:
       tags:
         - categories
       summary: "Get list categories"
-      security:
-        - bearerAuth: []
       parameters:
         - in: query
           name: page
@@ -235,7 +247,7 @@ paths:
         "403":
           description: "Forbidden"
 
-  "/api/v1/categories/{category_id}/":
+  "/api/v1/categories/{category_id}":
     get:
       tags:
         - categories
@@ -247,8 +259,6 @@ paths:
             type: number
           description: "Id категории"
           required: true
-      security:
-        - bearerAuth: []
       responses:
         "200":
           $ref: "#/components/responses/Category200"
@@ -309,7 +319,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/categories/{category_id}/dishes/":
+  "/api/v1/categories/{category_id}/dishes":
     get:
       tags:
         - categories
@@ -336,8 +346,6 @@ paths:
             nullable: true
           description: "Количество элементов на странице"
           required: false
-      security:
-        - bearerAuth: []
       responses:
         "200":
           $ref: "#/components/responses/DishList200"
@@ -348,7 +356,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/orders/":
+  "/api/v1/orders":
     post:
       tags:
         - orders
@@ -396,7 +404,7 @@ paths:
         "403":
           description: "Forbidden"
 
-  "/api/v1/orders/{order_id}/":
+  "/api/v1/orders/{order_id}":
     get:
       tags:
         - orders
@@ -470,7 +478,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/dishes/":
+  "/api/v1/dishes":
     post:
       tags:
         - dishes
@@ -493,8 +501,6 @@ paths:
       tags:
         - dishes
       summary: "Get list dishes"
-      security:
-        - bearerAuth: []
       parameters:
         - in: query
           name: page
@@ -518,7 +524,7 @@ paths:
         "403":
           description: "Forbidden"
 
-  "/api/v1/dishes/{dish_id}/":
+  "/api/v1/dishes/{dish_id}":
     get:
       tags:
         - dishes
@@ -530,8 +536,6 @@ paths:
             type: number
           description: "Id блюда"
           required: true
-      security:
-        - bearerAuth: []
       responses:
         "200":
           $ref: "#/components/responses/Dish200"
@@ -592,7 +596,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/dishes/{dish_id}/orders/":
+  "/api/v1/dishes/{dish_id}/orders":
     get:
       tags:
         - dishes
@@ -630,7 +634,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/dishes/{dish_id}/reviews/":
+  "/api/v1/dishes/{dish_id}/reviews":
     get:
       tags:
         - dishes
@@ -657,8 +661,6 @@ paths:
             nullable: true
           description: "Количество элементов на странице"
           required: false
-      security:
-        - bearerAuth: []
       responses:
         "200":
           $ref: "#/components/responses/ReviewList200"
@@ -696,7 +698,7 @@ paths:
         "403":
           description: "Forbidden"
 
-  "/api/v1/dish-images/{dish_image_id}/":
+  "/api/v1/dish-images/{dish_image_id}":
     delete:
       tags:
         - dish-images
@@ -720,7 +722,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/restaurant-and-orders/":
+  "/api/v1/restaurant-and-orders":
     post:
       tags:
         - restaurantAndOrders
@@ -768,7 +770,7 @@ paths:
         "403":
           description: "Forbidden"
 
-  "/api/v1/restaurant-and-orders/{restaurantAndOrders_id}/":
+  "/api/v1/restaurant-and-orders/{restaurantAndOrders_id}":
     get:
       tags:
         - restaurantAndOrders
@@ -842,7 +844,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/order-and-dishes/":
+  "/api/v1/order-and-dishes":
     post:
       tags:
         - orderAndDishes
@@ -861,7 +863,7 @@ paths:
         "403":
           description: "Forbidden"
 
-  "/api/v1/order-and-dishes/{orderAndDish_id}/":
+  "/api/v1/order-and-dishes/{orderAndDish_id}":
     patch:
       tags:
         - orderAndDishes
@@ -912,7 +914,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/stop-list/":
+  "/api/v1/stop-list":
     post:
       tags:
         - stopLists
@@ -960,7 +962,7 @@ paths:
         "403":
           description: "Forbidden"
 
-  "/api/v1/stop-list/{stopList_id}/":
+  "/api/v1/stop-list/{stopList_id}":
     delete:
       tags:
         - stopLists
@@ -984,7 +986,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/reviews/":
+  "/api/v1/reviews":
     post:
       tags:
         - reviews
@@ -1003,7 +1005,7 @@ paths:
         "403":
           description: "Forbidden"
 
-  "/api/v1/reviews/{review_id}/":
+  "/api/v1/reviews/{review_id}":
     get:
       tags:
         - reviews
@@ -1015,8 +1017,6 @@ paths:
             type: number
           description: "Id отзыва"
           required: true
-      security:
-        - bearerAuth: []
       responses:
         "200":
           $ref: "#/components/responses/Review200"
@@ -1077,7 +1077,7 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/reviews/{review_id}/images/":
+  "/api/v1/reviews/{review_id}/images":
     post:
       tags:
         - reviews
@@ -1104,7 +1104,7 @@ paths:
         "403":
           description: "Forbidden"
 
-  "/api/v1/review-images/{review_image_id}/":
+  "/api/v1/review-images/{review_image_id}":
     delete:
       tags:
         - review-images
@@ -1128,13 +1128,11 @@ paths:
         "404":
           description: "Not Found"
 
-  "/api/v1/restaurants/":
+  "/api/v1/restaurants":
     get:
       tags:
         - restaurants
       summary: "Get list restaurants"
-      security:
-        - bearerAuth: []
       parameters:
         - in: query
           name: page
@@ -1156,29 +1154,7 @@ paths:
         "401":
           description: "Unauthorized"
 
-  "/api/v1/restaurants/{restaurant_id}/":
-    get:
-      tags:
-        - restaurants
-      summary: "Get restaurant"
-      parameters:
-        - name: restaurant_id
-          in: path
-          schema:
-            type: number
-          required: true
-          description: "Id ресторана"
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          $ref: "#/components/responses/Restaurant200"
-        "401":
-          description: "Unauthorized"
-        "404":
-          description: "Not Found"
-
-  "/api/v1/restaurants/{restaurant_id}/reviews/":
+  "/api/v1/restaurants/{restaurant_id}/reviews":
     get:
       tags:
         - restaurants
@@ -1191,8 +1167,6 @@ paths:
             type: number
           required: true
           description: "Id ресторана"
-      security:
-        - bearerAuth: []
       responses:
         "200":
           $ref: "#/components/responses/ReviewList200"
@@ -1234,6 +1208,8 @@ components:
           type: string
         role:
           type: string
+        restaurant:
+          type: number
 
     ClientCreateBase:
       type: object
@@ -1269,7 +1245,7 @@ components:
         dishes:
           type: array
           items:
-            $ref: "#/components/schemas/OrderAndDishInOrder"
+            $ref: "#/components/schemas/OrderAndDishBase"
 
     OrderCreateBase:
       type: object
@@ -1512,24 +1488,6 @@ components:
           type: string
 
     OrderAndDishBase:
-      type: object
-      properties:
-        id:
-          type: number
-        status:
-          type: string
-        order:
-          $ref: "#/components/schemas/OrderBase"
-        dish:
-          $ref: "#/components/schemas/DishBase"
-        comment:
-          type: string
-        employee:
-          type: number
-          description: "Id исполняющего работника"
-          nullable: true
-    
-    OrderAndDishInOrder:
       type: object
       properties:
         id:

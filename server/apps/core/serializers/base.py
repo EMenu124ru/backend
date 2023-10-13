@@ -9,3 +9,5 @@ class BaseModelSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         self._request = self.context.get("request")
         self._user = getattr(self._request, "user", None)
+        if not self._user:
+            self._user = self.context.get("user")
