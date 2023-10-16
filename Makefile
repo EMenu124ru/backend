@@ -1,7 +1,3 @@
-# Если условие ниже не сработает, то можно попробовать заменить на:
-# include .env
-# export
-
 ifeq ($(shell test -e '.env' && echo -n yes),yes)
 	include .env
 endif
@@ -26,22 +22,22 @@ help: ##@Help Show this help
 	@echo -e "Usage: make [target] ...\n"
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
-docker-run-build:  ##@Application Run and build application server
+docker-up-build:  ##@Application Run and build application server
 	docker-compose up --build --remove-orphans
 
-docker-run-buildd:  ##@Application Run and build application server in daemon
+docker-up-buildd:  ##@Application Run and build application server in daemon
 	docker-compose up -d --build --remove-orphans
 
-docker-run:  ##@Application Run application server
+docker-up:  ##@Application Run application server
 	docker-compose up
 
-docker-rund:  ##@Application Run application server in daemon
+docker-upd:  ##@Application Run application server in daemon
 	docker-compose up -d
 
-docker-run-build-prod:  ##@Application Run application server in prod
+docker-up-build-prod:  ##@Application Run application server in prod
 	docker-compose -f docker-compose.prod.yml up --build --remove-orphans
 
-docker-run-buildd-prod:  ##@Application Run application server in prod in daemon
+docker-up-buildd-prod:  ##@Application Run application server in prod in daemon
 	docker-compose -f docker-compose.prod.yml up -d --build --remove-orphans
 
 docker-down:  ##@Application Stop application in docker

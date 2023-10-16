@@ -45,7 +45,7 @@ services:
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - DJANGO_ADMIN_URL=${DJANGO_ADMIN_URL}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
-    command: daphne -b 0.0.0.0 -p 8008 config.asgi:application --access-log ./logs/daphne_logs.log -v 3
+    command: daphne -b 0.0.0.0 -p 8008 config.asgi:application --access-log ./logs/daphne.log -v 3
 
   django:
     image: ghcr.io/emenu124ru/django:latest
@@ -70,7 +70,7 @@ services:
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - DJANGO_ADMIN_URL=${DJANGO_ADMIN_URL}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
-    command: gunicorn config.wsgi -c ./config/gunicorn.py --capture-output --log-file ./logs/django_logs.log --log-level 'debug' 
+    command: gunicorn config.wsgi -c ./config/gunicorn.py
 
   redis:
     image: redis:6
@@ -81,7 +81,7 @@ services:
 
   postgres:
     image: postgres:14.4
-    container_name: postgresql
+    container_name: postgres
     restart: always
     expose:
       - ${POSTGRES_PORT}
