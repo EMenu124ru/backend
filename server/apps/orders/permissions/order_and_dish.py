@@ -10,6 +10,8 @@ class OrderAndDishPermission(permissions.BasePermission):
         return not request.user.is_client
 
     def has_object_permission(self, request, view, obj) -> bool:
+        if request.user.employee.restaurant != obj.order.employee.restaurant:
+            return False
         if request.method in ("PATCH", "PUT"):
             return any([
                 check_role_employee(request.user, Employee.Roles.COOK),
@@ -17,5 +19,3 @@ class OrderAndDishPermission(permissions.BasePermission):
                 check_role_employee(request.user, Employee.Roles.SOUS_CHEF),
                 check_role_employee(request.user, Employee.Roles.WAITER),
             ])
-        if request.method == "DELETE":
-            return check_role_employee(request.user, Employee.Roles.WAITER)

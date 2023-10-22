@@ -4,7 +4,7 @@ from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import Reservation
 from apps.orders.serializers import OrderSerializer
 from apps.restaurants.models import Place, Restaurant
-from apps.restaurants.serializers import PlaceSerializer, RestaurantSerializer
+from apps.restaurants.serializers import PlaceSerializer, RestaurantDataSerializer
 from apps.users.models import Client, Employee
 from apps.users.serializers import ClientSerializer
 
@@ -104,7 +104,7 @@ class ReservationSerializer(BaseModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         restaurant = Restaurant.objects.get(pk=data["restaurant"])
-        data["restaurant"] = RestaurantSerializer(restaurant).data
+        data["restaurant"] = RestaurantDataSerializer(restaurant).data
 
         if (place_id := data.pop("place", None)) is not None:
             place = Place.objects.get(pk=place_id)

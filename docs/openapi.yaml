@@ -457,29 +457,6 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound404"
 
-    delete:
-      tags:
-        - orders
-      summary: "Delete order"
-      parameters:
-        - name: order_id
-          in: path
-          schema:
-            type: number
-          description: "Id заказа"
-          required: true
-      security:
-        - bearerAuth: []
-      responses:
-        "204":
-          description: "No Content"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
   "/api/v1/dishes":
     post:
       tags:
@@ -870,29 +847,6 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound404"
 
-    delete:
-      tags:
-        - orderAndDishes
-      summary: "Delete orderAndDish"
-      parameters:
-        - name: orderAndDish_id
-          in: path
-          schema:
-            type: number
-          description: "Id связки ресторана и заказа"
-          required: true
-      security:
-        - bearerAuth: []
-      responses:
-        "204":
-          description: "No Content"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
   "/api/v1/stop-list":
     post:
       tags:
@@ -1173,6 +1127,8 @@ components:
           type: string
         last_name:
           type: string
+        surname:
+          type: string
         bonuses:
           type: number
         phone_number:
@@ -1187,6 +1143,8 @@ components:
           type: string
         last_name:
           type: string
+        surname:
+          type: string
         role:
           type: string
         restaurant:
@@ -1198,6 +1156,8 @@ components:
         first_name:
           type: string
         last_name:
+          type: string
+        surname:
           type: string
         password:
           type: string
@@ -1408,7 +1368,7 @@ components:
         status:
           type: string
         restaurant:
-          $ref: "#/components/schemas/RestaurantBase"
+          $ref: "#/components/schemas/RestaurantReservationBase"
         place:
           allOf:
           - $ref: "#/components/schemas/PlaceBase"
@@ -1455,6 +1415,18 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ScheduleBase"
+        places:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlaceBase"
+    
+    RestaurantReservationBase:
+      type: object
+      properties:
+        id:
+          type: number
+        address:
+          type: string
 
     OrderAndDishCreateBase:
       type: object

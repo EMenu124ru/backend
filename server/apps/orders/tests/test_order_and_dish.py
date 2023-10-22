@@ -38,26 +38,17 @@ def test_create_order_and_dishes_by_cook(
     assert Order.objects.get(id=order.id).dishes.exists()
 
 
-def test_read_order_and_dishes_by_cook(
-    cook,
-    api_client,
-) -> None:
-    order_and_dishes = OrderAndDishFactory.create()
-    api_client.force_authenticate(user=cook.user)
-    response = api_client.get(
-        reverse_lazy(
-            "api:orderAndDishes-detail",
-            kwargs={"pk": order_and_dishes.pk},
-        ),
-    )
-    assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
-
-
 def test_update_order_and_dishes_by_cook_success(
     cook,
     api_client,
 ) -> None:
+    waiter = EmployeeFactory.create(
+        restaurant=cook.restaurant,
+        role=Employee.Roles.WAITER,
+    )
+    order = OrderFactory.create(employee=waiter)
     order_and_dishes = OrderAndDishFactory.create(
+        order=order,
         status=OrderAndDish.Statuses.COOKING,
     )
     api_client.force_authenticate(user=cook.user)
@@ -84,7 +75,13 @@ def test_update_order_and_dishes_by_chef_success(
     chef,
     api_client,
 ) -> None:
+    waiter = EmployeeFactory.create(
+        restaurant=chef.restaurant,
+        role=Employee.Roles.WAITER,
+    )
+    order = OrderFactory.create(employee=waiter)
     order_and_dishes = OrderAndDishFactory.create(
+        order=order,
         status=OrderAndDish.Statuses.COOKING,
         employee=None,
     )
@@ -113,7 +110,13 @@ def test_update_order_and_dishes_by_sous_chef_success(
     sous_chef,
     api_client,
 ) -> None:
+    waiter = EmployeeFactory.create(
+        restaurant=sous_chef.restaurant,
+        role=Employee.Roles.WAITER,
+    )
+    order = OrderFactory.create(employee=waiter)
     order_and_dishes = OrderAndDishFactory.create(
+        order=order,
         status=OrderAndDish.Statuses.COOKING,
         employee=None,
     )
@@ -138,50 +141,127 @@ def test_update_order_and_dishes_by_sous_chef_success(
     ).exists()
 
 
-def test_update_order_and_dishes_by_chef_failed(
+def test_update_order_and_dishes_by_chef_failed_field(
     chef,
     api_client,
 ) -> None:
+    waiter = EmployeeFactory.create(
+        restaurant=chef.restaurant,
+        role=Employee.Roles.WAITER,
+    )
+    order = OrderFactory.create(employee=waiter)
     order_and_dishes = OrderAndDishFactory.create(
+        order=order,
         status=OrderAndDish.Statuses.COOKING,
     )
     api_client.force_authenticate(user=chef.user)
-    new_status = OrderAndDish.Statuses.DELIVERED
     response = api_client.patch(
         reverse_lazy(
             "api:orderAndDishes-detail",
             kwargs={"pk": order_and_dishes.pk},
         ),
         data={
-            "status": new_status,
+            "order": OrderFactory.create().pk,
         },
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_update_order_and_dishes_by_sous_chef_failed_field(
+    sous_chef,
+    api_client,
+) -> None:
+    waiter = EmployeeFactory.create(
+        restaurant=sous_chef.restaurant,
+        role=Employee.Roles.WAITER,
+    )
+    order = OrderFactory.create(employee=waiter)
+    order_and_dishes = OrderAndDishFactory.create(
+        order=order,
+        status=OrderAndDish.Statuses.COOKING,
+    )
+    api_client.force_authenticate(user=sous_chef.user)
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orderAndDishes-detail",
+            kwargs={"pk": order_and_dishes.pk},
+        ),
+        data={
+            "order": OrderFactory.create().pk,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_update_order_and_dishes_by_cook_failed_field(
+    cook,
+    chef,
+    api_client,
+) -> None:
+    waiter = EmployeeFactory.create(
+        restaurant=cook.restaurant,
+        role=Employee.Roles.WAITER,
+    )
+    order = OrderFactory.create(employee=waiter)
+    order_and_dishes = OrderAndDishFactory.create(order=order)
+    api_client.force_authenticate(user=cook.user)
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orderAndDishes-detail",
+            kwargs={"pk": order_and_dishes.pk},
+        ),
+        data={
+            "employee": chef.pk,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_update_order_and_dishes_by_chef_failed(
+    chef,
+    api_client,
+) -> None:
+    order = OrderFactory.create()
+    order_and_dishes = OrderAndDishFactory.create(
+        status=OrderAndDish.Statuses.COOKING,
+    )
+    api_client.force_authenticate(user=chef.user)
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orderAndDishes-detail",
+            kwargs={"pk": order_and_dishes.pk},
+        ),
+        data={
+            "order": order.pk,
+        },
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_update_order_and_dishes_by_sous_chef_failed(
     sous_chef,
     api_client,
 ) -> None:
+    order = OrderFactory.create()
     order_and_dishes = OrderAndDishFactory.create(
         status=OrderAndDish.Statuses.COOKING,
     )
     api_client.force_authenticate(user=sous_chef.user)
-    new_status = OrderAndDish.Statuses.DELIVERED
     response = api_client.patch(
         reverse_lazy(
             "api:orderAndDishes-detail",
             kwargs={"pk": order_and_dishes.pk},
         ),
         data={
-            "status": new_status,
+            "order": order.pk,
         },
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_update_order_and_dishes_by_cook_failed(
     cook,
+    chef,
     api_client,
 ) -> None:
     order_and_dishes = OrderAndDishFactory.create()
@@ -192,26 +272,10 @@ def test_update_order_and_dishes_by_cook_failed(
             kwargs={"pk": order_and_dishes.pk},
         ),
         data={
-            "comment": "new_comment",
+            "employee": chef.pk,
         },
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-
-def test_remove_order_and_dishes_by_cook(
-    cook,
-    api_client,
-) -> None:
-    order_and_dishes = OrderAndDishFactory.create()
-    api_client.force_authenticate(user=cook.user)
-    response = api_client.delete(
-        reverse_lazy(
-            "api:orderAndDishes-detail",
-            kwargs={"pk": order_and_dishes.pk},
-        ),
-    )
     assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert OrderAndDish.objects.filter(id=order_and_dishes.id).exists()
 
 
 def test_create_order_and_dishes_by_waiter(
@@ -242,56 +306,17 @@ def test_create_order_and_dishes_by_waiter(
     assert Order.objects.get(id=order.id).dishes.exists()
 
 
-def test_read_order_and_dishes_by_waiter(
-    waiter,
-    api_client,
-) -> None:
-    order_and_dishes = OrderAndDishFactory.create()
-    api_client.force_authenticate(user=waiter.user)
-    response = api_client.get(
-        reverse_lazy(
-            "api:orderAndDishes-detail",
-            kwargs={"pk": order_and_dishes.pk},
-        ),
-    )
-    assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
-
-
 def test_update_order_and_dishes_by_waiter_success(
     waiter,
     api_client,
 ) -> None:
+    order = OrderFactory.create(employee=waiter)
     order_and_dishes = OrderAndDishFactory.create(
+        order=order,
         status=OrderAndDish.Statuses.COOKING,
     )
     api_client.force_authenticate(user=waiter.user)
     new_comment = "new_comment"
-    response = api_client.patch(
-        reverse_lazy(
-            "api:orderAndDishes-detail",
-            kwargs={"pk": order_and_dishes.pk},
-        ),
-        data={
-            "comment": new_comment,
-        },
-    )
-    assert response.status_code == status.HTTP_200_OK
-    assert OrderAndDish.objects.filter(
-        comment=new_comment,
-        order=order_and_dishes.order,
-        dish=order_and_dishes.dish,
-        status=order_and_dishes.status,
-    ).exists()
-
-
-def test_update_order_and_dishes_by_waiter_failed(
-    waiter,
-    api_client,
-) -> None:
-    order_and_dishes = OrderAndDishFactory.create(
-        status=OrderAndDish.Statuses.COOKING,
-    )
-    api_client.force_authenticate(user=waiter.user)
     new_status = OrderAndDish.Statuses.DELIVERED
     response = api_client.patch(
         reverse_lazy(
@@ -299,25 +324,40 @@ def test_update_order_and_dishes_by_waiter_failed(
             kwargs={"pk": order_and_dishes.pk},
         ),
         data={
+            "comment": new_comment,
             "status": new_status,
         },
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_200_OK
+    assert OrderAndDish.objects.filter(
+        comment=new_comment,
+        order=order_and_dishes.order,
+        dish=order_and_dishes.dish,
+        status=new_status,
+    ).exists()
 
 
-def test_remove_order_and_dishes_by_waiter(
+def test_update_order_and_dishes_by_waiter_failed(
     waiter,
+    cook,
     api_client,
 ) -> None:
-    order_and_dishes = OrderAndDishFactory.create()
+    order = OrderFactory.create(employee=waiter)
+    order_and_dishes = OrderAndDishFactory.create(
+        order=order,
+        status=OrderAndDish.Statuses.COOKING,
+    )
     api_client.force_authenticate(user=waiter.user)
-    api_client.delete(
+    response = api_client.patch(
         reverse_lazy(
             "api:orderAndDishes-detail",
             kwargs={"pk": order_and_dishes.pk},
         ),
+        data={
+            "employee": cook.pk,
+        },
     )
-    assert not OrderAndDish.objects.filter(id=order_and_dishes.id).exists()
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_create_order_and_dishes_by_client(
@@ -372,21 +412,6 @@ def test_update_order_and_dishes_by_client(
         data={
             "status": new_status,
         },
-    )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-
-def test_remove_order_and_dishes_by_client(
-    client,
-    api_client,
-) -> None:
-    order_and_dishes = OrderAndDishFactory.create()
-    api_client.force_authenticate(user=client.user)
-    response = api_client.delete(
-        reverse_lazy(
-            "api:orderAndDishes-detail",
-            kwargs={"pk": order_and_dishes.pk},
-        ),
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
