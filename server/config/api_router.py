@@ -8,7 +8,7 @@ from apps.orders.viewsets import (
     DishViewSet,
     OrderAndDishViewSet,
     OrderViewSet,
-    RestaurantAndOrderViewSet,
+    ReservationViewSet,
     StopListViewSet,
 )
 from apps.reviews.viewsets import ReviewImageViewSet, ReviewViewSet
@@ -38,9 +38,9 @@ router.register(
     basename="dish-images",
 )
 router.register(
-    "restaurant-and-orders",
-    RestaurantAndOrderViewSet,
-    basename="restaurantAndOrders",
+    "reservations",
+    ReservationViewSet,
+    basename="reservations",
 )
 router.register(
     "order-and-dishes",

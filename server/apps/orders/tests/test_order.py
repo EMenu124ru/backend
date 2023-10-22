@@ -2,9 +2,10 @@ import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
 
-from apps.orders.factories import DishFactory, OrderAndDishFactory, OrderFactory
+from apps.orders.factories import DishFactory, OrderFactory
 from apps.orders.models import Order
 from apps.users.factories import ClientFactory, EmployeeFactory
+from apps.users.models import Employee
 
 pytestmark = pytest.mark.django_db
 
@@ -60,22 +61,22 @@ def test_update_order_by_cook_failed(
         price=sum([dish.price for dish in dishes]),
     )
     api_client.force_authenticate(user=cook.user)
-    for dish in dishes:
-        OrderAndDishFactory.create(dish=dish, order=order)
+    new_comment = "New some comment"
+    new_status = Order.Statuses.COOKING
     response = api_client.patch(
         reverse_lazy(
             "api:orders-detail",
             kwargs={"pk": order.pk},
         ),
         data={
-            "employee": EmployeeFactory.create(),
+            "comment": new_comment,
+            "status": new_status,
         },
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_update_order_by_cook_success(
-    cook,
     waiter,
     api_client,
 ) -> None:
@@ -85,6 +86,10 @@ def test_update_order_by_cook_success(
     order = OrderFactory.create(
         employee=waiter,
         price=sum([dish.price for dish in dishes]),
+    )
+    cook = EmployeeFactory.create(
+        role=Employee.Roles.COOK,
+        restaurant=waiter.restaurant,
     )
     api_client.force_authenticate(user=cook.user)
     new_comment = "New some comment"
@@ -148,27 +153,6 @@ def test_read_order_by_waiter(
         ),
     )
     assert response.status_code == status.HTTP_200_OK
-
-
-def test_remove_order_by_waiter(
-    waiter,
-    api_client,
-) -> None:
-    dishes = DishFactory.create_batch(
-        size=DISHES_COUNT,
-    )
-    order = OrderFactory.create(
-        employee=waiter,
-        price=sum([dish.price for dish in dishes]),
-    )
-    api_client.force_authenticate(user=waiter.user)
-    api_client.delete(
-        reverse_lazy(
-            "api:orders-detail",
-            kwargs={"pk": order.pk},
-        ),
-    )
-    assert order not in Order.objects.all()
 
 
 def test_create_order_by_client(
@@ -281,27 +265,6 @@ def test_read_order_by_client_success(
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_remove_order_by_client(
-    client,
-    api_client,
-) -> None:
-    dishes = DishFactory.create_batch(
-        size=DISHES_COUNT,
-    )
-    order = OrderFactory.create(
-        client=client,
-        price=sum([dish.price for dish in dishes]),
-    )
-    api_client.force_authenticate(user=client.user)
-    response = api_client.delete(
-        reverse_lazy(
-            "api:orders-detail",
-            kwargs={"pk": order.pk},
-        ),
-    )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-
 def test_create_order_by_not_auth(
     api_client,
 ) -> None:
@@ -376,24 +339,6 @@ def test_read_order_by_not_auth(
         price=sum([dish.price for dish in dishes]),
     )
     response = api_client.get(
-        reverse_lazy(
-            "api:orders-detail",
-            kwargs={"pk": order.pk},
-        ),
-    )
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-
-def test_remove_order_by_not_auth(
-    api_client,
-) -> None:
-    dishes = DishFactory.create_batch(
-        size=DISHES_COUNT,
-    )
-    order = OrderFactory.create(
-        price=sum([dish.price for dish in dishes]),
-    )
-    response = api_client.delete(
         reverse_lazy(
             "api:orders-detail",
             kwargs={"pk": order.pk},

@@ -4,6 +4,8 @@ from factory.django import DjangoModelFactory
 from apps.orders.models import Order
 from apps.users.factories import ClientFactory, EmployeeFactory
 
+from .reservation import ReservationFactory
+
 
 class OrderFactory(DjangoModelFactory):
     """Factory for Order instance."""
@@ -27,6 +29,9 @@ class OrderFactory(DjangoModelFactory):
     )
     client = SubFactory(
         ClientFactory,
+    )
+    reservation = SubFactory(
+        ReservationFactory,
     )
 
     class Meta:

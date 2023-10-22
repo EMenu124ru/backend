@@ -35,7 +35,7 @@ class OrderSerializer(BaseModelSerializer):
             "dishes",
         )
 
-    def check_fields_by_cook(
+    def check_fields_by_staff(
         self,
         instance: Order,
         validated_data: OrderedDict,
@@ -50,13 +50,7 @@ class OrderSerializer(BaseModelSerializer):
 
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self.instance:
-            if (
-                self._user.employee.role in (
-                    Employee.Roles.CHEF,
-                    Employee.Roles.COOK,
-                    Employee.Roles.BARTENDER,
-                ) and not self.check_fields_by_cook(self.instance, attrs)
-            ):
+            if not self.check_fields_by_staff(self.instance, attrs):
                 raise serializers.ValidationError(
                     "Работник может изменить только статус и комментарий к заказу",
                 )
@@ -68,16 +62,18 @@ class OrderSerializer(BaseModelSerializer):
             {"price": sum([Decimal(item["dish"].price) for item in dishes])}
         )
         order = Order.objects.create(**validated_data)
-        OrderAndDish.objects.bulk_create(
-            [
-                OrderAndDish(
-                    order=order,
-                    dish=item["dish"],
-                    comment=item.get("comment", ""),
-                )
-                for item in dishes
-            ],
-        )
+        order_and_dishes = []
+        for item in dishes:
+            order_and_dish = {
+                "order": order.pk,
+                "dish": item["dish"].pk,
+                "comment": item.get("comment", ""),
+            }
+            serializer = OrderAndDishSerializer(data=order_and_dish)
+            serializer.is_valid(raise_exception=True)
+            order_and_dishes.append(serializer)
+        for item in order_and_dishes:
+            item.save()
         return order
 
     def update(
@@ -103,6 +99,7 @@ class OrderSerializer(BaseModelSerializer):
             "price": instance.price,
             "employee":  None if not employee else EmployeeSerializer(employee).data,
             "client": None if not client else ClientSerializer(client).data,
+            "reservation": instance.reservation.pk if instance.reservation else None,
         }
         data.update(new_info)
         return data

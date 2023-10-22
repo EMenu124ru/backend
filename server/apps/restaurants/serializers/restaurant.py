@@ -3,8 +3,17 @@ from typing import OrderedDict
 from apps.core.serializers import BaseModelSerializer
 from apps.restaurants.models import Restaurant
 
-from .plan import PlanSerializer
+from .place import PlaceSerializer
 from .schedule import ScheduleSerializer
+
+
+class RestaurantDataSerializer(BaseModelSerializer):
+    class Meta:
+        model = Restaurant
+        fields = (
+            "id",
+            "address",
+        )
 
 
 class RestaurantSerializer(BaseModelSerializer):
@@ -17,9 +26,11 @@ class RestaurantSerializer(BaseModelSerializer):
 
     def to_representation(self, instance: Restaurant) -> OrderedDict:
         data = super().to_representation(instance)
-        plans = instance.plans.all()
-        schedules = instance.schedules.all()
-        if plans:
-            data.update({"plans": PlanSerializer(plans, many=True).data})
-        data.update({"schedules": ScheduleSerializer(schedules, many=True).data})
+        schedule = instance.schedule.all()
+        places = instance.places.all()
+        info = {
+            "schedules": ScheduleSerializer(schedule, many=True).data,
+            "places": PlaceSerializer(places, many=True).data,
+        }
+        data.update(info)
         return data

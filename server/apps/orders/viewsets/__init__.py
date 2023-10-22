@@ -3,7 +3,7 @@ from .dish import DishViewSet
 from .dish_image import DishImageViewSet
 from .order import OrderViewSet
 from .order_and_dish import OrderAndDishViewSet
-from .restaurant_and_order import RestaurantAndOrderViewSet
+from .reservation import ReservationViewSet
 from .stop_list import StopListViewSet
 
 __all__ = (
@@ -12,6 +12,6 @@ __all__ = (
     DishImageViewSet,
     OrderViewSet,
     OrderAndDishViewSet,
-    RestaurantAndOrderViewSet,
+    ReservationViewSet,
     StopListViewSet,
 )

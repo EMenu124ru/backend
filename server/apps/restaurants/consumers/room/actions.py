@@ -21,9 +21,11 @@ class RestaurantActionsMixin:
                 "order": await OrderService.create_order(body, self.user.employee),
             }
         except (ValidationError, ValidationErrorDjango) as ex:
-            errors = get_errors(ex.detail)
-            error_message = "\n".join(map(str, set(errors)))
-            await self.send_error(error_message)
+            error_message = get_errors(ex.detail)
+            error_message_str = (
+                f"{error_message[0]['field']} - {error_message[0]['message']}"
+            )
+            await self.send_error(error_message_str)
         else:
             await self.response_to_group(Events.NEW_ORDER, order_body)
 
@@ -35,8 +37,10 @@ class RestaurantActionsMixin:
             edited_order = await OrderService.edit_order(body, order, self.user)
             body = {"order": edited_order}
         except (ValidationError, ValidationErrorDjango) as ex:
-            errors = get_errors(ex.detail)
-            error_message = "\n".join(map(str, set(errors)))
-            await self.send_error(error_message)
+            error_message = get_errors(ex.detail)
+            error_message_str = (
+                f"{error_message[0]['field']} - {error_message[0]['message']}"
+            )
+            await self.send_error(error_message_str)
         else:
             await self.response_to_group(Events.ORDER_CHANGED, body)

@@ -1,9 +1,16 @@
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 from .client import Client
 
 
 class User(AbstractUser):
+    surname = models.CharField(
+        max_length=150,
+        blank=True,
+        null=True,
+        verbose_name='Отчество',
+    )
 
     @property
     def is_client(self) -> bool:

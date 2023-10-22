@@ -4,6 +4,8 @@ from rest_framework import status
 
 from apps.orders.factories import DishFactory, OrderAndDishFactory, OrderFactory
 from apps.orders.models import Order, OrderAndDish
+from apps.users.factories import EmployeeFactory
+from apps.users.models import Employee
 
 pytestmark = pytest.mark.django_db
 
@@ -14,10 +16,15 @@ def test_change_order_status_by_changing_dish_status_success(
     cook,
     api_client,
 ) -> None:
+    waiter = EmployeeFactory.create(
+        restaurant=cook.restaurant,
+        role=Employee.Roles.WAITER,
+    )
     dishes = DishFactory.create_batch(size=DISHES_NUMBER)
     order = OrderFactory.create(
         price=sum([dish.price for dish in dishes]),
         status=Order.Statuses.WAITING_FOR_COOKING,
+        employee=waiter,
     )
     order_and_dishes = []
     for dish in dishes:

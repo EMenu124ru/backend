@@ -13,7 +13,7 @@ class EmployeeAuthAPIView(TokenObtainPairView):
 
 class EmployeeRetrieveAPIView(RetrieveAPIView):
     serializer_class = EmployeeSerializer
-    permission_classes = (IsAuthenticated, IsCurrentUser,)
+    permission_classes = (IsAuthenticated & IsCurrentUser,)
 
     def get_object(self):
         return Employee.objects.get(user_id=self.request.user.id)

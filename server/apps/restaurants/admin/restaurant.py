@@ -15,7 +15,7 @@ class RestaurantAdmin(admin.ModelAdmin):
     )
 
     def get_schedule(self, obj):
-        return obj.schedules.all()
+        return obj.schedule.all()
 
     def get_plans(self, obj):
-        return [plan.plan for plan in obj.plans.all()]
+        return [place.place for place in obj.places.all()]

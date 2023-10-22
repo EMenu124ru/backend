@@ -3,7 +3,7 @@ from .dish import DishFactory
 from .dish_image import DishImageFactory
 from .order import OrderFactory
 from .order_and_dish import OrderAndDishFactory
-from .restaurant_and_order import RestaurantAndOrderFactory
+from .reservation import ReservationFactory
 from .stop_list import StopListFactory
 
 __all__ = (
@@ -12,6 +12,6 @@ __all__ = (
     DishImageFactory,
     OrderFactory,
     OrderAndDishFactory,
-    RestaurantAndOrderFactory,
+    ReservationFactory,
     StopListFactory,
 )

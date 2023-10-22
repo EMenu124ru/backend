@@ -23,6 +23,6 @@ class RestaurantListAPIView(ListAPIView):
 
     def get_queryset(self):
         return Restaurant.objects.prefetch_related(
-            "plans",
-            "schedules",
+            "places",
+            "schedule",
         ).all()

@@ -18,14 +18,8 @@ class OrderPermission(permissions.BasePermission):
         return True
 
     def has_object_permission(self, request, view, obj) -> bool:
-        if request.method == "GET":
-            if request.user.is_client:
-                return obj.client.user == request.user
-            return check_role_employee(request.user, Employee.Roles.WAITER)
-        if request.method == "DELETE" and (
-            check_role_employee(request.user, Employee.Roles.WAITER)
-        ):
-            return True
-        if request.method in ("PUT", "PATCH"):
-            return not request.user.is_client
-        return False
+        if request.user.is_client:
+            return request.method == "GET" and obj.client.user == request.user
+        if request.user.employee.restaurant != obj.employee.restaurant:
+            return False
+        return True
