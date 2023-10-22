@@ -1,52 +1,39 @@
-from typing import Union
-
-from rest_framework.exceptions import ErrorDetail
-from rest_framework.views import exception_handler
+from rest_framework import response, status, views
 
 
 def iterate_by_errors(errors: list, dict_errors: dict):
     """Func for iterate by errors"""
     for key, value in dict_errors.items():
+        key_errors = {"field": key}
         if isinstance(value, (list, dict)):
-            errors.extend(check_errors_dict(key, value))
+            key_errors["message"] = check_errors_dict(value)
+            errors.append(key_errors)
         else:
-            errors.append(value)
+            errors.append(str(value))
 
 
-def check_errors_dict(
-    key: str,
-    lst_errors: Union[list, dict],
-) -> Union[str, list]:
-    errors = []
+def check_errors_dict(lst_errors: list | dict) -> str | list:
     """Function for recursive error traversal"""
+    errors = []
     if isinstance(lst_errors, dict):
         iterate_by_errors(errors, lst_errors)
     elif isinstance(lst_errors, list):
-        for data in lst_errors:
-            if isinstance(data, ErrorDetail):
-                return (
-                    [str(data)]
-                    if key == "non_field_errors"
-                    else [f"{key} - {data}"]
-                )
-            iterate_by_errors(errors, data)
+        return lst_errors
     return errors
 
 
-def get_errors(data: list | dict):
+def get_errors(data: list | dict) -> list:
     """Entrypoint for get errors"""
     errors = []
-    if isinstance(data, list):
-        errors.append(data[0])
-    elif isinstance(data, dict):
-        iterate_by_errors(errors, data)
+    iterate_by_errors(errors, data)
     return errors
 
 
-def custom_exception_handler(exc, context):
+def custom_exception_handler(exc, context) -> response.Response | None:
     """Custom exception handler"""
-    response = exception_handler(exc, context)
-    if response is not None:
-        errors = get_errors(response.data)
-        response.data = {"message": "\n".join(map(str, set(errors)))}
+    response = views.exception_handler(exc, context)
+    if response.status_code == status.HTTP_400_BAD_REQUEST:
+        response.data = {"detail": get_errors(response.data)}
+    else:
+        response.data = {"detail": response.data["detail"]}
     return response

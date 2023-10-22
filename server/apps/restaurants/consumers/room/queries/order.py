@@ -15,7 +15,6 @@ class OrderQueries:
             Order.Statuses.COOKING,
             Order.Statuses.WAITING_FOR_DELIVERY,
             Order.Statuses.IN_PROCESS_DELIVERY,
-            Order.Statuses.DELIVERED,
         ]
         return Order.objects.filter(
             employee__restaurant_id=restaurant_id,

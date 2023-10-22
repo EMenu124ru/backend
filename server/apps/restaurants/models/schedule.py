@@ -19,7 +19,7 @@ class Schedule(models.Model):
     restaurant = models.ForeignKey(
         "restaurants.Restaurant",
         on_delete=models.CASCADE,
-        related_name="schedules",
+        related_name="schedule",
         verbose_name="Ресторан",
     )
     time_open = models.TimeField(

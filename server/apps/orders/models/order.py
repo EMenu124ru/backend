@@ -44,6 +44,14 @@ class Order(models.Model):
         related_name="orders",
         verbose_name="Клиент",
     )
+    reservation = models.ForeignKey(
+        "orders.Reservation",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="orders",
+        verbose_name="Бронирование",
+    )
 
     class Meta:
         verbose_name = "Заказ"

@@ -9,7 +9,10 @@ class OrderAdmin(admin.ModelAdmin):
 
     list_display = (
         "id",
+        "status",
+        "comment",
         "price",
         "comment",
         "employee",
+        "reservation",
     )

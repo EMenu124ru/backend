@@ -6,16 +6,16 @@ from apps.orders.factories import (
     DishImageFactory,
     OrderAndDishFactory,
     OrderFactory,
-    RestaurantAndOrderFactory,
+    ReservationFactory,
 )
-from apps.restaurants.factories import RestaurantFactory, ScheduleFactory
+from apps.restaurants.factories import PlaceFactory, RestaurantFactory, ScheduleFactory
 from apps.reviews.factories import ReviewFactory, ReviewImageFactory
 from apps.users.factories import ClientFactory, EmployeeFactory, UserFactory
 
-USERS_COUNT = 10
-CLIENTS_COUNT = EMPLOYEES_COUNT = 5
+USERS_COUNT = 20
+CLIENTS_COUNT = EMPLOYEES_COUNT = 10
 CATEGORIES_COUNT = 2
-ORDERS_COUNT = 3
+ORDERS_COUNT = 10
 DISH_REVIEWS_COUNT = 10
 IMAGES_PER_DISH_COUNT = IMAGES_PER_REVIEW_COUNT = 3
 RESTAURANTS_COUNT = 3
@@ -29,8 +29,8 @@ def run():
         size=USERS_COUNT,
     )
     clients = [
-        ClientFactory.create(user=users[i])
-        for i in range(CLIENTS_COUNT)
+        ClientFactory.create(user=user)
+        for user in users[:len(users) // 2]
     ]
     rest_reviews = []
     for _ in range(RESTAURANT_REVIEWS_COUNT):
@@ -48,6 +48,8 @@ def run():
     for _ in range(SCHEDULES_COUNT):
         restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]
         ScheduleFactory.create(restaurant=restaurant)
+    for restaurant in restaurants:
+        restaurant.places.add(PlaceFactory.create(restaurant=restaurant))
     employees = []
     for i in range(EMPLOYEES_COUNT, USERS_COUNT):
         restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]
@@ -78,18 +80,21 @@ def run():
         )
     orders = []
     for i in range(ORDERS_COUNT):
-        orders.append(OrderFactory.create(
+        reservation = None
+        if randint(0, 1):
+            restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]
+            reservation = ReservationFactory.create(
+                restaurant=restaurant,
+                client=clients[i],
+            )
+        order = OrderFactory.create(
             client=clients[i],
             employee=employees[i],
-        ))
+            reservation=reservation,
+        )
+        orders.append(order)
         for dish in dishes[i: i + 2]:
             OrderAndDishFactory.create(
                 order=orders[-1],
                 dish=dish,
             )
-    for order in orders:
-        restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]
-        RestaurantAndOrderFactory.create(
-            order=order,
-            restaurant=restaurant,
-        )

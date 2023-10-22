@@ -25,6 +25,7 @@ class EmployeeAuthSerializer(TokenObtainPairSerializer):
 class EmployeeSerializer(BaseModelSerializer):
     first_name = serializers.CharField(source="user.first_name")
     last_name = serializers.CharField(source="user.last_name")
+    surname = serializers.CharField(source="user.surname")
     restaurant = serializers.PrimaryKeyRelatedField(
         queryset=Restaurant.objects.all(),
         source="restaurant.id",
@@ -37,6 +38,7 @@ class EmployeeSerializer(BaseModelSerializer):
             'id',
             'first_name',
             'last_name',
+            'surname',
             'role',
             'restaurant',
         )

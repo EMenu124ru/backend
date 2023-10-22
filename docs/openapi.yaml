@@ -1,9 +1,5 @@
 openapi: 3.0.2
 
-servers:
-  - description: API
-    url: http://0.0.0.0:8000/
-
 info:
   title: EMenu
   version: 0.1.0
@@ -29,8 +25,8 @@ tags:
     description: "Review image namespace"
   - name: restaurants
     description: "Restaurant namespace"
-  - name: restaurantAndOrders
-    description: "RestaurantAndOrder namespace"
+  - name: reservations
+    description: "Reservation namespace"
   - name: orderAndDishes
     description: "OrderAndDish namespace"
   - name: stopLists
@@ -49,7 +45,9 @@ paths:
         "200":
           $ref: "#/components/responses/TokenObtain200"
         "400":
-          $ref: "#/components/responses/TokenObtain400"
+          $ref: "#/components/responses/BadRequest400"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
 
   "/api/v1/staff/login":
     post:
@@ -63,7 +61,9 @@ paths:
         "200":
           $ref: "#/components/responses/TokenObtain200"
         "400":
-          $ref: "#/components/responses/TokenObtain400"
+          $ref: "#/components/responses/BadRequest400"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
   
   "/api/v1/staff/me":
     get:
@@ -76,11 +76,11 @@ paths:
         "200":
           $ref: "#/components/responses/Employee200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/auth/token/refresh":
     post:
@@ -95,7 +95,9 @@ paths:
         "200":
           $ref: "#/components/responses/TokenRefresh200"
         "400":
-          $ref: "#/components/responses/TokenRefresh400"
+          $ref: "#/components/responses/BadRequest400"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
 
   "/api/v1/clients":
     post:
@@ -108,7 +110,7 @@ paths:
         "201":
           $ref: "#/components/responses/ClientCreate201"
         "400":
-          $ref: "#/components/responses/ClientCreate400"
+          $ref: "#/components/responses/BadRequest400"
   
   "/api/v1/clients/me":
     get:
@@ -121,11 +123,11 @@ paths:
         "200":
           $ref: "#/components/responses/Client200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/clients/{client_id}":
     get:
@@ -145,11 +147,11 @@ paths:
         "200":
           $ref: "#/components/responses/Client200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
     patch:
       tags:
@@ -170,13 +172,13 @@ paths:
         "200":
           $ref: "#/components/responses/Client200"
         "400":
-          description: "Bad request"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
     delete:
       tags:
@@ -195,11 +197,11 @@ paths:
         "204":
           description: "No Content"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/categories":
     post:
@@ -214,11 +216,11 @@ paths:
         "201":
           $ref: "#/components/responses/CategoryCreate201"
         "400":
-          $ref: "#/components/responses/CategoryCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
     get:
       tags:
@@ -243,9 +245,9 @@ paths:
         "200":
           $ref: "#/components/responses/CategoryList200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
   "/api/v1/categories/{category_id}":
     get:
@@ -263,11 +265,11 @@ paths:
         "200":
           $ref: "#/components/responses/Category200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
     patch:
       tags:
@@ -288,13 +290,13 @@ paths:
         "200":
           $ref: "#/components/responses/Category200"
         "400":
-          $ref: "#/components/responses/CategoryCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
     delete:
       tags:
@@ -313,11 +315,11 @@ paths:
         "204":
           description: "No Content"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/categories/{category_id}/dishes":
     get:
@@ -350,11 +352,11 @@ paths:
         "200":
           $ref: "#/components/responses/DishList200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/orders":
     post:
@@ -369,11 +371,11 @@ paths:
         "201":
           $ref: "#/components/responses/OrderCreate201"
         "400":
-          $ref: "#/components/responses/OrderCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
     get:
       tags:
@@ -400,9 +402,9 @@ paths:
         "200":
           $ref: "#/components/responses/OrderList200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
   "/api/v1/orders/{order_id}":
     get:
@@ -422,11 +424,11 @@ paths:
         "200":
           $ref: "#/components/responses/Order200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
     patch:
       tags:
@@ -447,13 +449,13 @@ paths:
         "200":
           $ref: "#/components/responses/Order200"
         "400":
-          $ref: "#/components/responses/OrderCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
     delete:
       tags:
@@ -472,11 +474,11 @@ paths:
         "204":
           description: "No Content"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/dishes":
     post:
@@ -491,11 +493,11 @@ paths:
         "201":
           $ref: "#/components/responses/DishCreate201"
         "400":
-          $ref: "#/components/responses/DishCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
     get:
       tags:
@@ -520,9 +522,9 @@ paths:
         "200":
           $ref: "#/components/responses/DishList200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
   "/api/v1/dishes/{dish_id}":
     get:
@@ -540,11 +542,11 @@ paths:
         "200":
           $ref: "#/components/responses/Dish200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
     patch:
       tags:
@@ -565,13 +567,13 @@ paths:
         "200":
           $ref: "#/components/responses/Dish200"
         "400":
-          $ref: "#/components/responses/DishCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
     delete:
       tags:
@@ -590,11 +592,11 @@ paths:
         "204":
           description: "No Content"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/dishes/{dish_id}/orders":
     get:
@@ -628,11 +630,11 @@ paths:
         "200":
           $ref: "#/components/responses/OrderList200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/dishes/{dish_id}/reviews":
     get:
@@ -665,11 +667,11 @@ paths:
         "200":
           $ref: "#/components/responses/ReviewList200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/dishes/{dish_id}/images":
     post:
@@ -692,11 +694,11 @@ paths:
         "201":
           $ref: "#/components/responses/DishImage200"
         "400":
-          $ref: "#/components/responses/DishImageCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
   "/api/v1/dish-images/{dish_image_id}":
     delete:
@@ -716,35 +718,35 @@ paths:
         "204":
           description: "No Content"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
-  "/api/v1/restaurant-and-orders":
+  "/api/v1/reservations":
     post:
       tags:
-        - restaurantAndOrders
-      summary: "Create restaurantAndOrders"
+        - reservations
+      summary: "Create reservation"
       security:
         - bearerAuth: []
       requestBody:
-        $ref: "#/components/requestBodies/RestaurantAndOrdersRequestBody"
+        $ref: "#/components/requestBodies/ReservationRequestBody"
       responses:
         "201":
-          $ref: "#/components/responses/RestaurantAndOrdersCreate201"
+          $ref: "#/components/responses/ReservationCreate201"
         "400":
-          $ref: "#/components/responses/RestaurantAndOrdersCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
     get:
       tags:
-        - restaurantAndOrders
-      summary: "Get list restaurantAndOrders"
+        - reservations
+      summary: "Get list reservations"
       security:
         - bearerAuth: []
       parameters:
@@ -764,19 +766,19 @@ paths:
           required: false
       responses:
         "200":
-          $ref: "#/components/responses/RestaurantAndOrdersList200"
+          $ref: "#/components/responses/ReservationList200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
-  "/api/v1/restaurant-and-orders/{restaurantAndOrders_id}":
+  "/api/v1/reservations/{reservation_id}":
     get:
       tags:
-        - restaurantAndOrders
-      summary: "Get restaurantAndOrders"
+        - reservations
+      summary: "Get reservation"
       parameters:
-        - name: restaurantAndOrders_id
+        - name: reservation_id
           in: path
           schema:
             type: number
@@ -786,20 +788,20 @@ paths:
         - bearerAuth: []
       responses:
         "200":
-          $ref: "#/components/responses/RestaurantAndOrder200"
+          $ref: "#/components/responses/Reservation200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
     patch:
       tags:
-        - restaurantAndOrders
-      summary: "Update restaurantAndOrders"
+        - reservations
+      summary: "Update reservation"
       parameters:
-        - name: restaurantAndOrders_id
+        - name: reservation_id
           in: path
           schema:
             type: number
@@ -808,41 +810,18 @@ paths:
       security:
         - bearerAuth: []
       requestBody:
-        $ref: "#/components/requestBodies/RestaurantAndOrdersRequestBody"
+        $ref: "#/components/requestBodies/ReservationRequestBody"
       responses:
         "200":
-          $ref: "#/components/responses/RestaurantAndOrders200"
+          $ref: "#/components/responses/Reservation200"
         "400":
-          $ref: "#/components/responses/RestaurantAndOrdersCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
-
-    delete:
-      tags:
-        - restaurantAndOrders
-      summary: "Delete restaurantAndOrders"
-      parameters:
-        - name: restaurantAndOrders_id
-          in: path
-          schema:
-            type: number
-          description: "Id бронирования"
-          required: true
-      security:
-        - bearerAuth: []
-      responses:
-        "204":
-          description: "No Content"
-        "401":
-          description: "Unauthorized"
-        "403":
-          description: "Forbidden"
-        "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/order-and-dishes":
     post:
@@ -857,11 +836,11 @@ paths:
         "201":
           $ref: "#/components/responses/OrderAndDishCreate201"
         "400":
-          $ref: "#/components/responses/OrderAndDishCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
   "/api/v1/order-and-dishes/{orderAndDish_id}":
     patch:
@@ -883,13 +862,13 @@ paths:
         "200":
           $ref: "#/components/responses/OrderAndDish200"
         "400":
-          $ref: "#/components/responses/OrderAndDishCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
     delete:
       tags:
@@ -908,11 +887,11 @@ paths:
         "204":
           description: "No Content"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/stop-list":
     post:
@@ -927,11 +906,11 @@ paths:
         "201":
           $ref: "#/components/responses/StopListCreate201"
         "400":
-          $ref: "#/components/responses/StopListCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
     get:
       tags:
@@ -957,10 +936,12 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/StopListList200"
+        "400":
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
   "/api/v1/stop-list/{stopList_id}":
     delete:
@@ -980,11 +961,11 @@ paths:
         "204":
           description: "No Content"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/reviews":
     post:
@@ -999,11 +980,11 @@ paths:
         "201":
           $ref: "#/components/responses/ReviewCreate201"
         "400":
-          $ref: "#/components/responses/ReviewCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
   "/api/v1/reviews/{review_id}":
     get:
@@ -1021,11 +1002,11 @@ paths:
         "200":
           $ref: "#/components/responses/Review200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
     patch:
       tags:
@@ -1046,13 +1027,13 @@ paths:
         "200":
           $ref: "#/components/responses/Review200"
         "400":
-          $ref: "#/components/responses/ReviewCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
     delete:
       tags:
@@ -1071,11 +1052,11 @@ paths:
         "204":
           description: "No Content"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/reviews/{review_id}/images":
     post:
@@ -1098,11 +1079,11 @@ paths:
         "201":
           $ref: "#/components/responses/ReviewImageCreate201"
         "400":
-          $ref: "#/components/responses/ReviewImageCreate400"
+          $ref: "#/components/responses/BadRequest400"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
 
   "/api/v1/review-images/{review_image_id}":
     delete:
@@ -1122,11 +1103,11 @@ paths:
         "204":
           description: "No Content"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "403":
-          description: "Forbidden"
+          $ref: "#/components/responses/Forbidden403"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/restaurants":
     get:
@@ -1152,7 +1133,7 @@ paths:
         "200":
           $ref: "#/components/responses/RestaurantList200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
 
   "/api/v1/restaurants/{restaurant_id}/reviews":
     get:
@@ -1171,9 +1152,9 @@ paths:
         "200":
           $ref: "#/components/responses/ReviewList200"
         "401":
-          description: "Unauthorized"
+          $ref: "#/components/responses/Unauthorized401"
         "404":
-          description: "Not Found"
+          $ref: "#/components/responses/NotFound404"
 
 components:
   securitySchemes:
@@ -1403,20 +1384,20 @@ components:
           items:
             $ref: "#/components/schemas/ReviewImageBase"
 
-    RestaurantAndOrdersCreateBase:
+    ReservationCreateBase:
       type: object
       properties:
         arrival_time:
           type: string
           format: date-time
-        order:
-          $ref: "#/components/schemas/OrderCreateBase"
+          nullable: true
+        status:
+          type: string
+          nullable: true
         restaurant:
           type: number
-        place_number:
-          type: number
 
-    RestaurantAndOrdersBase:
+    ReservationBase:
       type: object
       properties:
         id:
@@ -1424,12 +1405,22 @@ components:
         arrival_time:
           type: string
           format: date-time
-        order:
-          $ref: "#/components/schemas/OrderBase"
+        status:
+          type: string
         restaurant:
-          type: number
-        place_number:
-          type: number
+          $ref: "#/components/schemas/RestaurantBase"
+        place:
+          allOf:
+          - $ref: "#/components/schemas/PlaceBase"
+          nullable: true
+        client:
+          allOf:
+          - $ref: "#/components/schemas/ClientBase"
+          nullable: true
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderBase"
 
     ScheduleBase:
       type: object
@@ -1445,12 +1436,12 @@ components:
           type: string
           format: time
 
-    PlanBase:
+    PlaceBase:
       type: object
       properties:
         id:
           type: number
-        plan:
+        place:
           type: string
 
     RestaurantBase:
@@ -1464,10 +1455,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ScheduleBase"
-        plans:
-          type: array
-          items:
-            $ref: "#/components/schemas/PlanBase"
 
     OrderAndDishCreateBase:
       type: object
@@ -1634,11 +1621,11 @@ components:
                 type: string
       required: true
 
-    RestaurantAndOrdersRequestBody:
+    ReservationRequestBody:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/RestaurantAndOrdersCreateBase"
+            $ref: "#/components/schemas/ReservationCreateBase"
       required: true
 
     OrderAndDishRequestBody:
@@ -1716,9 +1703,6 @@ components:
           schema:
             $ref: "#/components/schemas/OrderBase"
 
-    OrderCreate400:
-      description: "Order created error"
-
     OrderList200:
       description: "Order list"
       content:
@@ -1766,9 +1750,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ClientBase"
-
-    ClientCreate400:
-      description: "Client created error"
     
     Employee200:
       description: "Employee item"
@@ -1783,9 +1764,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/CategoryBase"
-
-    CategoryCreate400:
-      description: "Category created error"
 
     CategoryList200:
       description: "Category list"
@@ -1827,9 +1805,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/DishBase"
-
-    DishCreate400:
-      description: "Dish created error"
 
     DishList200:
       description: "Dish list"
@@ -1874,9 +1849,6 @@ components:
             items:
               $ref: "#/components/schemas/DishImageBase"
 
-    DishImageCreate400:
-      description: "Dish image created error"
-
     DishImage200:
       description: "Dish image get"
       content:
@@ -1892,9 +1864,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ReviewBase"
-
-    ReviewCreate400:
-      description: "Review created error"
 
     Review200:
       description: "Review get"
@@ -1939,11 +1908,8 @@ components:
             items:
               $ref: "#/components/schemas/ReviewImageBase"
 
-    ReviewImageCreate400:
-      description: "Review image error create"
-
-    RestaurantAndOrdersList200:
-      description: "List of restaurantAndOrders"
+    ReservationList200:
+      description: "List of reservation"
       content:
         application/json:
           schema:
@@ -1967,33 +1933,21 @@ components:
               results:
                 type: array
                 items:
-                  $ref: "#/components/schemas/RestaurantAndOrdersBase"
+                  $ref: "#/components/schemas/ReservationBase"
 
-    RestaurantAndOrdersCreate201:
-      description: "RestaurantAndOrders create"
+    ReservationCreate201:
+      description: "Reservation create"
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/RestaurantAndOrdersBase"
-
-    RestaurantAndOrdersCreate400:
-      description: "RestaurantAndOrders created error"
+            $ref: "#/components/schemas/ReservationBase"
     
-    RestaurantAndOrder200:
-      description: "RestaurantAndOrders get"
+    Reservation200:
+      description: "Reservation get"
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/RestaurantAndOrdersBase"
-
-    RestaurantAndOrders200:
-      description: "RestaurantAndOrders get"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/RestaurantAndOrdersBase"
+            $ref: "#/components/schemas/ReservationBase"
 
     OrderAndDishCreate201:
       description: "OrderAndDish create"
@@ -2001,9 +1955,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderAndDishBase"
-
-    OrderAndDishCreate400:
-      description: "OrderAndDish created error"
 
     OrderAndDish200:
       description: "OrderAndDish get"
@@ -2018,9 +1969,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/StopListBase"
-
-    StopListCreate400:
-      description: "StopList created error"
 
     StopListList200:
       description: "StopList get"
@@ -2046,3 +1994,52 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/RestaurantBase"
+
+    BadRequest400:
+      description: "BadRequest"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                    message:
+                      type: array
+                      items:
+                        type: string
+
+    Unauthorized401:
+      description: "Unauthorized"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+    
+    Forbidden403:
+      description: "Forbidden"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+
+    NotFound404:
+      description: "NotFound"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string

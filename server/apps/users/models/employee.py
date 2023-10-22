@@ -3,8 +3,6 @@ from django.db import models
 
 class Employee(models.Model):
     class Roles(models.TextChoices):
-        """Class choices."""
-
         WAITER = "WAITER", "Официант"
         BARTENDER = "BARTENDER", "Бармен"
         COOK = "COOK", "Повар"

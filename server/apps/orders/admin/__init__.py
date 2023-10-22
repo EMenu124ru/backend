@@ -3,7 +3,7 @@ from .dish import DishAdmin
 from .dish_image import DishImageAdmin
 from .order import OrderAdmin
 from .order_and_dish import OrderAndDishAdmin
-from .restaurant_and_order import RestaurantAndOrderAdmin
+from .reservation import ReservationAdmin
 from .stop_list import StopListAdmin
 
 __all__ = (
@@ -12,6 +12,6 @@ __all__ = (
     DishImageAdmin,
     OrderAdmin,
     OrderAndDishAdmin,
-    RestaurantAndOrderAdmin,
+    ReservationAdmin,
     StopListAdmin,
 )

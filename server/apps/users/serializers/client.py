@@ -42,6 +42,7 @@ class ClientAuthSerializer(serializers.Serializer):
 class ClientSerializer(BaseModelSerializer):
     first_name = serializers.CharField(source="user.first_name")
     last_name = serializers.CharField(source="user.last_name")
+    surname = serializers.CharField(source="user.surname")
     password = serializers.CharField(source="user.password", write_only=True)
     bonuses = serializers.IntegerField(default=0)
 
@@ -53,6 +54,7 @@ class ClientSerializer(BaseModelSerializer):
             'phone_number',
             'first_name',
             'last_name',
+            'surname',
             'password',
         )
 
@@ -60,12 +62,13 @@ class ClientSerializer(BaseModelSerializer):
         user_fields = validated_data['user']
         username = (
             f"{user_fields['first_name']}_{user_fields['last_name']}"
-            f"_{validated_data['phone_number']}"
+            f"_{user_fields['surname']}_{validated_data['phone_number']}"
         )
         user = User.objects.create(
             username=username,
             first_name=user_fields['first_name'],
             last_name=user_fields['last_name'],
+            surname=user_fields['surname'],
         )
         user.set_password(user_fields['password'])
         user.save()
@@ -85,6 +88,9 @@ class ClientSerializer(BaseModelSerializer):
             instance.user.last_name = (
                 user_fields.get("last_name", instance.user.last_name)
             )
+            instance.user.surname = (
+                user_fields.get("surname", instance.user.surname)
+            )
             if "password" in validated_data["user"]:
                 instance.user.set_password(
                     user_fields.pop("password")
@@ -93,8 +99,9 @@ class ClientSerializer(BaseModelSerializer):
         instance.phone_number = (
             validated_data.get("phone_number", instance.phone_number)
         )
-        instance.bonuses = (
-            validated_data.get("bonuses", instance.bonuses)
-        )
+        if "bonuses" in validated_data:
+            raise serializers.ValidationError(
+                "Пользователь не может изменять количество бонусов"
+            )
         instance.save()
         return instance

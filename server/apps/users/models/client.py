@@ -1,6 +1,11 @@
 from django.core.validators import RegexValidator
 from django.db import models
 
+phone_regex = RegexValidator(
+    regex=r'^\+?1?\d{9,15}$',
+    message="Телефонный номер должен быть введен в формате: '+999999999'",
+)
+
 
 class Client(models.Model):
     user = models.OneToOneField(
@@ -11,10 +16,6 @@ class Client(models.Model):
     )
     bonuses = models.PositiveIntegerField(
         verbose_name="Бонусы",
-    )
-    phone_regex = RegexValidator(
-        regex=r'^\+?1?\d{9,15}$',
-        message="Телефонный номер должен быть введен в формате: '+999999999'",
     )
     phone_number = models.CharField(
         max_length=17,

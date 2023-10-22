@@ -16,6 +16,9 @@ class UserFactory(DjangoModelFactory):
     last_name = Faker(
         "last_name",
     )
+    surname = Faker(
+        "first_name",
+    )
     email = Faker(
         "email",
     )
