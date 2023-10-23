@@ -8,9 +8,6 @@ services:
     image: ghcr.io/emenu124ru/nginx:latest
     container_name: nginx
     restart: always
-    build:
-      context: .
-      dockerfile: ./nginx/Dockerfile
     depends_on:
       - django
       - daphne
@@ -24,12 +21,6 @@ services:
     image: ghcr.io/emenu124ru/django:latest
     container_name: daphne
     restart: always
-    build:
-      context: ./server/
-      dockerfile: Dockerfile
-      args:
-        MODE: "--without dev"
-        APP_HOME: "/server"
     depends_on:
       - postgres
       - redis
@@ -50,12 +41,6 @@ services:
     image: ghcr.io/emenu124ru/django:latest
     container_name: django
     restart: always
-    build:
-      context: ./server/
-      dockerfile: Dockerfile
-      args:
-        MODE: "--without dev"
-        APP_HOME: "/server"
     depends_on:
       - postgres
       - redis
