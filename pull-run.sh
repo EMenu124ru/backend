@@ -1,3 +1,4 @@
+make docker-clean-all
+make docker-login
 make docker-down-prod
-make docker-clean
 make docker-up-buildd-prod

@@ -89,6 +89,9 @@ linters:  ##@Linters Run linters
 	make docker-django-run "isort . --settings-file=./setup.cfg"
 	make docker-django-run "flake8 . --config=./setup.cfg"
 
+docker-login:
+	echo $(PAT) | docker login ghcr.io -u $(USERNAME) --password-stdin
+
 docker-clean:  ##@Application Remove all docker objects
 	docker system prune -f
 
