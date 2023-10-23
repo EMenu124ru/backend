@@ -14,7 +14,6 @@ services:
     depends_on:
       - django
       - daphne
-      - alexandria
       - swagger-ui
     ports:
       - 80:80
@@ -109,16 +108,6 @@ services:
     volumes:
       - ./dumps:/dump
     command: dump-cron
-
-  alexandria:
-    image: raisultan/alexandria:0.1
-    container_name: alexandria
-    expose:
-      - 8080
-    volumes:
-      - ./docs/ws.yml:/ws.yml
-    environment:
-      - ALEXANDRIA_YAML=/ws.yml
 
   swagger-ui:
     image: swaggerapi/swagger-ui
