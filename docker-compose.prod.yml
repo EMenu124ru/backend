@@ -28,7 +28,7 @@ services:
       - 8008
     volumes:
       - ./server/media:/server/media/
-      - ./logs/:/server/logs/
+      - ./server/logs/:/server/logs/
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - REDIS_URL=${REDIS_URL}
@@ -48,7 +48,7 @@ services:
       - 8000
     volumes:
       - ./server/media:/server/media/
-      - ./logs/:/server/logs/
+      - ./server/logs/:/server/logs/
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - DJANGO_DEBUG=${DJANGO_DEBUG}
