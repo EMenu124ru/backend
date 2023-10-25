@@ -20,6 +20,7 @@ env:
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
   REGISTRY: ghcr.io
+  REDIS_URL: redis://redis:6379/0
   NGINX_IMAGE_NAME: emenu124ru/nginx:latest
   DJANGO_IMAGE_NAME: emenu124ru/django:latest
 
