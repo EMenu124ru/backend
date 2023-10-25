@@ -101,8 +101,11 @@ docker-clean-all:  ##@Application Remove all unused docker objects
 docker-clean-allv:  ##@Application Remove all docker objects with volumes
 	docker system prune --all --volumes -f
 
+docker-pull-prod:  ##@Application Pulling containers
+	docker-compose -f docker-compose.prod.yml pull
+
 docker-stop:  ##@Application Stop all docker containers
-	@docker container rm -f $$(docker ps -aq) || true
+	@docker rm -f $$(docker ps -aq) || true
 
 %::
 	echo $(MESSAGE)

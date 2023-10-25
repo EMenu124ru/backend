@@ -25,7 +25,7 @@ env:
   DJANGO_IMAGE_NAME: emenu124ru/django:latest
 
 jobs:
-  linter:
+  linters:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code Repository
@@ -65,7 +65,7 @@ jobs:
 
   publish-nginx:
     name: publish nginx image
-    needs: [tests, linter]
+    needs: [tests, linters]
     runs-on: ubuntu-latest
 
     steps:
@@ -84,7 +84,7 @@ jobs:
 
   publish-django:
     name: publish django image
-    needs: [tests, linter]
+    needs: [tests, linters]
     runs-on: ubuntu-latest
     permissions:
       packages: write

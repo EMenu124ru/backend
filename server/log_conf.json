@@ -2,22 +2,15 @@
     "version": 1,
     "disable_existing_loggers": false,
     "formatters": {
-        "default": {
+        "verbose": {
             "format": "%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"
-        },
-        "access": {
-            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         }
     },
     "handlers": {
-        "default": {
-            "formatter": "default",
+        "file": {
             "class": "logging.FileHandler",
-            "filename": "./logs/django.log"
-        },
-        "access": {
-            "formatter": "access",
-            "class": "logging.FileHandler",
+            "level": "DEBUG",
+            "formatter": "verbose",
             "filename": "./logs/django.log"
         }
     },
@@ -25,23 +18,20 @@
         "gunicorn.error": {
             "level": "INFO",
             "handlers": [
-                "default"
-            ],
-            "propagate": "no"
+                "file"
+            ]
         },
         "gunicorn.access": {
             "level": "INFO",
             "handlers": [
-                "access"
-            ],
-            "propagate": "no"
+                "file"
+            ]
         }
     },
     "root": {
         "level": "DEBUG",
         "handlers": [
-            "default"
-        ],
-        "propagate": "no"
+            "file"
+        ]
     }
 }
