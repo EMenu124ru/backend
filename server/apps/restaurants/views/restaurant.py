@@ -1,13 +1,15 @@
-from rest_framework.generics import ListAPIView
+from rest_framework import generics, permissions, response, status
 
 from apps.core.services.pagination import PaginationObject
+from apps.orders.models import Reservation
 from apps.restaurants.models import Restaurant
-from apps.restaurants.serializers import RestaurantSerializer
+from apps.restaurants.permissions import RestaurantPermission
+from apps.restaurants.serializers import PlaceSerializer, RestaurantSerializer
 from apps.reviews.models import Review
 from apps.reviews.serializers import ReviewSerializer
 
 
-class ReviewsRestaurantAPIView(ListAPIView):
+class ReviewsRestaurantAPIView(generics.ListAPIView):
     serializer_class = ReviewSerializer
     pagination_class = PaginationObject
 
@@ -17,12 +19,49 @@ class ReviewsRestaurantAPIView(ListAPIView):
         )
 
 
-class RestaurantListAPIView(ListAPIView):
+class RestaurantListAPIView(generics.ListAPIView):
     serializer_class = RestaurantSerializer
     pagination_class = PaginationObject
 
     def get_queryset(self):
         return Restaurant.objects.prefetch_related(
-            "places",
             "schedule",
         ).all()
+
+
+class RestaurantPlacesAPIView(generics.RetrieveAPIView):
+    queryset = Restaurant.objects.all()
+    permission_classes = (
+        permissions.IsAuthenticated & RestaurantPermission,
+    )
+
+    def get(self, request, *args, **kwargs):
+        restaurant = self.get_object()
+        places = restaurant.places.order_by("id").all()
+        free, reserved, busy = [], [], []
+        free_statuses = [
+            Reservation.Statuses.CANCELED,
+            Reservation.Statuses.FINISHED,
+        ]
+        for place in places:
+            reservations = place.reservations.all()
+
+            opened = reservations.filter(status=Reservation.Statuses.OPENED)
+            if opened.filter(orders__isnull=True):
+                reserved.append(place)
+                continue
+
+            if opened.filter(orders__isnull=False):
+                busy.append(place)
+                continue
+
+            if not reservations or reservations.filter(status__in=free_statuses):
+                free.append(place)
+                continue
+
+        data = {
+            "free": PlaceSerializer(free, many=True).data,
+            "reserved": PlaceSerializer(reserved, many=True).data,
+            "busy": PlaceSerializer(busy, many=True).data,
+        }
+        return response.Response(data=data, status=status.HTTP_200_OK)

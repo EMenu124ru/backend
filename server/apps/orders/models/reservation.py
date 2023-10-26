@@ -44,7 +44,7 @@ class Reservation(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        related_name="reservation",
+        related_name="reservations",
         verbose_name="Номер места",
     )
 
@@ -53,4 +53,7 @@ class Reservation(models.Model):
         verbose_name_plural = "Забронированные столы"
 
     def __str__(self) -> str:
-        return f"Reservation {self.arrival_time} {self.restaurant} {self.place} {self.user}"
+        return (
+            f"Reservation {self.arrival_time} {self.status} "
+            f"{self.restaurant} {self.place} {self.client}"
+        )

@@ -1109,6 +1109,26 @@ paths:
           $ref: "#/components/responses/Unauthorized401"
         "404":
           $ref: "#/components/responses/NotFound404"
+  
+  "/api/v1/restaurants/{restaurant_id}/places":
+    get:
+      tags:
+        - restaurants
+      summary: "Get places of restaurant and it statuses"
+      parameters:
+        - name: restaurant_id
+          in: path
+          schema:
+            type: number
+          required: true
+          description: "Id ресторана"
+      responses:
+        "200":
+          $ref: "#/components/responses/PlaceState200"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "404":
+          $ref: "#/components/responses/NotFound404"
 
 components:
   securitySchemes:
@@ -1368,7 +1388,7 @@ components:
         status:
           type: string
         restaurant:
-          $ref: "#/components/schemas/RestaurantReservationBase"
+          $ref: "#/components/schemas/RestaurantBase"
         place:
           allOf:
           - $ref: "#/components/schemas/PlaceBase"
@@ -1411,22 +1431,10 @@ components:
           type: number
         address:
           type: string
-        schedules:
+        schedule:
           type: array
           items:
             $ref: "#/components/schemas/ScheduleBase"
-        places:
-          type: array
-          items:
-            $ref: "#/components/schemas/PlaceBase"
-    
-    RestaurantReservationBase:
-      type: object
-      properties:
-        id:
-          type: number
-        address:
-          type: string
 
     OrderAndDishCreateBase:
       type: object
@@ -1484,6 +1492,22 @@ components:
         restaurant:
           type: number
           description: "Id ресторана"
+    
+    PlaceState:
+      type: object
+      properties:
+        free:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlaceBase"
+        reserved:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlaceBase"
+        busy:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlaceBase"
 
   requestBodies:
     ReviewCreateBody:
@@ -1959,13 +1983,13 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/RestaurantBase"
-
-    Restaurant200:
-      description: "Restaurant get"
+    
+    PlaceState200:
+      description: "Places state get"
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/RestaurantBase"
+            $ref: "#/components/schemas/PlaceState"
 
     BadRequest400:
       description: "BadRequest"

@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='reservation',
             name='place',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reservation', to='restaurants.place', verbose_name='Номер места'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reservations', to='restaurants.place', verbose_name='Номер места'),
         ),
         migrations.AddField(
             model_name='reservation',
