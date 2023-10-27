@@ -11,4 +11,8 @@ class PlaceAdmin(admin.ModelAdmin):
         "id",
         "restaurant",
         "place",
+        "get_tags",
     )
+
+    def get_tags(self, obj):
+        return obj.tags.all()

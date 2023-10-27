@@ -1,10 +1,15 @@
+from django.db.models import QuerySet
 from rest_framework import generics, permissions, response, status
 
 from apps.core.services.pagination import PaginationObject
 from apps.orders.models import Reservation
 from apps.restaurants.models import Restaurant
 from apps.restaurants.permissions import RestaurantPermission
-from apps.restaurants.serializers import PlaceSerializer, RestaurantSerializer
+from apps.restaurants.serializers import (
+    PlaceSerializer,
+    RestaurantSerializer,
+    TagToProjectSerializer,
+)
 from apps.reviews.models import Review
 from apps.reviews.serializers import ReviewSerializer
 
@@ -35,9 +40,16 @@ class RestaurantPlacesAPIView(generics.RetrieveAPIView):
         permissions.IsAuthenticated & RestaurantPermission,
     )
 
+    def filter_places(self, places, tags) -> QuerySet:
+        if not tags:
+            return places
+        return places.filter(tags__in=tags.split(",")).order_by("id").distinct()
+
     def get(self, request, *args, **kwargs):
         restaurant = self.get_object()
-        places = restaurant.places.order_by("id").all()
+        places = restaurant.places.all()
+        tags = request.query_params.get('tags')
+        places = self.filter_places(places, tags)
         free, reserved, busy = [], [], []
         free_statuses = [
             Reservation.Statuses.CANCELED,
@@ -65,3 +77,20 @@ class RestaurantPlacesAPIView(generics.RetrieveAPIView):
             "busy": PlaceSerializer(busy, many=True).data,
         }
         return response.Response(data=data, status=status.HTTP_200_OK)
+
+
+class TagToPlaceAPIView(generics.ListAPIView):
+    queryset = Restaurant.objects.all()
+    permission_classes = (
+        permissions.IsAuthenticated & RestaurantPermission,
+    )
+
+    def get(self, request, *args, **kwargs):
+        restaurant = self.get_object()
+        restaurant_tags = set()
+        for place in restaurant.places.all():
+            tags = place.tags.all()
+            restaurant_tags |= set(tags)
+
+        serializer = TagToProjectSerializer(restaurant_tags, many=True)
+        return response.Response(data=serializer.data, status=status.HTTP_200_OK)

@@ -8,7 +8,12 @@ from apps.orders.factories import (
     OrderFactory,
     ReservationFactory,
 )
-from apps.restaurants.factories import PlaceFactory, RestaurantFactory, ScheduleFactory
+from apps.restaurants.factories import (
+    PlaceFactory,
+    RestaurantFactory,
+    ScheduleFactory,
+    TagToPlaceFactory,
+)
 from apps.reviews.factories import ReviewFactory, ReviewImageFactory
 from apps.users.factories import ClientFactory, EmployeeFactory, UserFactory
 
@@ -21,6 +26,7 @@ IMAGES_PER_DISH_COUNT = IMAGES_PER_REVIEW_COUNT = 3
 RESTAURANTS_COUNT = 3
 RESTAURANT_REVIEWS_COUNT = 3
 SCHEDULES_COUNT = 7
+TAGS_COUNT = PLACE_COUNT = 10
 
 
 def run():
@@ -41,6 +47,7 @@ def run():
             review=review,
             size=IMAGES_PER_REVIEW_COUNT,
         )
+    tags = TagToPlaceFactory.create_batch(size=TAGS_COUNT)
     restaurants = []
     for review in rest_reviews:
         restaurants.append(RestaurantFactory.create())
@@ -49,7 +56,11 @@ def run():
         restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]
         ScheduleFactory.create(restaurant=restaurant)
     for restaurant in restaurants:
-        restaurant.places.add(PlaceFactory.create(restaurant=restaurant))
+        places = PlaceFactory.create_batch(size=PLACE_COUNT, restaurant=restaurant)
+        for place in places:
+            restaurant.places.add(place)
+            for i in range(randint(1, TAGS_COUNT)):
+                place.tags.add(tags[i])
     employees = []
     for i in range(EMPLOYEES_COUNT, USERS_COUNT):
         restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]

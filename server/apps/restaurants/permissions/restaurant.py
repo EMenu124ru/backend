@@ -11,3 +11,6 @@ class RestaurantPermission(permissions.BasePermission):
         if request.user.employee.role == Employee.Roles.HOSTESS:
             return True
         return False
+
+    def has_object_permission(self, request, view, obj):
+        return request.user.employee.restaurant.id == obj.id

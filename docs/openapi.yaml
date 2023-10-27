@@ -1122,9 +1122,37 @@ paths:
             type: number
           required: true
           description: "Id ресторана"
+        - name: tags
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+          required: false
+          description: "Id тегов"
       responses:
         "200":
           $ref: "#/components/responses/PlaceState200"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "404":
+          $ref: "#/components/responses/NotFound404"
+  
+  "/api/v1/restaurants/{restaurant_id}/tags":
+    get:
+      tags:
+        - restaurants
+      summary: "Get tags of restaurant places"
+      parameters:
+        - name: restaurant_id
+          in: path
+          schema:
+            type: number
+          required: true
+          description: "Id ресторана"
+      responses:
+        "200":
+          $ref: "#/components/responses/TagToPlace200"
         "401":
           $ref: "#/components/responses/Unauthorized401"
         "404":
@@ -1508,6 +1536,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PlaceBase"
+    
+    TagToProject:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
 
   requestBodies:
     ReviewCreateBody:
@@ -1990,6 +2026,15 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PlaceState"
+    
+    TagToPlace200:
+      description: "TagToPlace get"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/TagToProject"
 
     BadRequest400:
       description: "BadRequest"

@@ -12,6 +12,11 @@ class Place(models.Model):
         max_length=16,
         verbose_name="Название места",
     )
+    tags = models.ManyToManyField(
+        "restaurants.TagToPlace",
+        related_name="places",
+        verbose_name="Тэги к столу",
+    )
 
     class Meta:
         verbose_name = "Место в ресторане"

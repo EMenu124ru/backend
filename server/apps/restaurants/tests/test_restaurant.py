@@ -76,6 +76,21 @@ def test_read_state_places_of_restaurant_by_hostess(
     assert response.status_code == status.HTTP_200_OK
 
 
+def test_read_state_places_of_restaurant_by_hostess_other_restaurant(
+    hostess,
+    api_client,
+):
+    restaurant = RestaurantFactory.create()
+    api_client.force_authenticate(user=hostess.user)
+    response = api_client.get(
+        reverse_lazy(
+            "api:restaurants-places",
+            kwargs={"pk": restaurant.pk},
+        ),
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
 def test_read_state_places_of_restaurant_by_waiter(
     waiter,
     api_client,
@@ -142,3 +157,33 @@ def test_state_places_of_restaurant_by_hostess(
     assert [item["id"] in created_busy for item in busy]
     assert [item["id"] in created_reserved for item in reserved]
     assert [item["id"] in created_free for item in free]
+
+
+def test_read_tags_of_restaurant_by_hostess(
+    hostess,
+    api_client,
+):
+    restaurant = hostess.restaurant
+    api_client.force_authenticate(user=hostess.user)
+    response = api_client.get(
+        reverse_lazy(
+            "api:restaurants-tags",
+            kwargs={"pk": restaurant.pk},
+        ),
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_read_tags_of_restaurant_by_hostess_other_restaurant(
+    hostess,
+    api_client,
+):
+    restaurant = RestaurantFactory.create()
+    api_client.force_authenticate(user=hostess.user)
+    response = api_client.get(
+        reverse_lazy(
+            "api:restaurants-tags",
+            kwargs={"pk": restaurant.pk},
+        ),
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
