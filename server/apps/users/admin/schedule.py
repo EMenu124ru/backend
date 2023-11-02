@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.restaurants.models import Schedule
+from apps.users.models import Schedule
 
 
 @admin.register(Schedule)
@@ -9,8 +9,8 @@ class ScheduleAdmin(admin.ModelAdmin):
 
     list_display = (
         "id",
-        "restaurant",
+        "employee",
         "time_start",
         "time_finish",
-        "week_day",
+        "day",
     )

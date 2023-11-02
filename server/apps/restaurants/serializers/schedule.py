@@ -8,6 +8,6 @@ class ScheduleSerializer(BaseModelSerializer):
         fields = (
             "id",
             "week_day",
-            "time_open",
-            "time_close",
+            "time_start",
+            "time_finish",
         )

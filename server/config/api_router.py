@@ -12,7 +12,7 @@ from apps.orders.viewsets import (
     StopListViewSet,
 )
 from apps.reviews.viewsets import ReviewImageViewSet, ReviewViewSet
-from apps.users.viewsets import ClientViewSet
+from apps.users.viewsets import ClientViewSet, EmployeeScheduleAPIView
 
 router = (DefaultRouter if settings.DEBUG else SimpleRouter)(
     trailing_slash=False,
@@ -66,6 +66,11 @@ router.register(
     "clients",
     ClientViewSet,
     basename="clients",
+)
+router.register(
+    "employee-schedule",
+    EmployeeScheduleAPIView,
+    basename="employeeSchedule",
 )
 
 app_name = "api"

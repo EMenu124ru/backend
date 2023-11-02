@@ -92,13 +92,10 @@ linters:  ##@Linters Run linters
 docker-login:
 	echo $(PAT) | docker login ghcr.io -u $(USERNAME) --password-stdin
 
-docker-clean:  ##@Application Remove all docker objects
-	docker system prune -f
-
-docker-clean-all:  ##@Application Remove all unused docker objects
+docker-clean:  ##@Application Remove all unused docker objects
 	docker system prune --all -f
 
-docker-clean-allv:  ##@Application Remove all docker objects with volumes
+docker-cleanv:  ##@Application Remove all docker objects with volumes
 	docker system prune --all --volumes -f
 
 docker-pull-prod:  ##@Application Pulling containers

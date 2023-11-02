@@ -14,11 +14,11 @@ class ScheduleFactory(DjangoModelFactory):
     restaurant = SubFactory(
         RestaurantFactory,
     )
-    time_open = Faker(
+    time_start = Faker(
         "time",
     )
-    time_close = LazyAttribute(
-        lambda obj: datetime.combine(date.today(), time.fromisoformat(obj.time_open)) + timedelta(hours=8),
+    time_finish = LazyAttribute(
+        lambda obj: datetime.combine(date.today(), time.fromisoformat(obj.time_start)) + timedelta(hours=8),
     )
     week_day = fuzzy.FuzzyChoice(
         [item[0] for item in Schedule.WeekDays.choices],

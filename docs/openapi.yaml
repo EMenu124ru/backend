@@ -81,6 +81,96 @@ paths:
           $ref: "#/components/responses/Forbidden403"
         "404":
           $ref: "#/components/responses/NotFound404"
+  
+  "/api/v1/staff/{employee_id}/schedule":
+    get:
+      tags:
+        - employees
+      summary: "Retrieve schedule of employee"
+      parameters:
+        - name: employee_id
+          in: path
+          schema:
+            type: number
+          description: "Id сотрудника"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/EmployeeSchedule200"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "403":
+          $ref: "#/components/responses/Forbidden403"
+        "404":
+          $ref: "#/components/responses/NotFound404"
+  
+  "/api/v1/employee-schedule":
+    post:
+      tags:
+        - employees
+      summary: "Create schedule for employees"
+      requestBody:
+        $ref: "#/components/requestBodies/XLSXFileRequestBody"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/EmployeeSchedule200"
+        "400":
+          $ref: "#/components/responses/BadRequest400"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "403":
+          $ref: "#/components/responses/Forbidden403"
+
+  "/api/v1/employee-schedule/{schedule_id}":
+    patch:
+      tags:
+        - employees
+      summary: "Update schedule row"
+      parameters:
+        - name: schedule_id
+          in: path
+          schema:
+            type: number
+          description: "Id строки расписания"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/EmployeeSchedule200"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "403":
+          $ref: "#/components/responses/Forbidden403"
+        "404":
+          $ref: "#/components/responses/NotFound404"
+    
+    delete:
+      tags:
+        - employees
+      summary: "Delete schedule row"
+      parameters:
+        - name: schedule_id
+          in: path
+          schema:
+            type: number
+          description: "Id строки расписания"
+          required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "403":
+          $ref: "#/components/responses/Forbidden403"
+        "404":
+          $ref: "#/components/responses/NotFound404"
 
   "/api/v1/auth/token/refresh":
     post:
@@ -1430,17 +1520,17 @@ components:
           items:
             $ref: "#/components/schemas/OrderBase"
 
-    ScheduleBase:
+    RestaurantScheduleBase:
       type: object
       properties:
         id:
           type: number
         week_day:
           type: number
-        time_open:
+        time_start:
           type: string
           format: time
-        time_close:
+        time_finish:
           type: string
           format: time
 
@@ -1462,7 +1552,7 @@ components:
         schedule:
           type: array
           items:
-            $ref: "#/components/schemas/ScheduleBase"
+            $ref: "#/components/schemas/RestaurantScheduleBase"
 
     OrderAndDishCreateBase:
       type: object
@@ -1537,13 +1627,28 @@ components:
           items:
             $ref: "#/components/schemas/PlaceBase"
     
-    TagToProject:
+    TagToPlace:
       type: object
       properties:
         id:
           type: integer
         name:
           type: string
+    
+    EmployeeScheduleBase:
+      type: object
+      properties:
+        id:
+          type: number
+        day:
+          type: string
+          format: date
+        time_start:
+          type: string
+          format: time
+        time_finish:
+          type: string
+          format: time
 
   requestBodies:
     ReviewCreateBody:
@@ -1672,6 +1777,14 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/StopListCreateBase"
+      required: true
+    
+    XLSXFileRequestBody:
+      content:
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+          schema:
+            type: string
+            format: binary
       required: true
 
   responses:
@@ -2034,7 +2147,16 @@ components:
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/TagToProject"
+              $ref: "#/components/schemas/TagToPlace"
+    
+    EmployeeSchedule200:
+      description: "EmployeeSchedule list get"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/EmployeeScheduleBase"
 
     BadRequest400:
       description: "BadRequest"
