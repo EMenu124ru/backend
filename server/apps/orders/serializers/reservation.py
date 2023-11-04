@@ -30,19 +30,6 @@ class ReservationSerializer(BaseModelSerializer):
             "place",
         )
 
-    def check_fields_by_waiter(
-        self,
-        instance: Reservation,
-        validated_data: OrderedDict,
-    ) -> bool:
-        data = validated_data.copy()
-        data.pop("place", None)
-        data.pop("status", None)
-        return all([
-            instance.__getattribute__(key) == value
-            for key, value in data.items()
-        ])
-
     def check_fields_by_hostess(
         self,
         instance: Reservation,
@@ -84,13 +71,6 @@ class ReservationSerializer(BaseModelSerializer):
             ):
                 raise serializers.ValidationError(
                     "Редактируя бронь, хостес может менять только стол, время прибытия и статус",
-                )
-            if (
-                self._user.employee.role == Employee.Roles.WAITER and
-                not self.check_fields_by_waiter(self.instance, attrs)
-            ):
-                raise serializers.ValidationError(
-                    "Редактируя бронь, официант может менять только стол и статус",
                 )
             return attrs
         restaurant = attrs.get("restaurant")

@@ -164,6 +164,8 @@ def test_read_tags_of_restaurant_by_hostess(
     api_client,
 ):
     restaurant = hostess.restaurant
+    for i in range(15):
+        PlaceFactory.create(restaurant=restaurant, place=f"A{i}")
     api_client.force_authenticate(user=hostess.user)
     response = api_client.get(
         reverse_lazy(

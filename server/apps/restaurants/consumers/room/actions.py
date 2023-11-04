@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from apps.core.services import get_errors
 
 from .constants import Events
-from .queries import OrderQueries
+from .queries import OrderQueries, UserQueries
 from .services import OrderAndDishService, OrderService
 
 
@@ -16,6 +16,8 @@ class RestaurantActionsMixin:
         await self.response_to_user(Events.LIST_ORDERS, body)
 
     async def create_order(self, body: dict) -> None:
+        if (await UserQueries.check_role_employee_cant_create_order(self.user)):
+            await self.send_error("Вы не можете создавать заказ")
         try:
             order_body = {
                 "order": await OrderService.create_order(body, self.user.employee),
@@ -31,6 +33,14 @@ class RestaurantActionsMixin:
 
     async def edit_order(self, body: dict) -> None:
         try:
+            cant_edit = await UserQueries.check_role_employee_cant_edit_order(self.user)
+            if cant_edit and not (await OrderAndDishService.check_can_edit_order(body)):
+                await self.send_error(
+                    (
+                        "Вы не можете редактировать заказ. "
+                        "Разрешено редактирование статусов готовности блюд в заказе"
+                    ),
+                )
             order = await OrderQueries.get_order(body["id"])
             dishes = body.pop("dishes", [])
             await OrderAndDishService.edit_dishes(dishes, order.id, self.user)

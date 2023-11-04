@@ -33,6 +33,7 @@ def test_change_order_status_by_changing_dish_status_success(
                 order=order,
                 dish=dish,
                 status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
+                employee=cook,
             ),
         )
     api_client.force_authenticate(user=cook.user)
@@ -54,7 +55,7 @@ def test_change_order_status_by_changing_dish_status_success(
 
 
 def test_change_order_status_by_adding_new_dish(
-    cook,
+    waiter,
     api_client,
 ) -> None:
     dishes = DishFactory.create_batch(size=DISHES_NUMBER)
@@ -71,7 +72,7 @@ def test_change_order_status_by_adding_new_dish(
                 status=OrderAndDish.Statuses.DONE,
             ),
         )
-    api_client.force_authenticate(user=cook.user)
+    api_client.force_authenticate(user=waiter.user)
     new_dish = DishFactory.create()
     response = api_client.post(
         reverse_lazy("api:orderAndDishes-list"),

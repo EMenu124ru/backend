@@ -38,6 +38,18 @@ def test_create_reservation_by_waiter(
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
+def test_read_reservations_by_waiter(
+    waiter,
+    api_client,
+) -> None:
+    ReservationFactory.create_batch(size=5, restaurant=waiter.restaurant)
+    api_client.force_authenticate(user=waiter.user)
+    response = api_client.get(
+        reverse_lazy("api:reservations-list"),
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
 def test_read_reservation_by_waiter(
     waiter,
     api_client,
@@ -53,7 +65,7 @@ def test_read_reservation_by_waiter(
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_update_reservation_by_waiter_failed(
+def test_update_reservation_by_waiter(
     waiter,
     api_client,
 ) -> None:
@@ -76,56 +88,24 @@ def test_update_reservation_by_waiter_failed(
         },
         format='json',
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_403_FORBIDDEN
     assert Reservation.objects.filter(
         id=reservation.pk,
         arrival_time=reservation.arrival_time,
     ).exists()
 
 
-def test_update_reservation_by_waiter_success(
-    waiter,
+def test_update_reservation_by_hostess_set_other_place(
+    hostess,
     api_client,
 ) -> None:
-    place = PlaceFactory.create(restaurant=waiter.restaurant)
+    place = PlaceFactory.create(restaurant=hostess.restaurant)
     reservation = ReservationFactory.create(
-        restaurant=waiter.restaurant,
+        restaurant=hostess.restaurant,
         place=place,
         status=Reservation.Statuses.OPENED,
     )
-    api_client.force_authenticate(user=waiter.user)
-    new_place = PlaceFactory.create(restaurant=waiter.restaurant)
-    new_status = Reservation.Statuses.FINISHED
-    response = api_client.patch(
-        reverse_lazy(
-            "api:reservations-detail",
-            kwargs={"pk": reservation.pk},
-        ),
-        data={
-            "place": new_place.pk,
-            "status": new_status,
-        },
-        format='json',
-    )
-    assert response.status_code == status.HTTP_200_OK
-    assert Reservation.objects.filter(
-        id=reservation.pk,
-        place=new_place,
-        status=new_status,
-    ).exists()
-
-
-def test_update_reservation_by_waiter_set_other_place(
-    waiter,
-    api_client,
-) -> None:
-    place = PlaceFactory.create(restaurant=waiter.restaurant)
-    reservation = ReservationFactory.create(
-        restaurant=waiter.restaurant,
-        place=place,
-        status=Reservation.Statuses.OPENED,
-    )
-    api_client.force_authenticate(user=waiter.user)
+    api_client.force_authenticate(user=hostess.user)
     new_place = PlaceFactory.create()
     while new_place.restaurant.id == reservation.place.restaurant.id:
         new_place = PlaceFactory.create()
@@ -146,15 +126,64 @@ def test_update_reservation_by_waiter_set_other_place(
     ).exists()
 
 
-def test_update_reservation_by_waiter_reopened_finish(
-    waiter,
+def test_update_reservation_by_hostess_set_other_restaurant(
+    hostess,
     api_client,
 ) -> None:
     reservation = ReservationFactory.create(
-        restaurant=waiter.restaurant,
+        restaurant=hostess.restaurant,
+        status=Reservation.Statuses.OPENED,
+    )
+    api_client.force_authenticate(user=hostess.user)
+    response = api_client.patch(
+        reverse_lazy(
+            "api:reservations-detail",
+            kwargs={"pk": reservation.pk},
+        ),
+        data={
+            "restaurant": RestaurantFactory.create().pk,
+        },
+        format='json',
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_update_reservation_by_hostess_set_not_exists_place(
+    hostess,
+    api_client,
+) -> None:
+    place = PlaceFactory.create(restaurant=hostess.restaurant)
+    reservation = ReservationFactory.create(
+        restaurant=hostess.restaurant,
+        place=place,
+        status=Reservation.Statuses.OPENED,
+    )
+    api_client.force_authenticate(user=hostess.user)
+    new_place = PlaceFactory.create()
+    while new_place.restaurant.id == reservation.place.restaurant.id:
+        new_place = PlaceFactory.create()
+    response = api_client.patch(
+        reverse_lazy(
+            "api:reservations-detail",
+            kwargs={"pk": reservation.pk},
+        ),
+        data={
+            "place": new_place.pk+1,
+        },
+        format='json',
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_update_reservation_by_hostess_reopened_finish(
+    hostess,
+    api_client,
+) -> None:
+    reservation = ReservationFactory.create(
+        restaurant=hostess.restaurant,
         status=Reservation.Statuses.FINISHED,
     )
-    api_client.force_authenticate(user=waiter.user)
+    api_client.force_authenticate(user=hostess.user)
     new_status = Reservation.Statuses.OPENED
     response = api_client.patch(
         reverse_lazy(
@@ -173,15 +202,15 @@ def test_update_reservation_by_waiter_reopened_finish(
     ).exists()
 
 
-def test_update_reservation_by_waiter_reopened_canseled(
-    waiter,
+def test_update_reservation_by_hostess_reopened_canceled(
+    hostess,
     api_client,
 ) -> None:
     reservation = ReservationFactory.create(
-        restaurant=waiter.restaurant,
+        restaurant=hostess.restaurant,
         status=Reservation.Statuses.CANCELED,
     )
-    api_client.force_authenticate(user=waiter.user)
+    api_client.force_authenticate(user=hostess.user)
     new_status = Reservation.Statuses.OPENED
     response = api_client.patch(
         reverse_lazy(
@@ -200,8 +229,8 @@ def test_update_reservation_by_waiter_reopened_canseled(
     ).exists()
 
 
-def test_update_reservation_by_waiter_from_other_restaurant(
-    waiter,
+def test_update_reservation_by_hostess_from_other_restaurant(
+    hostess,
     api_client,
 ) -> None:
     restaurant = RestaurantFactory.create()
@@ -211,7 +240,7 @@ def test_update_reservation_by_waiter_from_other_restaurant(
         place=place,
         status=Reservation.Statuses.OPENED,
     )
-    api_client.force_authenticate(user=waiter.user)
+    api_client.force_authenticate(user=hostess.user)
     new_client = ClientFactory.create()
     response = api_client.patch(
         reverse_lazy(
@@ -223,7 +252,7 @@ def test_update_reservation_by_waiter_from_other_restaurant(
         },
         format='json',
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert Reservation.objects.filter(
         id=reservation.pk,
         client=reservation.client,
@@ -302,7 +331,7 @@ def test_update_reservation_by_client_failed(
             "place": new_place.pk,
         },
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_403_FORBIDDEN
     assert Reservation.objects.filter(
         pk=reservation.pk,
         place=reservation.place,
@@ -332,9 +361,7 @@ def test_read_reservation_by_client_failed(
     client,
     api_client,
 ) -> None:
-    reservation = ReservationFactory.create(
-        client=ClientFactory.create(),
-    )
+    reservation = ReservationFactory.create()
     api_client.force_authenticate(user=client.user)
     response = api_client.get(
         reverse_lazy(
@@ -342,7 +369,7 @@ def test_read_reservation_by_client_failed(
             kwargs={"pk": reservation.pk},
         ),
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_create_reservation_by_hostess(
@@ -364,7 +391,29 @@ def test_create_reservation_by_hostess(
         },
         format='json',
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_201_CREATED
+
+
+def test_create_reservation_by_hostess_set_not_exists_place(
+    hostess,
+    api_client,
+) -> None:
+    place = PlaceFactory.create(restaurant=hostess.restaurant)
+    reservation = ReservationFactory.build(
+        restaurant=hostess.restaurant,
+        place=place,
+    )
+    api_client.force_authenticate(user=hostess.user)
+    response = api_client.post(
+        reverse_lazy("api:reservations-list"),
+        data={
+            "restaurant": reservation.restaurant.pk,
+            "arrival_time": reservation.arrival_time,
+            "place": reservation.place.pk+1,
+        },
+        format='json',
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_update_reservation_by_hostess_success(

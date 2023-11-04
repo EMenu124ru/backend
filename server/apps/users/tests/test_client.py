@@ -8,7 +8,29 @@ from apps.users.models import Client, User
 pytestmark = pytest.mark.django_db
 
 
-def test_create_client(
+def test_create_client_without_surname(
+    api_client,
+) -> None:
+    client = ClientFactory.build(phone_number="+7999999999")
+    response = api_client.post(
+        reverse_lazy("api:clients-list"),
+        data={
+            "first_name": client.user.first_name,
+            "last_name": client.user.last_name,
+            "password": client.user.password,
+            "bonuses": client.bonuses,
+            "phone_number": client.phone_number,
+        },
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert Client.objects.filter(
+        id=response.data["id"],
+        bonuses=client.bonuses,
+        phone_number=client.phone_number,
+    ).exists()
+
+
+def test_create_client_with_surname(
     api_client,
 ) -> None:
     client = ClientFactory.build(phone_number="+7999999999")

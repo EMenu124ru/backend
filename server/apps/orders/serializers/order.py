@@ -35,7 +35,7 @@ class OrderSerializer(BaseModelSerializer):
             "dishes",
         )
 
-    def check_fields_by_staff(
+    def check_fields_by_waiter(
         self,
         instance: Order,
         validated_data: OrderedDict,
@@ -50,7 +50,10 @@ class OrderSerializer(BaseModelSerializer):
 
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self.instance:
-            if not self.check_fields_by_staff(self.instance, attrs):
+            if (
+                self._user.employee.role == Employee.Roles.WAITER and
+                not self.check_fields_by_waiter(self.instance, attrs)
+            ):
                 raise serializers.ValidationError(
                     "Работник может изменить только статус и комментарий к заказу",
                 )

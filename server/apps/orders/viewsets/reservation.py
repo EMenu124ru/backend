@@ -7,11 +7,19 @@ from apps.orders.serializers import ReservationSerializer
 
 
 class ReservationViewSet(CreateReadUpdateViewSet):
-    queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     permission_classes = (
         permissions.IsAuthenticated & ReservationPermission,
     )
 
+    def get_queryset(self):
+        if self.request.user.is_client:
+            return Reservation.objects.filter(client=self.request.user.client)
+        return Reservation.objects.filter(
+            restaurant=self.request.user.employee.restaurant,
+        )
+
     def perform_create(self, serializer):
-        serializer.save(client=self.request.user.client)
+        if self.request.user.is_client:
+            serializer.save(client=self.request.user.client)
+        return serializer.save()

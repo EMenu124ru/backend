@@ -12,11 +12,15 @@ class ReservationPermission(permissions.BasePermission):
             view.action == "list",
         ]):
             return any([
+                request.user.is_client,
                 check_role_employee(request.user, Employee.Roles.HOSTESS),
                 check_role_employee(request.user, Employee.Roles.WAITER),
             ])
         if request.method == "POST":
-            return request.user.is_client
+            return (
+                request.user.is_client or
+                check_role_employee(request.user, Employee.Roles.HOSTESS)
+            )
         return any([
             request.user.is_client,
             check_role_employee(request.user, Employee.Roles.HOSTESS),
@@ -24,16 +28,15 @@ class ReservationPermission(permissions.BasePermission):
         ])
 
     def has_object_permission(self, request, view, obj) -> bool:
-        if request.method in ("PUT", "PATCH", "GET"):
-            return any([
-                request.user.is_client and obj.client and obj.client.user == request.user,
-                (
-                    check_role_employee(request.user, Employee.Roles.HOSTESS) and
-                    obj.restaurant == request.user.employee.restaurant
-                ),
-                (
-                    check_role_employee(request.user, Employee.Roles.WAITER) and
-                    obj.restaurant == request.user.employee.restaurant
-                ),
-            ])
-        return True
+        is_client = request.user.is_client and obj.client and obj.client.id == request.user.client.id
+        is_hostess = (
+            check_role_employee(request.user, Employee.Roles.HOSTESS) and
+            obj.restaurant == request.user.employee.restaurant
+        )
+        is_waiter = (
+            check_role_employee(request.user, Employee.Roles.WAITER) and
+            obj.restaurant == request.user.employee.restaurant
+        )
+        if request.method == "GET":
+            return any([is_client, is_hostess, is_waiter])
+        return is_hostess

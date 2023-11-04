@@ -250,7 +250,7 @@ actions:
                 type: string
     response_to_group:
       event: new_order
-      orders:
+      order:
         type: object
         properties:
           id:
@@ -388,7 +388,6 @@ actions:
             employee:
               type: number
               nullable: true
-
     response_to_group:
       event: order_changed
       order:
