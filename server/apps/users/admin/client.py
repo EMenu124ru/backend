@@ -25,3 +25,7 @@ class ClientAdmin(admin.ModelAdmin):
     @admin.display(empty_value='???')
     def last_name(self, obj):
         return obj.user.last_name
+
+    @admin.display(empty_value='???')
+    def surname(self, obj):
+        return obj.user.surname

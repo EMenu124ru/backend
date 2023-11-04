@@ -10,22 +10,6 @@ from apps.users.models import Employee, Schedule
 pytestmark = pytest.mark.django_db
 
 
-def test_create_schedule_manager():
-    pass
-
-
-def test_create_schedule_waiter():
-    pass
-
-
-def test_create_schedule_with_other_restaurant():
-    pass
-
-
-def test_create_schedule_not_auth():
-    pass
-
-
 def test_update_schedule_manager(
     api_client,
     manager,
