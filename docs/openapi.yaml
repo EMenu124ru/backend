@@ -1347,6 +1347,31 @@ components:
                 type: number
               comment:
                 type: string
+        reservation:
+          type: number
+          nullable: true
+    
+    OrderCreateReservationBase:
+      type: object
+      properties:
+        status:
+          type: string
+        comment:
+          type: string
+        employee:
+          type: number
+        client:
+          type: number
+          nullable: true
+        dishes:
+          type: array
+          items:
+            type: object
+            properties:
+              dish:
+                type: number
+              comment:
+                type: string
 
     CategoryBase:
       type: object
@@ -1494,6 +1519,10 @@ components:
           nullable: true
         restaurant:
           type: number
+        order:
+          allOf:
+            - $ref: "#/components/schemas/OrderCreateReservationBase"
+          nullable: true
 
     ReservationBase:
       type: object
