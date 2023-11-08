@@ -12,6 +12,3 @@ class ReservationViewSet(CreateReadUpdateViewSet):
     permission_classes = (
         permissions.IsAuthenticated & ReservationPermission,
     )
-
-    def perform_create(self, serializer):
-        serializer.save(client=self.request.user.client)

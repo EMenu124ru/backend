@@ -53,4 +53,4 @@ class Reservation(models.Model):
         verbose_name_plural = "Забронированные столы"
 
     def __str__(self) -> str:
-        return f"Reservation {self.arrival_time} {self.restaurant} {self.place} {self.user}"
+        return f"Reservation {self.arrival_time} {self.restaurant} {self.place}"

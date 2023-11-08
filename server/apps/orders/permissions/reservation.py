@@ -16,7 +16,10 @@ class ReservationPermission(permissions.BasePermission):
                 check_role_employee(request.user, Employee.Roles.WAITER),
             ])
         if request.method == "POST":
-            return request.user.is_client
+            return any([
+                request.user.is_client,
+                check_role_employee(request.user, Employee.Roles.HOSTESS),
+            ])
         return any([
             request.user.is_client,
             check_role_employee(request.user, Employee.Roles.HOSTESS),

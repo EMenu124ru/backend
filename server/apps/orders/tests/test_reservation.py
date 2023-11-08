@@ -5,7 +5,7 @@ import pytz
 from django.urls import reverse_lazy
 from rest_framework import status
 
-from apps.orders.factories import OrderFactory, ReservationFactory
+from apps.orders.factories import OrderFactory, ReservationFactory, DishFactory
 from apps.orders.models import Reservation
 from apps.restaurants.factories import PlaceFactory, RestaurantFactory
 from apps.users.factories import ClientFactory
@@ -115,7 +115,7 @@ def test_update_reservation_by_waiter_success(
     ).exists()
 
 
-def test_update_reservation_by_waiter_set_other_place(
+def test_update_reservation_by_waiter_set_other_place_other_restaurant(
     waiter,
     api_client,
 ) -> None:
@@ -173,7 +173,7 @@ def test_update_reservation_by_waiter_reopened_finish(
     ).exists()
 
 
-def test_update_reservation_by_waiter_reopened_canseled(
+def test_update_reservation_by_waiter_reopened_canceled(
     waiter,
     api_client,
 ) -> None:
@@ -254,6 +254,45 @@ def test_create_reservation_by_client_success(
         restaurant=restaurant.pk,
         arrival_time=reservation.arrival_time,
     ).exists()
+
+
+def test_create_reservation_by_client_success_with_order(
+    client,
+    api_client,
+) -> None:
+    restaurant = RestaurantFactory.create()
+    place = PlaceFactory.create(restaurant=restaurant)
+    reservation = ReservationFactory.build(
+        restaurant=restaurant,
+        place=place,
+    )
+    order = OrderFactory.build()
+    dish = DishFactory.create()
+    order_dict = {
+        "status": order.status,
+        "comment": order.comment,
+        "client": client.pk,
+        "dishes": [{"dish": dish.id, "comment": "some comment"}],
+    }
+    api_client.force_authenticate(user=client.user)
+    response = api_client.post(
+        reverse_lazy("api:reservations-list"),
+        data={
+            "restaurant": reservation.restaurant.pk,
+            "arrival_time": reservation.arrival_time,
+            "order": order_dict,
+        },
+        format='json',
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert Reservation.objects.filter(
+        restaurant=restaurant.pk,
+        arrival_time=reservation.arrival_time,
+    ).exists()
+    assert Reservation.objects.get(
+        restaurant=restaurant.pk,
+        arrival_time=reservation.arrival_time,
+    ).orders.exists()
 
 
 def test_create_reservation_by_client_failed_place(
@@ -345,7 +384,7 @@ def test_read_reservation_by_client_failed(
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_create_reservation_by_hostess(
+def test_create_reservation_by_hostess_success(
     hostess,
     api_client,
 ) -> None:
@@ -364,7 +403,39 @@ def test_create_reservation_by_hostess(
         },
         format='json',
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_201_CREATED
+
+
+def test_create_reservation_by_hostess_failed(
+    hostess,
+    client,
+    api_client,
+) -> None:
+    place = PlaceFactory.create(restaurant=hostess.restaurant)
+    reservation = ReservationFactory.build(
+        restaurant=hostess.restaurant,
+        place=place,
+    )
+    order = OrderFactory.build()
+    dish = DishFactory.create()
+    order_dict = {
+        "status": order.status,
+        "comment": order.comment,
+        "client": client.pk,
+        "dishes": [{"dish": dish.id, "comment": "some comment"}],
+    }
+    api_client.force_authenticate(user=hostess.user)
+    response = api_client.post(
+        reverse_lazy("api:reservations-list"),
+        data={
+            "restaurant": reservation.restaurant.pk,
+            "arrival_time": reservation.arrival_time,
+            "place": reservation.place.pk,
+            "order": order_dict,
+        },
+        format='json',
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_update_reservation_by_hostess_success(
@@ -388,6 +459,7 @@ def test_update_reservation_by_hostess_success(
         data={
             "place": new_place.pk,
             "arrival_time": new_arrival_time,
+            "status": Reservation.Statuses.FINISHED,
         },
     )
     assert response.status_code == status.HTTP_200_OK
@@ -395,6 +467,7 @@ def test_update_reservation_by_hostess_success(
         id=reservation.pk,
         place_id=new_place.pk,
         arrival_time=new_arrival_time,
+        status=Reservation.Statuses.FINISHED,
     ).exists()
 
 

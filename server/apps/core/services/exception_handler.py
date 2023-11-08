@@ -32,8 +32,9 @@ def get_errors(data: list | dict) -> list:
 def custom_exception_handler(exc, context) -> response.Response | None:
     """Custom exception handler"""
     response = views.exception_handler(exc, context)
-    if response.status_code == status.HTTP_400_BAD_REQUEST:
-        response.data = {"detail": get_errors(response.data)}
-    else:
-        response.data = {"detail": response.data["detail"]}
+    if response:
+        if response.status_code == status.HTTP_400_BAD_REQUEST:
+            response.data = {"detail": get_errors(response.data)}
+        else:
+            response.data = {"detail": response.data["detail"]}
     return response
