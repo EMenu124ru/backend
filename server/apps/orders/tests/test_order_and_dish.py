@@ -27,15 +27,7 @@ def test_create_order_and_dishes_by_cook(
             "comment": order_and_dishes.comment,
         },
     )
-    assert response.status_code == status.HTTP_201_CREATED
-    assert OrderAndDish.objects.filter(
-        status=order_and_dishes.status,
-        order=order_and_dishes.order,
-        dish=order_and_dishes.dish,
-        comment=order_and_dishes.comment,
-    ).exists()
-    assert Dish.objects.get(id=dish.id).orders.exists()
-    assert Order.objects.get(id=order.id).dishes.exists()
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_update_order_and_dishes_by_cook_success(
@@ -50,6 +42,7 @@ def test_update_order_and_dishes_by_cook_success(
     order_and_dishes = OrderAndDishFactory.create(
         order=order,
         status=OrderAndDish.Statuses.COOKING,
+        employee=cook,
     )
     api_client.force_authenticate(user=cook.user)
     new_status = OrderAndDish.Statuses.DELIVERED
@@ -235,7 +228,34 @@ def test_update_order_and_dishes_by_chef_failed(
             "order": order.pk,
         },
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_update_order_and_dishes_by_chef_failed_current_restaurant(
+    chef,
+    api_client,
+) -> None:
+    waiter = EmployeeFactory.create(
+        restaurant=chef.restaurant,
+        role=Employee.Roles.WAITER,
+    )
+    order = OrderFactory.create(employee=waiter)
+    new_order = OrderFactory.create()
+    order_and_dishes = OrderAndDishFactory.create(
+        status=OrderAndDish.Statuses.COOKING,
+        order=order,
+    )
+    api_client.force_authenticate(user=chef.user)
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orderAndDishes-detail",
+            kwargs={"pk": order_and_dishes.pk},
+        ),
+        data={
+            "order": new_order.pk,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_update_order_and_dishes_by_sous_chef_failed(
@@ -256,7 +276,34 @@ def test_update_order_and_dishes_by_sous_chef_failed(
             "order": order.pk,
         },
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_update_order_and_dishes_by_sous_chef_failed_current_restaurant(
+    sous_chef,
+    api_client,
+) -> None:
+    waiter = EmployeeFactory.create(
+        restaurant=sous_chef.restaurant,
+        role=Employee.Roles.WAITER,
+    )
+    new_order = OrderFactory.create()
+    order = OrderFactory.create(employee=waiter)
+    order_and_dishes = OrderAndDishFactory.create(
+        status=OrderAndDish.Statuses.COOKING,
+        order=order,
+    )
+    api_client.force_authenticate(user=sous_chef.user)
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orderAndDishes-detail",
+            kwargs={"pk": order_and_dishes.pk},
+        ),
+        data={
+            "order": new_order.pk,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_update_order_and_dishes_by_cook_failed(
@@ -275,7 +322,31 @@ def test_update_order_and_dishes_by_cook_failed(
             "employee": chef.pk,
         },
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_update_order_and_dishes_by_cook_failed_current_restaurant(
+    cook,
+    chef,
+    api_client,
+) -> None:
+    waiter = EmployeeFactory.create(
+        restaurant=cook.restaurant,
+        role=Employee.Roles.WAITER,
+    )
+    order = OrderFactory.create(employee=waiter)
+    order_and_dishes = OrderAndDishFactory.create(order=order)
+    api_client.force_authenticate(user=cook.user)
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orderAndDishes-detail",
+            kwargs={"pk": order_and_dishes.pk},
+        ),
+        data={
+            "employee": chef.pk,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_create_order_and_dishes_by_waiter(

@@ -12,3 +12,8 @@ class OrderAndDishViewSet(CreateReadUpdateViewSet):
     permission_classes = (
         permissions.IsAuthenticated & OrderAndDishPermission,
     )
+
+    def get_queryset(self):
+        return OrderAndDish.objects.filter(
+            order__employee__restaurant_id=self.request.user.employee.restaurant_id,
+        )

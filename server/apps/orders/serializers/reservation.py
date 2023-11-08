@@ -4,7 +4,7 @@ from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import Reservation
 from apps.orders.serializers import OrderSerializer
 from apps.restaurants.models import Place, Restaurant
-from apps.restaurants.serializers import PlaceSerializer, RestaurantDataSerializer
+from apps.restaurants.serializers import PlaceSerializer, RestaurantSerializer
 from apps.users.models import Client, Employee
 from apps.users.serializers import ClientSerializer
 
@@ -95,13 +95,6 @@ class ReservationSerializer(BaseModelSerializer):
                 raise serializers.ValidationError(
                     "Редактируя бронь, хостес может менять только стол, время прибытия и статус",
                 )
-            if (
-                self._user.employee.role == Employee.Roles.WAITER and
-                not self.check_fields_by_waiter(self.instance, attrs)
-            ):
-                raise serializers.ValidationError(
-                    "Редактируя бронь, официант может менять только стол и статус",
-                )
             return attrs
         if (
             self._user.employee.role == Employee.Roles.HOSTESS and
@@ -121,7 +114,7 @@ class ReservationSerializer(BaseModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         restaurant = Restaurant.objects.get(pk=data["restaurant"])
-        data["restaurant"] = RestaurantDataSerializer(restaurant).data
+        data["restaurant"] = RestaurantSerializer(restaurant).data
 
         if (place_id := data.pop("place", None)) is not None:
             place = Place.objects.get(pk=place_id)
@@ -141,11 +134,13 @@ class ReservationSerializer(BaseModelSerializer):
         if self._user.is_client:
             client = self._user.client
             validated_data["client"] = client
+        reservation = super().create(validated_data)
         if order_dict is not None:
+            order_dict["reservation"] = reservation.pk
             order_dict["client"] = client.id
             for dish in order_dict["dishes"]:
                 dish["dish"] = dish["dish"].id
             serializer = OrderSerializer(data=order_dict)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-        return super().create(validated_data)
+        return reservation

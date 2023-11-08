@@ -1,7 +1,9 @@
 from django.db import models
 
+from apps.core.models import ScheduleBase
 
-class Schedule(models.Model):
+
+class Schedule(ScheduleBase):
     class WeekDays(models.IntegerChoices):
         """Week day choices"""
         MONDAY = 0
@@ -22,16 +24,10 @@ class Schedule(models.Model):
         related_name="schedule",
         verbose_name="Ресторан",
     )
-    time_open = models.TimeField(
-        verbose_name="Время открытия",
-    )
-    time_close = models.TimeField(
-        verbose_name="Время закрытия",
-    )
 
     class Meta:
-        verbose_name = "Расписание"
-        verbose_name_plural = "Расписания"
+        verbose_name = "Расписание работы ресторана"
+        verbose_name_plural = "Расписания работы ресторанов"
 
     def __str__(self) -> str:
-        return f"Schedule {self.restaurant} {self.time_open} {self.time_close} {self.week_day}"
+        return f"Schedule {self.restaurant} {self.time_start} {self.time_finish} {self.week_day}"

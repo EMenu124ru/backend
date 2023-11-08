@@ -48,13 +48,16 @@ def test_create_order_by_waiter(
     ).exists()
 
 
-def test_update_order_by_cook_failed(
+def test_update_order_by_cook(
     cook,
-    waiter,
     api_client,
 ) -> None:
     dishes = DishFactory.create_batch(
         size=DISHES_COUNT,
+    )
+    waiter = EmployeeFactory.create(
+        restaurant=cook.restaurant,
+        role=Employee.Roles.WAITER,
     )
     order = OrderFactory.create(
         employee=waiter,
@@ -76,7 +79,7 @@ def test_update_order_by_cook_failed(
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_update_order_by_cook_success(
+def test_update_order_by_waiter_success(
     waiter,
     api_client,
 ) -> None:
@@ -87,11 +90,7 @@ def test_update_order_by_cook_success(
         employee=waiter,
         price=sum([dish.price for dish in dishes]),
     )
-    cook = EmployeeFactory.create(
-        role=Employee.Roles.COOK,
-        restaurant=waiter.restaurant,
-    )
-    api_client.force_authenticate(user=cook.user)
+    api_client.force_authenticate(user=waiter.user)
     new_comment = "New some comment"
     new_status = Order.Statuses.COOKING
     response = api_client.patch(
@@ -109,6 +108,35 @@ def test_update_order_by_cook_success(
         id=order.pk,
         comment=new_comment,
         status=new_status,
+    ).exists()
+
+
+def test_update_order_by_waiter_failed(
+    waiter,
+    api_client,
+) -> None:
+    dishes = DishFactory.create_batch(
+        size=DISHES_COUNT,
+    )
+    order = OrderFactory.create(
+        employee=waiter,
+        price=sum([dish.price for dish in dishes]),
+    )
+    api_client.force_authenticate(user=waiter.user)
+    new_employee = EmployeeFactory.create()
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orders-detail",
+            kwargs={"pk": order.pk},
+        ),
+        data={
+            "employee": new_employee.pk,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert Order.objects.filter(
+        id=order.pk,
+        employee=order.employee,
     ).exists()
 
 
@@ -153,6 +181,27 @@ def test_read_order_by_waiter(
         ),
     )
     assert response.status_code == status.HTTP_200_OK
+
+
+def test_read_order_by_waiter_from_other_restaurant(
+    waiter,
+    api_client,
+) -> None:
+    dishes = DishFactory.create_batch(
+        size=DISHES_COUNT,
+    )
+    sum_dishes_prices = sum([dish.price for dish in dishes])
+    order = OrderFactory.create(
+        price=sum_dishes_prices,
+    )
+    api_client.force_authenticate(user=waiter.user)
+    response = api_client.get(
+        reverse_lazy(
+            "api:orders-detail",
+            kwargs={"pk": order.pk},
+        ),
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_create_order_by_client(
@@ -262,7 +311,7 @@ def test_read_order_by_client_success(
             kwargs={"pk": order.pk},
         ),
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_create_order_by_not_auth(

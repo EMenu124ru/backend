@@ -29,3 +29,12 @@ class OrderAndDishService:
                 )
             serializer.is_valid(raise_exception=True)
             serializer.save()
+
+    @staticmethod
+    @database_sync_to_async
+    def check_can_edit_order(body: dict) -> bool:
+        return (
+            len(body) == 2
+            and "id" in body and "dishes" in body and
+            all(["id" in dish for dish in body["dishes"]])
+        )

@@ -1,5 +1,6 @@
 from .client import ClientAdmin
 from .employee import EmployeeAdmin
-from .user import UserAdmin
+from .schedule import ScheduleAdmin
+from .user import UserAdminNew as UserAdmin
 
-__all__ = (UserAdmin, ClientAdmin, EmployeeAdmin)
+__all__ = (UserAdmin, ClientAdmin, ScheduleAdmin, EmployeeAdmin)

@@ -68,8 +68,9 @@ class DishViewSet(BaseViewSet):
     def images(self, request, *args, **kwargs):
         if request.data.get("images", None) is None:
             return response.Response(
-                data={"message": "Изображения отсутствуют"},
+                data={"images": "Изображения отсутствуют"},
                 status=status.HTTP_400_BAD_REQUEST,
+                exception=True,
             )
         serializers = [
             DishImageSerializer(data={

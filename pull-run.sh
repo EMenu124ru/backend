@@ -1,4 +1,5 @@
-make docker-down-prod
 make docker-clean
-make docker-run-buildd-prod
-make migrate-prod
+make docker-login
+make docker-down-prod
+make docker-pull-prod
+make docker-up-buildd-prod

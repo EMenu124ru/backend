@@ -42,7 +42,7 @@ class ClientAuthSerializer(serializers.Serializer):
 class ClientSerializer(BaseModelSerializer):
     first_name = serializers.CharField(source="user.first_name")
     last_name = serializers.CharField(source="user.last_name")
-    surname = serializers.CharField(source="user.surname")
+    surname = serializers.CharField(source="user.surname", default="")
     password = serializers.CharField(source="user.password", write_only=True)
     bonuses = serializers.IntegerField(default=0)
 

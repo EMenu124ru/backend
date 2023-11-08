@@ -111,12 +111,12 @@ class OrderAndDishSerializer(BaseModelSerializer):
                 raise serializers.ValidationError(
                     "Повар может изменить только статус заказа",
                 )
-            if any([
+            if (
                 self._user.employee.role in (
                     Employee.Roles.CHEF,
                     Employee.Roles.SOUS_CHEF,
                 ) and not self.check_fields_by_chef(self.instance, attrs)
-            ]):
+            ):
                 raise serializers.ValidationError(
                     (
                         "Шеф и су-шеф могут менять только работника, "

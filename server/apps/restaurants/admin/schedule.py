@@ -10,7 +10,7 @@ class ScheduleAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "restaurant",
-        "time_open",
-        "time_close",
+        "time_start",
+        "time_finish",
         "week_day",
     )

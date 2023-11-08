@@ -7,11 +7,15 @@ from apps.orders.serializers import OrderSerializer
 
 
 class OrderViewSet(CreateReadUpdateViewSet):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = (
         permissions.IsAuthenticated & OrderPermission,
     )
+
+    def get_queryset(self):
+        return Order.objects.filter(
+            employee__restaurant_id=self.request.user.employee.restaurant_id,
+        )
 
     def perform_create(self, serializer) -> None:
         serializer.save(employee=self.request.user.employee)

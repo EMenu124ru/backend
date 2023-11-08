@@ -7,19 +7,13 @@ from apps.users.models import Employee
 class OrderPermission(permissions.BasePermission):
 
     def has_permission(self, request, view) -> bool:
-        if all([
-            request.method == "GET",
-            view.action == "list",
-            request.user.is_client,
-        ]):
+        if request.user.is_client:
             return False
         if request.method == "POST":
             return check_role_employee(request.user, Employee.Roles.WAITER)
         return True
 
     def has_object_permission(self, request, view, obj) -> bool:
-        if request.user.is_client:
-            return request.method == "GET" and obj.client.user == request.user
         if request.user.employee.restaurant != obj.employee.restaurant:
             return False
-        return True
+        return check_role_employee(request.user, Employee.Roles.WAITER)

@@ -1,10 +1,11 @@
 from .place import PlaceSerializer
-from .restaurant import RestaurantDataSerializer, RestaurantSerializer
+from .restaurant import RestaurantSerializer
 from .schedule import ScheduleSerializer
+from .tag_to_place import TagToProjectSerializer
 
 __all__ = (
-    RestaurantDataSerializer,
     RestaurantSerializer,
     ScheduleSerializer,
     PlaceSerializer,
+    TagToProjectSerializer,
 )
