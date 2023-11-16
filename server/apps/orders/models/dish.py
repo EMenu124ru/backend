@@ -34,11 +34,6 @@ class Dish(models.Model):
         validators=[MinValueValidator(0)],
         verbose_name="Вес блюда",
     )
-    reviews = models.ManyToManyField(
-        "reviews.Review",
-        related_name="dish",
-        verbose_name="Отзыв",
-    )
 
     class Meta:
         verbose_name = "Блюдо"

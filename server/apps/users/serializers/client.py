@@ -8,6 +8,10 @@ class ClientAuthSerializer(serializers.Serializer):
     phone_number = serializers.CharField()
     password = serializers.CharField()
 
+    class Errors:
+        CLIENT_ALREADY_EXISTS = "Клиента с таким номером телефона не найдено"
+        WRONG_PASSWORD = 'Не верный пароль'
+
     def to_representation(self, data):
         client = Client.objects.filter(
             phone_number=data['phone_number'],
@@ -21,9 +25,7 @@ class ClientAuthSerializer(serializers.Serializer):
     def validate_phone_number(self, phone_number: str) -> str:
         if Client.objects.filter(phone_number=phone_number).exists():
             return phone_number
-        raise serializers.ValidationError(
-            "Клиента с таким номером телефона не найдено",
-        )
+        raise serializers.ValidationError(self.Errors.CLIENT_ALREADY_EXISTS)
 
     def validate(self, attrs):
         if (
@@ -33,9 +35,7 @@ class ClientAuthSerializer(serializers.Serializer):
             ).first()
         ):
             if not client.user.check_password(attrs['password']):
-                raise serializers.ValidationError(
-                    'Не верный пароль',
-                )
+                raise serializers.ValidationError(self.Errors.WRONG_PASSWORD)
         return attrs
 
 
@@ -45,6 +45,9 @@ class ClientSerializer(BaseModelSerializer):
     surname = serializers.CharField(source="user.surname", default="")
     password = serializers.CharField(source="user.password", write_only=True)
     bonuses = serializers.IntegerField(default=0)
+
+    class Errors:
+        CANT_CHANGE_BONUSES = "Пользователь не может изменять количество бонусов"
 
     class Meta:
         model = Client
@@ -100,8 +103,6 @@ class ClientSerializer(BaseModelSerializer):
             validated_data.get("phone_number", instance.phone_number)
         )
         if "bonuses" in validated_data:
-            raise serializers.ValidationError(
-                "Пользователь не может изменять количество бонусов"
-            )
+            raise serializers.ValidationError(self.Errors.CANT_CHANGE_BONUSES)
         instance.save()
         return instance

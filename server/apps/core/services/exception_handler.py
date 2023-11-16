@@ -1,4 +1,8 @@
-from rest_framework import response, status, views
+from rest_framework import (
+    response,
+    status,
+    views,
+)
 
 
 def iterate_by_errors(errors: list, dict_errors: dict):

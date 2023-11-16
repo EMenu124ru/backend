@@ -1,16 +1,13 @@
 from rest_framework import permissions
 
+from apps.users.functions import check_role_employee
 from apps.users.models import Employee
 
 
 class RestaurantPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        if request.user.is_client:
-            return False
-        if request.user.employee.role == Employee.Roles.HOSTESS:
-            return True
-        return False
+        return check_role_employee(request.user, Employee.Roles.HOSTESS)
 
     def has_object_permission(self, request, view, obj):
         return request.user.employee.restaurant.id == obj.id

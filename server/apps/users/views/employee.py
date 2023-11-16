@@ -1,4 +1,8 @@
-from rest_framework import generics, permissions, response
+from rest_framework import (
+    generics,
+    permissions,
+    response,
+)
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from apps.users.models import Employee

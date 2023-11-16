@@ -1,4 +1,8 @@
-from rest_framework import decorators, response, status
+from rest_framework import (
+    decorators,
+    response,
+    status,
+)
 
 from apps.core.viewsets import CreateReadUpdateDestroyViewSet
 from apps.users.models import Client

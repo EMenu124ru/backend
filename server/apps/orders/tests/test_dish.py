@@ -2,7 +2,11 @@ import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
 
-from apps.orders.factories import CategoryFactory, DishFactory, DishImageFactory
+from apps.orders.factories import (
+    CategoryFactory,
+    DishFactory,
+    DishImageFactory,
+)
 from apps.orders.models import Dish
 
 pytestmark = pytest.mark.django_db

@@ -1,7 +1,15 @@
-from rest_framework import permissions, response, status
+from rest_framework import (
+    permissions,
+    response,
+    status,
+)
 
 from apps.core.viewsets import CreateUpdateDestroyViewSet
-from apps.users import functions, models, serializers
+from apps.users import (
+    functions,
+    models,
+    serializers,
+)
 from apps.users.permissions import FromSameRestaurantSchedule
 
 

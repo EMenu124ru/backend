@@ -3,7 +3,11 @@ from collections import OrderedDict
 from django.shortcuts import get_object_or_404
 
 from apps.core.serializers import BaseModelSerializer, serializers
-from apps.orders.models import Dish, Order, OrderAndDish
+from apps.orders.models import (
+    Dish,
+    Order,
+    OrderAndDish,
+)
 from apps.orders.serializers import DishSerializer
 from apps.users.models import Employee
 from apps.users.serializers import EmployeeSerializer
@@ -45,6 +49,14 @@ class OrderAndDishSerializer(BaseModelSerializer):
         queryset=Employee.objects.all(),
         required=False,
     )
+
+    class Errors:
+        WAITER_CHANGES = "Официант может изменить только комментарий к заказу и статус"
+        COOK_CHANGES = "Повар может изменить только статус заказа"
+        CHEF_CHANGES = (
+            "Шеф и су-шеф могут менять только работника, "
+            "который будет готовить блюдо, и статус"
+        )
 
     class Meta:
         model = OrderAndDish
@@ -101,28 +113,19 @@ class OrderAndDishSerializer(BaseModelSerializer):
                 self._user.employee.role == Employee.Roles.WAITER and
                 not self.check_fields_by_waiter(self.instance, attrs)
             ):
-                raise serializers.ValidationError(
-                    "Официант может изменить только комментарий к заказу и статус",
-                )
+                raise serializers.ValidationError(self.Errors.WAITER_CHANGES)
             if (
                 self._user.employee.role == Employee.Roles.COOK and
                 not self.check_fields_by_cook(self.instance, attrs)
             ):
-                raise serializers.ValidationError(
-                    "Повар может изменить только статус заказа",
-                )
+                raise serializers.ValidationError(self.Errors.COOK_CHANGES)
             if (
                 self._user.employee.role in (
                     Employee.Roles.CHEF,
                     Employee.Roles.SOUS_CHEF,
                 ) and not self.check_fields_by_chef(self.instance, attrs)
             ):
-                raise serializers.ValidationError(
-                    (
-                        "Шеф и су-шеф могут менять только работника, "
-                        "который будет готовить блюдо, и статус"
-                    ),
-                )
+                raise serializers.ValidationError(self.Errors.CHEF_CHANGES)
         return attrs
 
     def to_representation(self, instance: Order) -> OrderedDict:

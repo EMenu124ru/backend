@@ -1,19 +1,27 @@
-from rest_framework import decorators, response, status
+from rest_framework import (
+    decorators,
+    response,
+    status,
+)
 
 from apps.core.viewsets import BaseViewSet
-from apps.orders.models import Dish, Order, OrderAndDish
+from apps.orders.models import (
+    Dish,
+    Order,
+    OrderAndDish,
+)
 from apps.orders.permissions import DishPermission
-from apps.orders.serializers import DishImageSerializer, DishSerializer, OrderSerializer
-from apps.reviews.models import Review
-from apps.reviews.serializers import ReviewSerializer
+from apps.orders.serializers import (
+    DishImageSerializer,
+    DishSerializer,
+    OrderSerializer,
+)
 
 
 class DishViewSet(BaseViewSet):
     permission_classes = (DishPermission,)
 
     def get_serializer_class(self):
-        if self.action == "reviews":
-            return ReviewSerializer
         if self.action == "orders":
             return OrderSerializer
         return DishSerializer
@@ -24,10 +32,6 @@ class DishViewSet(BaseViewSet):
         instance.delete()
 
     def get_queryset(self):
-        if self.action == "reviews":
-            return Review.objects.filter(
-                dish=self.kwargs["pk"],
-            )
         if self.action == "orders":
             orders = OrderAndDish.objects.filter(
                 dish_id=self.kwargs["pk"],

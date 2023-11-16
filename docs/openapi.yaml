@@ -19,10 +19,6 @@ tags:
     description: "Dish namespace"
   - name: dish-images
     description: "Dish image namespace"
-  - name: reviews
-    description: "Review namespace"
-  - name: review-images
-    description: "Review image namespace"
   - name: restaurants
     description: "Restaurant namespace"
   - name: reservations
@@ -703,43 +699,6 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound404"
 
-  "/api/v1/dishes/{dish_id}/reviews":
-    get:
-      tags:
-        - dishes
-        - reviews
-      summary: "Get reviews of some dish"
-      parameters:
-        - name: dish_id
-          in: path
-          schema:
-            type: number
-          description: "Id блюда"
-          required: true
-        - in: query
-          name: page
-          schema:
-            type: number
-            nullable: true
-          description: "Номер страницы"
-          required: false
-        - in: query
-          name: page_size
-          schema:
-            type: number
-            nullable: true
-          description: "Количество элементов на странице"
-          required: false
-      responses:
-        "200":
-          $ref: "#/components/responses/ReviewList200"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
   "/api/v1/dishes/{dish_id}/images":
     post:
       tags:
@@ -1011,148 +970,6 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound404"
 
-  "/api/v1/reviews":
-    post:
-      tags:
-        - reviews
-      summary: "Create reviews"
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/ReviewCreateBody"
-      responses:
-        "201":
-          $ref: "#/components/responses/ReviewCreate201"
-        "400":
-          $ref: "#/components/responses/BadRequest400"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-
-  "/api/v1/reviews/{review_id}":
-    get:
-      tags:
-        - reviews
-      summary: "Get review"
-      parameters:
-        - name: review_id
-          in: path
-          schema:
-            type: number
-          description: "Id отзыва"
-          required: true
-      responses:
-        "200":
-          $ref: "#/components/responses/Review200"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
-    patch:
-      tags:
-        - reviews
-      summary: "Update review"
-      parameters:
-        - name: review_id
-          in: path
-          schema:
-            type: number
-          description: "Id отзыва"
-          required: true
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/ReviewCreateBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/Review200"
-        "400":
-          $ref: "#/components/responses/BadRequest400"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
-    delete:
-      tags:
-        - reviews
-      summary: "Delete review"
-      parameters:
-        - name: review_id
-          in: path
-          schema:
-            type: number
-          description: "Id отзыва"
-          required: true
-      security:
-        - bearerAuth: []
-      responses:
-        "204":
-          description: "No Content"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
-  "/api/v1/reviews/{review_id}/images":
-    post:
-      tags:
-        - reviews
-        - review-images
-      summary: "Create review-image"
-      parameters:
-        - name: review_id
-          in: path
-          schema:
-            type: number
-          description: "Id отзыва"
-          required: true
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/ReviewImageCreateBody"
-      responses:
-        "201":
-          $ref: "#/components/responses/ReviewImageCreate201"
-        "400":
-          $ref: "#/components/responses/BadRequest400"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-
-  "/api/v1/review-images/{review_image_id}":
-    delete:
-      tags:
-        - review-images
-      summary: "Delete review-image"
-      parameters:
-        - name: review_image_id
-          in: path
-          schema:
-            type: number
-          description: "Id картинки"
-          required: true
-      security:
-        - bearerAuth: []
-      responses:
-        "204":
-          description: "No Content"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
   "/api/v1/restaurants":
     get:
       tags:
@@ -1178,27 +995,6 @@ paths:
           $ref: "#/components/responses/RestaurantList200"
         "401":
           $ref: "#/components/responses/Unauthorized401"
-
-  "/api/v1/restaurants/{restaurant_id}/reviews":
-    get:
-      tags:
-        - restaurants
-        - reviews
-      summary: "Get reviews of restaurant"
-      parameters:
-        - name: restaurant_id
-          in: path
-          schema:
-            type: number
-          required: true
-          description: "Id ресторана"
-      responses:
-        "200":
-          $ref: "#/components/responses/ReviewList200"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "404":
-          $ref: "#/components/responses/NotFound404"
   
   "/api/v1/restaurants/{restaurant_id}/places":
     get:
@@ -1457,56 +1253,6 @@ components:
           items:
             type: string
 
-    ReviewImageCreateBase:
-      type: object
-      properties:
-        images:
-          type: array
-          items:
-            type: string
-
-    ReviewImageBase:
-      type: object
-      properties:
-        id:
-          type: number
-        image:
-          type: string
-
-    ReviewCreateBase:
-      type: object
-      properties:
-        review:
-          type: string
-        mark:
-          type: string
-        dish:
-          type: number
-          nullable: true
-        restaurant:
-          type: number
-          nullable: true
-        images:
-          type: array
-          items:
-            type: string
-
-    ReviewBase:
-      type: object
-      properties:
-        id:
-          type: number
-        review:
-          type: string
-        mark:
-          type: string
-        client:
-          $ref: "#/components/schemas/ClientBase"
-        images:
-          type: array
-          items:
-            $ref: "#/components/schemas/ReviewImageBase"
-
     ReservationCreateBase:
       type: object
       properties:
@@ -1680,20 +1426,6 @@ components:
           format: time
 
   requestBodies:
-    ReviewCreateBody:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ReviewCreateBase"
-      required: true
-
-    ReviewImageCreateBody:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ReviewImageCreateBase"
-      required: true
-
     LoginRequestBodyClient:
       content:
         application/json:
@@ -2031,56 +1763,6 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/DishImageBase"
-
-    ReviewCreate201:
-      description: "Review create"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ReviewBase"
-
-    Review200:
-      description: "Review get"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ReviewBase"
-
-    ReviewList200:
-      description: "List of reviews"
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              links:
-                type: object
-                properties:
-                  next:
-                    type: string
-                    format: url
-                    nullable: true
-                  previous:
-                    type: string
-                    format: url
-                    nullable: true
-              count:
-                type: number
-              total_pages:
-                type: number
-              results:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ReviewBase"
-
-    ReviewImageCreate201:
-      description: "Review image create"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/ReviewImageBase"
 
     ReservationList200:
       description: "List of reservation"

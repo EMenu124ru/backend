@@ -1,7 +1,11 @@
 from datetime import datetime, timedelta
 
 import pytz
-from factory import LazyAttribute, SubFactory, fuzzy
+from factory import (
+    LazyAttribute,
+    SubFactory,
+    fuzzy,
+)
 from factory.django import DjangoModelFactory
 
 from apps.orders.models import Reservation

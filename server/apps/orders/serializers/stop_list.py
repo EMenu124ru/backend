@@ -13,6 +13,9 @@ class StopListSerializer(BaseModelSerializer):
         required=False,
     )
 
+    class Errors:
+        STOP_LIST_WITHOUT_DISHES = "Нельзя создать стоп лист без блюд"
+
     class Meta:
         model = StopList
         fields = (
@@ -23,7 +26,5 @@ class StopListSerializer(BaseModelSerializer):
 
     def validate_dishes(self, dishes) -> list:
         if not dishes:
-            raise serializers.ValidationError(
-                "Нельзя создать стоп лист без блюд",
-            )
+            raise serializers.ValidationError(self.Errors.STOP_LIST_WITHOUT_DISHES)
         return dishes

@@ -5,11 +5,6 @@ class Restaurant(models.Model):
     address = models.TextField(
         verbose_name="Адрес",
     )
-    reviews = models.ManyToManyField(
-        "reviews.Review",
-        related_name="restaurant",
-        verbose_name="Отзыв",
-    )
 
     class Meta:
         verbose_name = "Ресторан"

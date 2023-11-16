@@ -1,5 +1,10 @@
 from django.db.models import QuerySet
-from rest_framework import generics, permissions, response, status
+from rest_framework import (
+    generics,
+    permissions,
+    response,
+    status,
+)
 
 from apps.core.services.pagination import PaginationObject
 from apps.orders.models import Reservation
@@ -10,18 +15,6 @@ from apps.restaurants.serializers import (
     RestaurantSerializer,
     TagToProjectSerializer,
 )
-from apps.reviews.models import Review
-from apps.reviews.serializers import ReviewSerializer
-
-
-class ReviewsRestaurantAPIView(generics.ListAPIView):
-    serializer_class = ReviewSerializer
-    pagination_class = PaginationObject
-
-    def get_queryset(self):
-        return Review.objects.filter(
-            restaurant=self.kwargs["pk"],
-        )
 
 
 class RestaurantListAPIView(generics.ListAPIView):

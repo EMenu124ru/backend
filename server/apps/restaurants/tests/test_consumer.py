@@ -6,7 +6,11 @@ from django.urls import path
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.core.middleware import JWTQueryParamAuthMiddleware
-from apps.orders.factories import DishFactory, OrderAndDishFactory, OrderFactory
+from apps.orders.factories import (
+    DishFactory,
+    OrderAndDishFactory,
+    OrderFactory,
+)
 from apps.orders.models import Order, OrderAndDish
 from apps.orders.serializers import OrderSerializer
 from apps.restaurants.consumers import RestaurantConsumer
