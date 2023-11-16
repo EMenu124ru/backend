@@ -1,4 +1,8 @@
-from factory import Faker, SubFactory, fuzzy
+from factory import (
+    Faker,
+    SubFactory,
+    fuzzy,
+)
 from factory.django import DjangoModelFactory
 
 from apps.orders.models import Order

@@ -2,12 +2,12 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
+from apps.orders.constants import OrderErrors
+
 
 def validate_arrival_time(arrival_time) -> None:
     if timezone.now() >= arrival_time:
-        raise ValidationError(
-            "Время прихода не может быть раньше текущего времени",
-        )
+        raise ValidationError(OrderErrors.WRONG_ARRIVAL_TIME)
 
 
 class Reservation(models.Model):

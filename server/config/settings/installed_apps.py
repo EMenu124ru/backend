@@ -21,7 +21,6 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "apps.orders.apps.OrdersConfig",
     "apps.restaurants.apps.RestaurantsConfig",
-    "apps.reviews.apps.ReviewsConfig",
     "apps.users.apps.UsersConfig",
 ]
 

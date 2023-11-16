@@ -6,4 +6,3 @@ class DestroyViewSet(
     viewsets.GenericViewSet,
 ):
     """Destroy ViewSet for `destroy` action."""
-    pass

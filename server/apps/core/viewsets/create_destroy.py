@@ -7,5 +7,3 @@ class CreateDestroyViewSet(
     viewsets.GenericViewSet,
 ):
     """CreateDestroy ViewSet for `create` and `destroy` actions."""
-
-    pass

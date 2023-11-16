@@ -10,12 +10,13 @@ class EmployeeAuthSerializer(TokenObtainPairSerializer):
     username = serializers.CharField()
     password = serializers.CharField()
 
+    class Errors:
+        USER_ISNT_EMPLOYEE = 'Пользователь не является сотрудником'
+
     def validate(self, attrs):
         validated_data = super().validate(attrs)
         if self.user.is_client:
-            raise serializers.ValidationError(
-                'Пользователь не является сотрудником',
-            )
+            raise serializers.ValidationError(self.Errors.USER_ISNT_EMPLOYEE)
         return {
             'access': validated_data['access'],
             'refresh': validated_data['refresh'],

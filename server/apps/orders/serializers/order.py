@@ -2,7 +2,11 @@ from collections import OrderedDict
 from decimal import Decimal
 
 from apps.core.serializers import BaseModelSerializer, serializers
-from apps.orders.models import Order, OrderAndDish, Reservation
+from apps.orders.models import (
+    Order,
+    OrderAndDish,
+    Reservation,
+)
 from apps.users.models import Client, Employee
 from apps.users.serializers import ClientSerializer, EmployeeSerializer
 
@@ -28,6 +32,9 @@ class OrderSerializer(BaseModelSerializer):
     dishes = DishCommentSerializer(
         many=True,
     )
+
+    class Errors:
+        EMPLOYEE_CHANGES = "Работник может изменить только статус и комментарий к заказу"
 
     class Meta:
         model = Order
@@ -60,9 +67,7 @@ class OrderSerializer(BaseModelSerializer):
                 self._user.employee.role == Employee.Roles.WAITER and
                 not self.check_fields_by_waiter(self.instance, attrs)
             ):
-                raise serializers.ValidationError(
-                    "Работник может изменить только статус и комментарий к заказу",
-                )
+                raise serializers.ValidationError(self.Errors.EMPLOYEE_CHANGES)
         return attrs
 
     def create(self, validated_data: OrderedDict) -> Order:

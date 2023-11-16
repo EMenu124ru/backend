@@ -9,5 +9,3 @@ class CreateReadUpdateDestroyViewSet(
     viewsets.GenericViewSet,
 ):
     """CreateReadUpdateDestroy ViewSet for `create`, `destroy`, `retrieve` and `update` actions."""
-
-    pass

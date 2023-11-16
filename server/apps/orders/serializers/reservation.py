@@ -28,6 +28,18 @@ class ReservationSerializer(BaseModelSerializer):
         default=None,
     )
 
+    class Errors:
+        CLIENT_CANT_CHOOSE_PLACE = "Клиент не может выбрать или поменять место"
+        RESTORE_CLOSED_RESERVATION = (
+            "Нельзя менять бронирование, когда оно уже завершено или отменено"
+        )
+        PLACE_DONT_EXISTS = "Данного места нет в ресторане"
+        HOSTESS_CHANGES = (
+            "Редактируя бронь, хостес может менять только стол, "
+            "время прибытия и статус"
+        )
+        HOSTESS_CANT_CREATE_ORDER = "Создавая бронь, хостес не может создать заказ"
+
     class Meta:
         model = Reservation
         fields = (
@@ -70,45 +82,33 @@ class ReservationSerializer(BaseModelSerializer):
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self._user.is_client:
             if "place" in attrs:
-                raise serializers.ValidationError(
-                    "Клиент не может выбрать или поменять стол",
-                )
+                raise serializers.ValidationError(self.Errors.CLIENT_CANT_CHOOSE_PLACE)
             return attrs
         if self.instance:
             if self.instance.status in (
                 Reservation.Statuses.CANCELED,
                 Reservation.Statuses.FINISHED,
             ):
-                raise serializers.ValidationError(
-                    "Нельзя менять бронирование, когда оно уже завершено или отменено",
-                )
+                raise serializers.ValidationError(self.Errors.RESTORE_CLOSED_RESERVATION)
             restaurant = attrs.get("restaurant", self.instance.restaurant)
             place = attrs.get("place", self.instance.place)
             if not restaurant.places.filter(pk=place.id).exists():
-                raise serializers.ValidationError(
-                    "Данного стола нет в ресторане",
-                )
+                raise serializers.ValidationError(self.Errors.PLACE_DONT_EXISTS)
             if (
                 self._user.employee.role == Employee.Roles.HOSTESS and
                 not self.check_fields_by_hostess(self.instance, attrs)
             ):
-                raise serializers.ValidationError(
-                    "Редактируя бронь, хостес может менять только стол, время прибытия и статус",
-                )
+                raise serializers.ValidationError(self.Errors.HOSTESS_CHANGES)
             return attrs
         if (
             self._user.employee.role == Employee.Roles.HOSTESS and
             attrs.get("order", None) is not None
         ):
-            raise serializers.ValidationError(
-                "Создавая бронь, хостес не может создать заказ",
-            )
+            raise serializers.ValidationError(self.Errors.HOSTESS_CANT_CREATE_ORDER)
         restaurant = attrs.get("restaurant")
         place = attrs.get("place")
         if not restaurant.places.filter(pk=place.id).exists():
-            raise serializers.ValidationError(
-                "Данного стола нет в ресторане",
-            )
+            raise serializers.ValidationError(self.Errors.PLACE_DONT_EXISTS)
         return attrs
 
     def to_representation(self, instance):

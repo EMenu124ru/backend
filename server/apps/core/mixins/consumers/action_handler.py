@@ -1,4 +1,8 @@
-from typing import Any, Awaitable, Final
+from typing import (
+    Any,
+    Awaitable,
+    Final,
+)
 
 from rest_framework.exceptions import ValidationError
 

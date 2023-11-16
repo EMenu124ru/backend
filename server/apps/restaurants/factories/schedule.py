@@ -1,6 +1,16 @@
-from datetime import date, datetime, time, timedelta
+from datetime import (
+    date,
+    datetime,
+    time,
+    timedelta,
+)
 
-from factory import Faker, LazyAttribute, SubFactory, fuzzy
+from factory import (
+    Faker,
+    LazyAttribute,
+    SubFactory,
+    fuzzy,
+)
 from factory.django import DjangoModelFactory
 
 from apps.restaurants.models import Schedule

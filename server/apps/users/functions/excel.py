@@ -2,26 +2,16 @@ from datetime import date
 from zipfile import BadZipfile
 
 import openpyxl
-from django.shortcuts import get_object_or_404
 
+from apps.users.constants import ScheduleErrors, ScheduleFile
 from apps.users.models import Employee, Schedule
 from apps.users.serializers import EmployeeScheduleSerializer
-
-
-class ScheduleFile:
-    LAST_NAME: int = 0
-    FIRST_NAME: int = 1
-    SURNAME: int = 2
-    ROLE: int = 3
-    DAY: int = 4
-    TIME_START: int = 5
-    TIME_FINISH: int = 6
 
 
 def import_schedule(request) -> list:
     if request.data['file'].name.split('.')[-1] != 'xlsx':
         return {
-            'file': 'Файл должен иметь расширение .xlsx',
+            'file': ScheduleErrors.WRONG_EXTENSION,
         }
     try:
         workbook = openpyxl.reader.excel.load_workbook(
@@ -30,7 +20,7 @@ def import_schedule(request) -> list:
         )
     except BadZipfile:
         return {
-            'file': 'Файл является битым',
+            'file': ScheduleErrors.BAD_FILE,
         }
     sheet = workbook.active
     employees = {}
@@ -46,7 +36,7 @@ def import_schedule(request) -> list:
             [last_name, first_name, surname, role, day, time_start, time_finish]
         ):
             return {
-                "file": "Присутствуют пропущенные значения",
+                "file": ScheduleErrors.WRONG_EXTENSION,
             }
         employee = (last_name, first_name, surname, role)
         if employee not in employees:
@@ -58,15 +48,19 @@ def import_schedule(request) -> list:
             index = Employee.Roles.labels.index(employee[3])
         except ValueError:
             return {
-                "file": f"Присутствует не корректная роль {employee[3]}",
+                "file": f"{ScheduleErrors.WRONG_ROLE} {employee[3]}",
             }
-        employee = get_object_or_404(
-            Employee,
+        objects = Employee.objects.filter(
             user__last_name=employee[0],
             user__first_name=employee[1],
             user__surname=employee[2],
             role=Employee.Roles.names[index],
         )
+        if not objects.exists():
+            return {
+                "file": f"{ScheduleErrors.EMPLOYEE_NOT_FOUND} {employee}",
+            }
+        employee = objects.first()
         to_create = []
         for item in schedule:
             if not Schedule.objects.filter(

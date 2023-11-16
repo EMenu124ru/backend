@@ -1,7 +1,16 @@
-from datetime import date, datetime, time, timedelta
+from datetime import (
+    date,
+    datetime,
+    time,
+    timedelta,
+)
 from random import randint
 
-from factory import Faker, LazyAttribute, SubFactory
+from factory import (
+    Faker,
+    LazyAttribute,
+    SubFactory,
+)
 from factory.django import DjangoModelFactory
 
 from apps.users.models import Schedule
@@ -19,7 +28,9 @@ class ScheduleFactory(DjangoModelFactory):
         "time",
     )
     time_finish = LazyAttribute(
-        lambda obj: datetime.combine(date.today(), time.fromisoformat(obj.time_start)) + timedelta(hours=8),
+        lambda obj: datetime.combine(
+            date.today(), time.fromisoformat(obj.time_start)
+        ) + timedelta(hours=8),
     )
     day = LazyAttribute(
         lambda _: date.today() + timedelta(days=randint(1, 10)),
