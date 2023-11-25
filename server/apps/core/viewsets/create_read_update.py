@@ -1,5 +1,7 @@
 from rest_framework import mixins, viewsets
 
+from apps.core.utils import PaginationObject
+
 
 class CreateReadUpdateViewSet(
     mixins.CreateModelMixin,
@@ -9,3 +11,5 @@ class CreateReadUpdateViewSet(
     viewsets.GenericViewSet,
 ):
     """CreateReadUpdate ViewSet for `create`, `retrieve` and `update` actions."""
+
+    pagination_class = PaginationObject

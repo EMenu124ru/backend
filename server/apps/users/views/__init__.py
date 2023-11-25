@@ -1,11 +1,16 @@
+from .client import ClientCookieAuthAPIView, ClientHeaderAuthAPIView
 from .employee import (
-    EmployeeAuthAPIView,
+    EmployeeCookieAuthAPIView,
+    EmployeeHeaderAuthAPIView,
     EmployeeRetrieveAPIView,
     EmployeeScheduleRetrieveAPIView,
 )
 
 __all__ = (
-    EmployeeAuthAPIView,
+    ClientCookieAuthAPIView,
+    ClientHeaderAuthAPIView,
+    EmployeeCookieAuthAPIView,
+    EmployeeHeaderAuthAPIView,
     EmployeeRetrieveAPIView,
     EmployeeScheduleRetrieveAPIView,
 )

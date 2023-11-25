@@ -11,7 +11,7 @@ from rest_framework_simplejwt.exceptions import (
     TokenError,
 )
 
-AUTH_COOKIE_KEY = "authorization"
+AUTH_COOKIE_KEY = "token"
 
 
 class JWTCookieAuthMiddleware(BaseMiddleware):
