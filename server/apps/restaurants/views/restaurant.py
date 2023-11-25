@@ -6,7 +6,7 @@ from rest_framework import (
     status,
 )
 
-from apps.core.services.pagination import PaginationObject
+from apps.core.utils import PaginationObject
 from apps.orders.models import Reservation
 from apps.restaurants.models import Restaurant
 from apps.restaurants.permissions import RestaurantPermission

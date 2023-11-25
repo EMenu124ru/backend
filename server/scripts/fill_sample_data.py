@@ -11,7 +11,6 @@ from apps.orders.factories import (
 from apps.restaurants.factories import PlaceFactory, RestaurantFactory
 from apps.restaurants.factories import ScheduleFactory as RestaurantScheduleFactory
 from apps.restaurants.factories import TagToPlaceFactory
-from apps.reviews.factories import ReviewFactory, ReviewImageFactory
 from apps.users.factories import ClientFactory, EmployeeFactory
 from apps.users.factories import ScheduleFactory as EmployeeScheduleFactory
 from apps.users.factories import UserFactory
@@ -24,7 +23,6 @@ ORDERS_COUNT = 10
 DISH_REVIEWS_COUNT = 10
 IMAGES_PER_DISH_COUNT = IMAGES_PER_REVIEW_COUNT = 3
 RESTAURANTS_COUNT = 3
-RESTAURANT_REVIEWS_COUNT = 3
 SCHEDULES_COUNT = 7
 TAGS_COUNT = PLACE_COUNT = 10
 
@@ -38,20 +36,10 @@ def run():
         ClientFactory.create(user=user)
         for user in users[:len(users) // 2]
     ]
-    rest_reviews = []
-    for _ in range(RESTAURANT_REVIEWS_COUNT):
-        client = clients[randint(0, CLIENTS_COUNT - 1)]
-        rest_reviews.append(ReviewFactory.create(client=client))
-    for review in rest_reviews:
-        ReviewImageFactory.create_batch(
-            review=review,
-            size=IMAGES_PER_REVIEW_COUNT,
-        )
     tags = TagToPlaceFactory.create_batch(size=TAGS_COUNT)
     restaurants = []
-    for review in rest_reviews:
+    for _ in range(RESTAURANTS_COUNT):
         restaurants.append(RestaurantFactory.create())
-        restaurants[-1].reviews.add(review)
     for _ in range(SCHEDULES_COUNT):
         restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]
         RestaurantScheduleFactory.create(restaurant=restaurant)
@@ -71,14 +59,6 @@ def run():
             employee=employee,
         )
     dish_reviews = []
-    for _ in range(DISH_REVIEWS_COUNT):
-        client = clients[randint(0, CLIENTS_COUNT - 1)]
-        dish_reviews.append(ReviewFactory.create(client=client))
-    for review in dish_reviews:
-        ReviewImageFactory.create_batch(
-            review=review,
-            size=IMAGES_PER_REVIEW_COUNT,
-        )
     categories = CategoryFactory.create_batch(
         size=CATEGORIES_COUNT,
     )

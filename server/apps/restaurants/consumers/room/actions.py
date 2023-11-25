@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError as ValidationErrorDjango
 from rest_framework.exceptions import ValidationError
 
-from apps.core.services import get_errors
+from apps.core.utils import get_errors
 
 from .constants import Errors, Events
 from .queries import OrderQueries, UserQueries

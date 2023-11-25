@@ -3,9 +3,9 @@ from channels.db import database_sync_to_async
 from channels.routing import URLRouter
 from channels.testing import WebsocketCommunicator
 from django.urls import path
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.core.middleware import JWTQueryParamAuthMiddleware
+from apps.core.utils import get_jwt_tokens
 from apps.orders.factories import (
     DishFactory,
     OrderAndDishFactory,
@@ -21,8 +21,7 @@ from apps.users.models import Employee
 
 @database_sync_to_async
 def get_token(user) -> str:
-    refresh = RefreshToken.for_user(user)
-    return str(refresh.access_token)
+    return get_jwt_tokens(user)["access"]
 
 
 @database_sync_to_async
