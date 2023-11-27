@@ -4,18 +4,34 @@ from rest_framework import (
     status,
 )
 
-from apps.core.viewsets import BaseViewSet
+from apps.core.viewsets import (
+    BaseViewSet,
+    RetrieveListViewSet,
+    DestroyViewSet,
+)
 from apps.orders.models import (
     Dish,
     Order,
     OrderAndDish,
+    Ingredient,
+    DishImage,
 )
-from apps.orders.permissions import DishPermission
+from apps.orders.permissions import (
+    DishPermission,
+    IngredientPermission,
+)
 from apps.orders.serializers import (
     DishImageSerializer,
     DishSerializer,
     OrderSerializer,
+    IngredientSerializer,
 )
+
+
+class IngredientViewSet(RetrieveListViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    permission_classes = (IngredientPermission,)
 
 
 class DishViewSet(BaseViewSet):
@@ -94,3 +110,8 @@ class DishViewSet(BaseViewSet):
             ).data,
             status=status.HTTP_201_CREATED,
         )
+
+
+class DishImageViewSet(DestroyViewSet):
+    queryset = DishImage.objects.all()
+    permission_classes = (DishPermission, )

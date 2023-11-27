@@ -4,6 +4,12 @@ from apps.users.functions import check_role_employee
 from apps.users.models import Employee
 
 
+class IngredientPermission(permissions.BasePermission):
+
+    def has_permission(self, request, view) -> bool:
+        return check_role_employee(request.user, Employee.Roles.MANAGER)
+
+
 class DishPermission(permissions.BasePermission):
 
     def has_permission(self, request, view) -> bool:

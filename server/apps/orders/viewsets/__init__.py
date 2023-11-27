@@ -1,6 +1,5 @@
 from .category import CategoryViewSet
-from .dish import DishViewSet
-from .dish_image import DishImageViewSet
+from .dish import DishViewSet, IngredientPermission, DishImageViewSet
 from .order import OrderViewSet
 from .order_and_dish import OrderAndDishViewSet
 from .reservation import ReservationViewSet
@@ -10,6 +9,7 @@ __all__ = (
     CategoryViewSet,
     DishViewSet,
     DishImageViewSet,
+    IngredientPermission,
     OrderViewSet,
     OrderAndDishViewSet,
     ReservationViewSet,

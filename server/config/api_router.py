@@ -6,6 +6,7 @@ from apps.orders.viewsets import (
     CategoryViewSet,
     DishImageViewSet,
     DishViewSet,
+    IngredientPermission,
     OrderAndDishViewSet,
     OrderViewSet,
     ReservationViewSet,
@@ -25,6 +26,11 @@ router.register(
     "dishes",
     DishViewSet,
     basename="dishes",
+)
+router.register(
+    "ingredients",
+    IngredientPermission,
+    basename="ingredients",
 )
 router.register(
     "orders",

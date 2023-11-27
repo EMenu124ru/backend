@@ -1,10 +1,33 @@
 from collections import OrderedDict
 
 from apps.core.serializers import BaseModelSerializer, serializers
-from apps.orders.models import Category, Dish
+from apps.orders.models import Category, Dish, DishImage, Ingredient
 
 from .category import CategorySerializer
-from .dish_image import DishImageSerializer
+
+
+class IngredientSerializer(BaseModelSerializer):
+    class Meta:
+        model = Ingredient
+        fields = (
+            "id",
+            "name",
+        )
+
+
+class DishImageSerializer(BaseModelSerializer):
+    dish = serializers.PrimaryKeyRelatedField(
+        queryset=Dish.objects.all(),
+        write_only=True,
+    )
+
+    class Meta:
+        model = DishImage
+        fields = (
+            "id",
+            "dish",
+            "image",
+        )
 
 
 class DishSerializer(BaseModelSerializer):
