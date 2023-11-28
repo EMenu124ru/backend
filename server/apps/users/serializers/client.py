@@ -10,7 +10,7 @@ class ClientAuthSerializer(serializers.Serializer):
 
     class Errors:
         CLIENT_ALREADY_EXISTS = "Клиента с таким номером телефона не найдено"
-        WRONG_PASSWORD = 'Не верный пароль'
+        WRONG_PASSWORD = "Не верный пароль"
 
     def to_representation(self, data):
         client = Client.objects.filter(

@@ -4,8 +4,10 @@ from decimal import Decimal
 from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import (
     Order,
+    Dish,
     OrderAndDish,
     Reservation,
+    StopList,
 )
 from apps.users.models import Client, Employee
 from apps.users.serializers import ClientSerializer, EmployeeSerializer
@@ -35,6 +37,7 @@ class OrderSerializer(BaseModelSerializer):
 
     class Errors:
         EMPLOYEE_CHANGES = "Работник может изменить только статус и комментарий к заказу"
+        INVALID_DISH = "Ингредиент в блюде {} находится в стоп листе"
 
     class Meta:
         model = Order
@@ -68,6 +71,18 @@ class OrderSerializer(BaseModelSerializer):
                 not self.check_fields_by_waiter(self.instance, attrs)
             ):
                 raise serializers.ValidationError(self.Errors.EMPLOYEE_CHANGES)
+        order_dishes = Dish.objects.filter(
+            id__in=attrs["dishes"],
+        ).prefetch_related("ingredients")
+        restaurant_id = self._user.employee.restaurant.id
+        for dish in order_dishes:
+            ingredients_id = dish.ingredients.all().values_list('id', flat=True)
+            stop_list = StopList.objects.filter(
+                ingredient_id__in=ingredients_id,
+                restaurant_id=restaurant_id,
+            ).exists()
+            if stop_list:
+                raise serializers.ValidationError(self.Errors.INVALID_DISH.format(dish.name))
         return attrs
 
     def create(self, validated_data: OrderedDict) -> Order:
