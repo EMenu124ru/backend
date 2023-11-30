@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 from apps.orders.viewsets import (
     CategoryViewSet,
     DishViewSet,
-    IngredientPermission,
+    IngredientViewSet,
     OrderAndDishViewSet,
     OrderViewSet,
     ReservationViewSet,
@@ -28,7 +28,7 @@ router.register(
 )
 router.register(
     "ingredients",
-    IngredientPermission,
+    IngredientViewSet,
     basename="ingredients",
 )
 router.register(

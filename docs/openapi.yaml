@@ -537,7 +537,7 @@ paths:
         $ref: "#/components/requestBodies/ReservationRequestBody"
       responses:
         "201":
-          $ref: "#/components/responses/ReservationCreate201"
+          $ref: "#/components/responses/Reservation200"
         "400":
           $ref: "#/components/responses/BadRequest400"
         "401":
@@ -637,7 +637,7 @@ paths:
         $ref: "#/components/requestBodies/OrderAndDishRequestBody"
       responses:
         "201":
-          $ref: "#/components/responses/OrderAndDishCreate201"
+          $ref: "#/components/responses/OrderAndDish200"
         "400":
           $ref: "#/components/responses/BadRequest400"
         "401":
@@ -821,6 +821,21 @@ paths:
           $ref: "#/components/responses/Unauthorized401"
         "404":
           $ref: "#/components/responses/NotFound404"
+  
+  "/api/v1/ingredients":
+    get:
+      tags:
+        - stopLists
+      summary: "Получение всех ингредиентов"
+      responses:
+        "200":
+          $ref: "#/components/responses/IngredientList200"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "403":
+          $ref: "#/components/responses/Forbidden403"
+        "404":
+          $ref: "#/components/responses/NotFound404"
 
 components:
   securitySchemes:
@@ -925,6 +940,10 @@ components:
           description: "Блюда заказа"
           items:
             $ref: "#/components/schemas/OrderAndDishBase"
+        reservation:
+          type: integer
+          description: "Id бронирования"
+          nullable: true
 
     OrderCreateBase:
       type: object
@@ -1018,7 +1037,8 @@ components:
           description: "Id блюда"
         category:
           description: "Категория блюда"
-          $ref: "#/components/schemas/CategoryBase"
+          allOf:
+          - $ref: "#/components/schemas/CategoryBase"
         name:
           type: string
           description: "Название блюда"
@@ -1064,6 +1084,12 @@ components:
           allOf:
             - $ref: "#/components/schemas/OrderCreateReservationBase"
           nullable: true
+        place:
+          type: number
+          description: "Id стола"
+        client:
+          type: number
+          description: "Id клиента"
 
     ReservationBase:
       type: object
@@ -1080,7 +1106,8 @@ components:
           description: "Статус бронирования"
           enum: ["OPENED", "FINISHED", "CANCELED"]
         restaurant:
-          $ref: "#/components/schemas/RestaurantBase"
+          allOf:
+          - $ref: "#/components/schemas/RestaurantBase"
           description: "Ресторан"
         place:
           allOf:
@@ -1177,7 +1204,8 @@ components:
           description: "Id заказа"
         dish:
           description: "Блюдо"
-          $ref: "#/components/schemas/DishBase"
+          allOf:
+          - $ref: "#/components/schemas/DishBase"
         comment:
           type: string
           description: "Комментарий к блюду"
@@ -1190,9 +1218,9 @@ components:
     StopListCreateBase:
       type: object
       properties:
-        dish:
+        ingredient:
           type: number
-          description: "Id блюда"
+          description: "Id ингредиента"
         restaurant:
           type: number
           description: "Id ресторана"
@@ -1200,12 +1228,19 @@ components:
     StopListBase:
       type: object
       properties:
-        dish:
+        id:
           type: number
-          description: "Id блюда"
+          description: "Id элемента стоп-листа"
+        ingredient:
+          type: number
+          description: "Id ингредиента"
         restaurant:
           type: number
           description: "Id ресторана"
+        created_at:
+          type: string
+          format: date-time
+          description: "Время добавления в стоп-лист"
     
     PlaceState:
       type: object
@@ -1257,6 +1292,16 @@ components:
         employee:
           type: number
           description: "Id сотрудника"
+
+    IngredientBase:
+      type: object
+      properties:
+        id:
+          type: number
+          description: "Id ингредиента"
+        name:
+          type: string
+          description: "Название ингредиента"
 
   requestBodies:
     LoginRequestBodyClient:
@@ -1343,7 +1388,7 @@ components:
 
   responses:
     TokenObtain200:
-      description: "Success"
+      description: "Получение токена"
       content:
         application/json:
           schema:
@@ -1357,7 +1402,7 @@ components:
                 description: "refresh token"
 
     TokenObtain400:
-      description: "Bad request"
+      description: "Ошибка получения токена"
       content:
         application/json:
           schema:
@@ -1368,7 +1413,7 @@ components:
                 example: "No active account found with the given credentials"
 
     TokenRefresh200:
-      description: "Success"
+      description: "Получение обновленного токена"
       content:
         application/json:
           schema:
@@ -1382,7 +1427,7 @@ components:
                 description: "refresh token"
 
     TokenRefresh400:
-      description: "Bad request"
+      description: "Ошибка при обновлении токена"
       content:
         application/json:
           schema:
@@ -1396,14 +1441,14 @@ components:
                 example: "token_not_valid"
 
     OrderCreate201:
-      description: "Order created"
+      description: "Создание заказов"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderBase"
 
     OrderList200:
-      description: "Order list"
+      description: "Получение заказов"
       content:
         application/json:
           schema:
@@ -1430,42 +1475,35 @@ components:
                   $ref: "#/components/schemas/OrderBase"
 
     Order200:
-      description: "Order item"
+      description: "Получение заказа"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderBase"
 
     Client200:
-      description: "Client item"
+      description: "Получение клиента"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ClientBase"
     
     ClientCreate201:
-      description: "Client created"
+      description: "Добавление клиента"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ClientBase"
     
     Employee200:
-      description: "Employee item"
+      description: "Получение сотрудника"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/EmployeeBase"
 
-    CategoryCreate201:
-      description: "Category created"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/CategoryBase"
-
     CategoryList200:
-      description: "Category list"
+      description: "Получение категорий"
       content:
         application/json:
           schema:
@@ -1492,21 +1530,14 @@ components:
                   $ref: "#/components/schemas/CategoryBase"
 
     Category200:
-      description: "Category item"
+      description: "Получение категории"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/CategoryBase"
 
-    DishCreate201:
-      description: "Dish create"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/DishBase"
-
     DishList200:
-      description: "Dish list"
+      description: "Получение блюд"
       content:
         application/json:
           schema:
@@ -1533,32 +1564,14 @@ components:
                   $ref: "#/components/schemas/DishBase"
 
     Dish200:
-      description: "Dish item"
+      description: "Получение блюда"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/DishBase"
 
-    DishImageCreate201:
-      description: "Dish image create"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/DishImageBase"
-
-    DishImage200:
-      description: "Dish image get"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/DishImageBase"
-
     ReservationList200:
-      description: "List of reservation"
+      description: "Получение броней"
       content:
         application/json:
           schema:
@@ -1583,44 +1596,30 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/ReservationBase"
-
-    ReservationCreate201:
-      description: "Reservation create"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ReservationBase"
     
     Reservation200:
-      description: "Reservation get"
+      description: "Получение брони"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ReservationBase"
 
-    OrderAndDishCreate201:
-      description: "OrderAndDish create"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/OrderAndDishBase"
-
     OrderAndDish200:
-      description: "OrderAndDish get"
+      description: "Блюдо в заказе"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderAndDishBase"
 
     StopListCreate201:
-      description: "StopList create"
+      description: "Добавление ингредиента в недоступные"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/StopListBase"
 
     StopListList200:
-      description: "StopList get"
+      description: "Получение списка недоступных блюд"
       content:
         application/json:
           schema:
@@ -1629,7 +1628,7 @@ components:
               $ref: "#/components/schemas/StopListBase"
 
     RestaurantList200:
-      description: "Restaurants list get"
+      description: "Получение списка ресторанов"
       content:
         application/json:
           schema:
@@ -1638,14 +1637,14 @@ components:
               $ref: "#/components/schemas/RestaurantBase"
     
     PlaceState200:
-      description: "Places state get"
+      description: "Получение столов ресторана"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PlaceState"
     
     TagToPlace200:
-      description: "TagToPlace get"
+      description: "Получение тегов столов"
       content:
         application/json:
           schema:
@@ -1654,13 +1653,22 @@ components:
               $ref: "#/components/schemas/TagToPlace"
     
     EmployeeSchedule200:
-      description: "EmployeeSchedule list get"
+      description: "Получение расписания сотрудника"
       content:
         application/json:
           schema:
             type: array
             items:
               $ref: "#/components/schemas/EmployeeScheduleBase"
+    
+    IngredientList200:
+      description: "Получение списка ингредиентов"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/IngredientBase"
 
     BadRequest400:
       description: "BadRequest"
