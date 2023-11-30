@@ -7,6 +7,7 @@ from apps.orders.factories import (
     OrderAndDishFactory,
     OrderFactory,
     ReservationFactory,
+    IngredientFactory,
 )
 from apps.restaurants.factories import PlaceFactory, RestaurantFactory
 from apps.restaurants.factories import ScheduleFactory as RestaurantScheduleFactory

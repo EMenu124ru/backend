@@ -1,6 +1,30 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from apps.core.models import TagBase
+
+
+def get_directory_path(instance, filename) -> str:
+    return (
+        f"dishes/{instance.dish.name.replace(' ', '_')}"
+        f"_{instance.dish.id}/{filename}"
+    )
+
+
+class Ingredient(TagBase):
+    dishes = models.ManyToManyField(
+        "orders.Dish",
+        related_name="ingredients",
+        verbose_name="Блюда с данным ингредиентом",
+    )
+
+    class Meta:
+        verbose_name = "Ингредиент"
+        verbose_name_plural = "Ингредиенты"
+
+    def __str__(self) -> str:
+        return f"Ingredient {self.name}"
+
 
 class Dish(models.Model):
     category = models.ForeignKey(
@@ -41,3 +65,23 @@ class Dish(models.Model):
 
     def __str__(self) -> str:
         return f"Dish {self.name} {self.category} {self.price} {self.description}"
+
+
+class DishImage(models.Model):
+    image = models.ImageField(
+        upload_to=get_directory_path,
+        verbose_name="Картинка",
+    )
+    dish = models.ForeignKey(
+        "orders.Dish",
+        on_delete=models.CASCADE,
+        related_name="images",
+        verbose_name="Блюдо",
+    )
+
+    class Meta:
+        verbose_name = "Картинка блюда"
+        verbose_name_plural = "Картинки блюд"
+
+    def __str__(self) -> str:
+        return f"DishImage {self.dish}"

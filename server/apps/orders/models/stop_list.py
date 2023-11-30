@@ -2,11 +2,11 @@ from django.db import models
 
 
 class StopList(models.Model):
-    dish = models.ForeignKey(
-        "orders.Dish",
+    ingredient = models.ForeignKey(
+        "orders.Ingredient",
         related_name="stop_list",
         on_delete=models.CASCADE,
-        verbose_name="Блюда",
+        verbose_name="Отсутствующие ингредиенты",
     )
     restaurant = models.ForeignKey(
         "restaurants.Restaurant",
@@ -14,10 +14,18 @@ class StopList(models.Model):
         related_name="stop_list",
         verbose_name="Ресторан",
     )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Время добавления ингредиента",
+    )
 
     class Meta:
         verbose_name = "Стоп лист ресторана"
         verbose_name_plural = "Стоп листы ресторанов"
 
     def __str__(self) -> str:
-        return f"StopList with dish: {self.dish}, restaurant: {self.restaurant}"
+        return (
+            f"StopList ingredient={self.ingredient}, "
+            f"restaurant={self.restaurant}, "
+            f"created_at={self.created_at}"
+        )

@@ -1,11 +1,20 @@
 from factory import Faker, SubFactory
-from factory.django import DjangoModelFactory
+from factory.django import DjangoModelFactory, ImageField
 
-from apps.orders.models import Dish
+from apps.orders.models import Ingredient, Dish, DishImage
 
 from .category import CategoryFactory
 
-REVIEWS_COUNT = 3
+
+class IngredientFactory(DjangoModelFactory):
+    """Factory for Ingredient instance."""
+
+    name = Faker(
+        "language_name",
+    )
+
+    class Meta:
+        model = Ingredient
 
 
 class DishFactory(DjangoModelFactory):
@@ -46,3 +55,17 @@ class DishFactory(DjangoModelFactory):
 
     class Meta:
         model = Dish
+
+
+class DishImageFactory(DjangoModelFactory):
+    """Factory for DishImage instance."""
+
+    image = ImageField(
+        color="green",
+    )
+    dish = SubFactory(
+        DishFactory,
+    )
+
+    class Meta:
+        model = DishImage
