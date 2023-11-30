@@ -1,6 +1,6 @@
 from rest_framework import mixins, viewsets
 
-from apps.core.services import PaginationObject
+from apps.core.utils import PaginationObject
 
 
 class RetrieveListViewSet(

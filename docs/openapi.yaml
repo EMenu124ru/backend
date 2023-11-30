@@ -1241,6 +1241,11 @@ components:
           type: string
           format: date-time
           description: "Время добавления в стоп-лист"
+        dishes:
+          description: "Блюда данного ингредиента"
+          type: array
+          items:
+            $ref: "#/components/schemas/DishBase"
     
     PlaceState:
       type: object

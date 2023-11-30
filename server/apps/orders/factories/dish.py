@@ -1,9 +1,12 @@
-from factory import Faker, SubFactory
+from factory import Faker, SubFactory, post_generation
 from factory.django import DjangoModelFactory, ImageField
 
 from apps.orders.models import Ingredient, Dish, DishImage
 
 from .category import CategoryFactory
+
+
+INGREDIENTS_COUNT = 10
 
 
 class IngredientFactory(DjangoModelFactory):
@@ -14,6 +17,9 @@ class IngredientFactory(DjangoModelFactory):
     )
 
     class Meta:
+        django_get_or_create = (
+            "name",
+        )
         model = Ingredient
 
 
@@ -52,6 +58,16 @@ class DishFactory(DjangoModelFactory):
         min_value=50,
         max_value=750,
     )
+
+    @post_generation
+    def ingredients(self, create, extracted, **kwargs):
+        """Create ingredients for dish."""
+        if not create:
+            return
+        ingredients = extracted if extracted is not None else (
+            IngredientFactory() for _ in range(INGREDIENTS_COUNT)
+        )
+        self.ingredients.add(*ingredients)
 
     class Meta:
         model = Dish
