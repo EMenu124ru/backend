@@ -8,6 +8,6 @@ from apps.restaurants.views import (
 
 urlpatterns = [
     path("", RestaurantListAPIView.as_view(), name="restaurants-list"),
-    path("<int:pk>/places", RestaurantPlacesAPIView.as_view(), name="restaurants-places"),
-    path("<int:pk>/tags", TagToPlaceAPIView.as_view(), name="restaurants-tags"),
+    path("places", RestaurantPlacesAPIView.as_view(), name="restaurants-places"),
+    path("tags", TagToPlaceAPIView.as_view(), name="restaurants-tags"),
 ]

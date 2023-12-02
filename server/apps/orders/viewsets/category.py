@@ -1,14 +1,14 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import decorators, response
 
 from apps.core.viewsets import RetrieveListViewSet
 from apps.orders.functions import get_available_dishes
-from apps.orders.models import Category, Dish
+from apps.orders.models import Category
 from apps.orders.permissions import CategoryPermission
 from apps.orders.serializers import CategorySerializer, DishSerializer
 
 
 class CategoryViewSet(RetrieveListViewSet):
-    queryset = Category.objects.all()
     permission_classes = (CategoryPermission,)
 
     def get_serializer_class(self):
@@ -17,10 +17,10 @@ class CategoryViewSet(RetrieveListViewSet):
         return CategorySerializer
 
     def get_queryset(self):
+        queryset = Category.objects.all().prefetch_related("dishes")
         if self.action == "dishes":
-            queryset = Dish.objects.prefetch_related("ingredients").filter(
-                category_id=self.kwargs["pk"],
-            )
+            category = get_object_or_404(queryset, pk=self.kwargs["pk"])
+            queryset = category.dishes.all()
             if self.request.user.is_authenticated:
                 if not self.request.user.is_client:
                     return get_available_dishes(
@@ -28,7 +28,7 @@ class CategoryViewSet(RetrieveListViewSet):
                         self.request.user.employee.restaurant.id,
                     )
             return queryset
-        return self.queryset
+        return queryset
 
     @decorators.action(methods=("GET",), detail=True)
     def dishes(self, request, *args, **kwargs) -> response.Response:

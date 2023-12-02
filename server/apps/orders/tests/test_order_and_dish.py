@@ -222,7 +222,6 @@ def test_update_order_and_dishes_by_chef_failed(
     chef,
     api_client,
 ) -> None:
-    order = OrderFactory.create()
     order_and_dishes = OrderAndDishFactory.create(
         status=OrderAndDish.Statuses.COOKING,
     )
@@ -233,7 +232,7 @@ def test_update_order_and_dishes_by_chef_failed(
             kwargs={"pk": order_and_dishes.pk},
         ),
         data={
-            "order": order.pk,
+            "order": OrderFactory.create().pk,
         },
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -248,7 +247,6 @@ def test_update_order_and_dishes_by_chef_failed_current_restaurant(
         role=Employee.Roles.WAITER,
     )
     order = OrderFactory.create(employee=waiter)
-    new_order = OrderFactory.create()
     order_and_dishes = OrderAndDishFactory.create(
         status=OrderAndDish.Statuses.COOKING,
         order=order,
@@ -260,7 +258,7 @@ def test_update_order_and_dishes_by_chef_failed_current_restaurant(
             kwargs={"pk": order_and_dishes.pk},
         ),
         data={
-            "order": new_order.pk,
+            "order": OrderFactory.create().pk,
         },
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -270,7 +268,6 @@ def test_update_order_and_dishes_by_sous_chef_failed(
     sous_chef,
     api_client,
 ) -> None:
-    order = OrderFactory.create()
     order_and_dishes = OrderAndDishFactory.create(
         status=OrderAndDish.Statuses.COOKING,
     )
@@ -281,7 +278,7 @@ def test_update_order_and_dishes_by_sous_chef_failed(
             kwargs={"pk": order_and_dishes.pk},
         ),
         data={
-            "order": order.pk,
+            "order": OrderFactory.create().pk,
         },
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -295,7 +292,6 @@ def test_update_order_and_dishes_by_sous_chef_failed_current_restaurant(
         restaurant=sous_chef.restaurant,
         role=Employee.Roles.WAITER,
     )
-    new_order = OrderFactory.create()
     order = OrderFactory.create(employee=waiter)
     order_and_dishes = OrderAndDishFactory.create(
         status=OrderAndDish.Statuses.COOKING,
@@ -308,7 +304,7 @@ def test_update_order_and_dishes_by_sous_chef_failed_current_restaurant(
             kwargs={"pk": order_and_dishes.pk},
         ),
         data={
-            "order": new_order.pk,
+            "order": OrderFactory.create().pk,
         },
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST

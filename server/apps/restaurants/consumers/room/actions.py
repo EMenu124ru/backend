@@ -20,7 +20,7 @@ class RestaurantActionsMixin:
             await self.send_error(Errors.CANT_CREATE_ORDER)
         try:
             order_body = {
-                "order": await OrderService.create_order(body, self.user.employee),
+                "order": await OrderService.create_order(body, self.user),
             }
         except (ValidationError, ValidationErrorDjango) as ex:
             error_message = get_errors(ex.detail)

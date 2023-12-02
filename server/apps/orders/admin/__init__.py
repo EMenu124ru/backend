@@ -1,5 +1,9 @@
 from .category import CategoryAdmin
-from .dish_image import DishAdmin, DishImageAdmin, IngredientAdmin
+from .dish_image import (
+    DishAdmin,
+    DishImageAdmin,
+    IngredientAdmin,
+)
 from .order import OrderAdmin
 from .order_and_dish import OrderAndDishAdmin
 from .reservation import ReservationAdmin

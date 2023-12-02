@@ -28,10 +28,12 @@ class RestaurantListAPIView(generics.ListAPIView):
 
 
 class RestaurantPlacesAPIView(generics.RetrieveAPIView):
-    queryset = Restaurant.objects.all()
     permission_classes = (
         permissions.IsAuthenticated & RestaurantPermission,
     )
+
+    def get_object(self):
+        return self.request.user.employee.restaurant
 
     def filter_places(self, places, tags) -> QuerySet:
         if not tags:
@@ -77,6 +79,9 @@ class TagToPlaceAPIView(generics.ListAPIView):
     permission_classes = (
         permissions.IsAuthenticated & RestaurantPermission,
     )
+
+    def get_object(self):
+        return self.request.user.employee.restaurant
 
     def get(self, request, *args, **kwargs):
         restaurant = self.get_object()

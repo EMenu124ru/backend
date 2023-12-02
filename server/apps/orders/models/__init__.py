@@ -1,5 +1,9 @@
 from .category import Category
-from .dish import Dish, DishImage, Ingredient
+from .dish import (
+    Dish,
+    DishImage,
+    Ingredient,
+)
 from .order import Order
 from .order_and_dish import OrderAndDish
 from .reservation import Reservation

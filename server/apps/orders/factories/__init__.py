@@ -1,5 +1,9 @@
 from .category import CategoryFactory
-from .dish import IngredientFactory, DishFactory, DishImageFactory
+from .dish import (
+    DishFactory,
+    DishImageFactory,
+    IngredientFactory,
+)
 from .order import OrderFactory
 from .order_and_dish import OrderAndDishFactory
 from .reservation import ReservationFactory

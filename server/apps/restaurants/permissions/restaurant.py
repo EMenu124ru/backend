@@ -8,6 +8,3 @@ class RestaurantPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return check_role_employee(request.user, Employee.Roles.HOSTESS)
-
-    def has_object_permission(self, request, view, obj):
-        return request.user.employee.restaurant.id == obj.id

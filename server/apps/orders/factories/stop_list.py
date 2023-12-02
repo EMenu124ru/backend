@@ -24,4 +24,8 @@ class StopListFactory(DjangoModelFactory):
     )
 
     class Meta:
+        django_get_or_create = (
+            "ingredient",
+            "restaurant",
+        )
         model = StopList

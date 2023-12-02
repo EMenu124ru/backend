@@ -5,7 +5,7 @@ from django.db.models import QuerySet
 
 from apps.orders.models import Order
 from apps.orders.serializers import OrderSerializer
-from apps.users.models import Employee, User
+from apps.users.models import User
 
 
 class OrderService:
@@ -20,10 +20,10 @@ class OrderService:
 
     @staticmethod
     @database_sync_to_async
-    def create_order(order: dict, employee: Employee) -> OrderedDict:
-        serializer = OrderSerializer(data=order)
+    def create_order(order: dict, user: User) -> OrderedDict:
+        serializer = OrderSerializer(data=order, context={"user": user})
         serializer.is_valid(raise_exception=True)
-        serializer.save(employee=employee)
+        serializer.save(employee=user.employee)
         data = serializer.data
         data['price'] = str(data['price'])
         return data

@@ -1,23 +1,22 @@
-from random import randint, shuffle
+from random import (
+    choice,
+    randint,
+    shuffle,
+)
 
 from apps.orders.factories import (
     CategoryFactory,
     DishFactory,
-    DishImageFactory,
     OrderAndDishFactory,
     OrderFactory,
     ReservationFactory,
     StopListFactory,
 )
-from apps.restaurants.factories import (
-    RestaurantFactory,
-    ScheduleFactory as RestaurantScheduleFactory,
-)
+from apps.restaurants.factories import RestaurantFactory
 from apps.users.factories import (
-    UserFactory,
     ClientFactory,
     EmployeeFactory,
-    ScheduleFactory as EmployeeScheduleFactory,
+    UserFactory,
 )
 
 USERS_COUNT = 20
@@ -25,11 +24,8 @@ CLIENTS_COUNT = EMPLOYEES_COUNT = 10
 EMPLOYEE_SCHEDULE_COUNT = 5
 CATEGORIES_COUNT = 5
 ORDERS_COUNT = 10
-DISH_REVIEWS_COUNT = 10
 DISH_IN_CATEGORY_COUNT = 3
-IMAGES_PER_DISH_COUNT = 3
 RESTAURANTS_COUNT = 3
-SCHEDULES_COUNT = 7
 
 
 def run():
@@ -41,21 +37,14 @@ def run():
         ClientFactory.create(user=user)
         for user in users[:len(users) // 2]
     ]
-    restaurants = []
-    for _ in range(RESTAURANTS_COUNT):
-        restaurants.append(RestaurantFactory.create())
-    for restaurant in restaurants:
-        for _ in range(SCHEDULES_COUNT):
-            RestaurantScheduleFactory.create(restaurant=restaurant)
+    restaurants = RestaurantFactory.create_batch(
+        size=RESTAURANTS_COUNT,
+    )
     employees = []
     for i in range(EMPLOYEES_COUNT, USERS_COUNT):
-        restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]
+        restaurant = restaurants[randint(1, RESTAURANTS_COUNT) - 1]
         employee = EmployeeFactory.create(user=users[i], restaurant=restaurant)
         employees.append(employee)
-        EmployeeScheduleFactory.create_batch(
-            size=EMPLOYEE_SCHEDULE_COUNT,
-            employee=employee,
-        )
     categories = CategoryFactory.create_batch(
         size=CATEGORIES_COUNT,
     )
@@ -68,18 +57,15 @@ def run():
     ingredients = []
     for dish in dishes:
         ingredients.extend(dish.ingredients.all())
-        DishImageFactory.create_batch(
-            dish=dish,
-            size=IMAGES_PER_DISH_COUNT,
-        )
     orders = []
     for i in range(ORDERS_COUNT):
         reservation = None
         if randint(0, 1):
-            restaurant = restaurants[randint(0, RESTAURANTS_COUNT - 1)]
+            restaurant = restaurants[randint(1, RESTAURANTS_COUNT) - 1]
             reservation = ReservationFactory.create(
                 restaurant=restaurant,
                 client=clients[i],
+                place=choice(restaurant.places.all()),
             )
         order = OrderFactory.create(
             client=clients[i],
@@ -91,6 +77,7 @@ def run():
             OrderAndDishFactory.create(
                 order=orders[-1],
                 dish=dish,
+                employee=employees[i],
             )
     shuffle(ingredients)
     for restaurant, ingredient in zip(restaurants, ingredients[:len(ingredients) // 2]):

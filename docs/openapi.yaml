@@ -774,18 +774,12 @@ paths:
         "401":
           $ref: "#/components/responses/Unauthorized401"
   
-  "/api/v1/restaurants/{restaurant_id}/places":
+  "/api/v1/restaurants/places":
     get:
       tags:
         - restaurants
-      summary: "Получение столов в зависимости от ресторана"
+      summary: "Получение столов ресторана, к которому вы прикреплены."
       parameters:
-        - name: restaurant_id
-          in: path
-          schema:
-            type: number
-          required: true
-          description: "Id ресторана"
         - name: tags
           in: query
           schema:
@@ -802,18 +796,11 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound404"
   
-  "/api/v1/restaurants/{restaurant_id}/tags":
+  "/api/v1/restaurants/tags":
     get:
       tags:
         - restaurants
-      summary: "Получение тегов к столам в зависимости от ресторана"
-      parameters:
-        - name: restaurant_id
-          in: path
-          schema:
-            type: number
-          required: true
-          description: "Id ресторана"
+      summary: "Получение тегов к столам ресторана, к которому вы прикреплены."
       responses:
         "200":
           $ref: "#/components/responses/TagToPlace200"
@@ -1119,11 +1106,6 @@ components:
           - $ref: "#/components/schemas/ClientBase"
           nullable: true
           description: "Клиент"
-        orders:
-          type: array
-          description: "Заказы к бронированию"
-          items:
-            $ref: "#/components/schemas/OrderBase"
 
     RestaurantScheduleBase:
       type: object

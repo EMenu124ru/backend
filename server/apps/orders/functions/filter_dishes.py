@@ -3,7 +3,7 @@ from django.db.models import QuerySet
 from apps.orders.models import Dish, StopList
 
 
-def get_available_dishes(dishes: QuerySet, restaurant_id: int) -> Dish:
+def get_available_dishes(dishes: QuerySet, restaurant_id: int) -> QuerySet:
     computed_ingredients = {}
     available_dishes = []
     for dish in dishes:
@@ -27,5 +27,5 @@ def get_available_dishes(dishes: QuerySet, restaurant_id: int) -> Dish:
                 for item in stop_list:
                     computed_ingredients[item.ingredient.id] = False
         if is_available:
-            available_dishes.append(dish)
-    return available_dishes
+            available_dishes.append(dish.id)
+    return Dish.objects.filter(id__in=available_dishes)

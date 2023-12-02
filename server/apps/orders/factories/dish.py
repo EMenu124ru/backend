@@ -1,12 +1,20 @@
-from factory import Faker, SubFactory, post_generation
+from factory import (
+    Faker,
+    SubFactory,
+    post_generation,
+)
 from factory.django import DjangoModelFactory, ImageField
 
-from apps.orders.models import Ingredient, Dish, DishImage
+from apps.orders.models import (
+    Dish,
+    DishImage,
+    Ingredient,
+)
 
 from .category import CategoryFactory
 
-
-INGREDIENTS_COUNT = 10
+INGREDIENTS_COUNT = 5
+DISH_IMAGES_COUNT = 3
 
 
 class IngredientFactory(DjangoModelFactory):
@@ -68,6 +76,16 @@ class DishFactory(DjangoModelFactory):
             IngredientFactory() for _ in range(INGREDIENTS_COUNT)
         )
         self.ingredients.add(*ingredients)
+
+    @post_generation
+    def images(self, create, extracted, **kwargs):
+        """Create images for dish."""
+        if not create:
+            return
+        images = extracted if extracted is not None else (
+            DishImageFactory(dish=self) for _ in range(DISH_IMAGES_COUNT)
+        )
+        self.images.add(*images)
 
     class Meta:
         model = Dish

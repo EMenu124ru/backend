@@ -6,11 +6,12 @@ from apps.orders.serializers import StopListSerializer
 
 class StopListViewSet(CreateReadDestroyViewSet):
     serializer_class = StopListSerializer
-    permission_classes = (StopListPermission, )
+    permission_classes = (StopListPermission,)
 
     def get_queryset(self):
+        queryset = StopList.objects.all()
         if self.action == "list":
-            return StopList.objects.filter(
+            return queryset.filter(
                 restaurant=self.request.user.employee.restaurant,
             )
-        return StopList.objects.all()
+        return queryset

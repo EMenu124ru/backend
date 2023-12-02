@@ -2,123 +2,19 @@ import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
 
-from apps.orders.factories import (
-    CategoryFactory,
-    DishFactory,
-    DishImageFactory,
-)
-from apps.orders.models import Dish
+from apps.orders.factories import DishFactory, IngredientFactory
 
 pytestmark = pytest.mark.django_db
 
-DISH_COUNT = 3
+DISH_COUNT = INGREDIENT_COUNT = 3
 DISH_IMAGES_COUNT = 5
-
-
-def test_create_dish_by_manager_without_images(
-    manager,
-    api_client,
-) -> None:
-    dish = DishFactory.build()
-    category = CategoryFactory.create()
-    api_client.force_authenticate(user=manager.user)
-    response = api_client.post(
-        reverse_lazy("api:dishes-list"),
-        data={
-            "category": category.pk,
-            "name": dish.name,
-            "description": dish.description,
-            "short_description": dish.short_description,
-            "compound": dish.compound,
-            "weight": dish.weight,
-            "price": dish.price,
-        },
-    )
-    assert response.status_code == status.HTTP_201_CREATED
-    assert Dish.objects.filter(
-        category=category.pk,
-        name=dish.name,
-        description=dish.description,
-        short_description=dish.short_description,
-        compound=dish.compound,
-        weight=dish.weight,
-        price=dish.price,
-    ).exists()
-
-
-def test_create_dish_by_manager_with_images(
-    manager,
-    api_client,
-) -> None:
-    dish = DishFactory.build()
-    dish_images = DishImageFactory.build_batch(size=DISH_IMAGES_COUNT)
-    images = [dish_image.image for dish_image in dish_images]
-    category = CategoryFactory.create()
-    api_client.force_authenticate(user=manager.user)
-    response = api_client.post(
-        reverse_lazy("api:dishes-list"),
-        data={
-            "category": category.pk,
-            "name": dish.name,
-            "description": dish.description,
-            "short_description": dish.short_description,
-            "compound": dish.compound,
-            "weight": dish.weight,
-            "price": dish.price,
-            "images": images,
-        },
-    )
-    assert response.status_code == status.HTTP_201_CREATED
-    assert Dish.objects.filter(
-        category=category.pk,
-        name=dish.name,
-        description=dish.description,
-        short_description=dish.short_description,
-        compound=dish.compound,
-        weight=dish.weight,
-        price=dish.price,
-    ).exists()
-    assert Dish.objects.get(
-        category=category.pk,
-        name=dish.name,
-        description=dish.description,
-        short_description=dish.short_description,
-        compound=dish.compound,
-        weight=dish.weight,
-        price=dish.price,
-    ).images.count() == DISH_IMAGES_COUNT
-
-
-def test_update_dish_by_manager(
-    manager,
-    api_client,
-) -> None:
-    dish = DishFactory.create()
-    api_client.force_authenticate(user=manager.user)
-    new_name = "New name"
-    response = api_client.patch(
-        reverse_lazy(
-            "api:dishes-detail",
-            kwargs={"pk": dish.pk},
-        ),
-        data={
-            "name": new_name,
-        },
-    )
-    assert response.status_code == status.HTTP_200_OK
-    assert Dish.objects.filter(
-        id=dish.pk,
-        name=new_name,
-    ).exists()
 
 
 def test_read_dishes_by_manager(
     manager,
     api_client,
 ) -> None:
-    DishFactory.create_batch(
-        size=DISH_COUNT,
-    )
+    DishFactory.create_batch(size=DISH_COUNT)
     api_client.force_authenticate(user=manager.user)
     response = api_client.get(
         reverse_lazy("api:dishes-list"),
@@ -126,32 +22,14 @@ def test_read_dishes_by_manager(
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_read_dish_orders_by_manager(
+def test_read_ingredients_by_manager(
     manager,
     api_client,
 ) -> None:
-    dish = DishFactory.create()
+    IngredientFactory.create_batch(size=INGREDIENT_COUNT)
     api_client.force_authenticate(user=manager.user)
     response = api_client.get(
-        reverse_lazy(
-            "api:dishes-orders",
-            kwargs={"pk": dish.pk},
-        ),
-    )
-    assert response.status_code == status.HTTP_200_OK
-
-
-def test_read_dish_reviews_by_manager(
-    manager,
-    api_client,
-) -> None:
-    dish = DishFactory.create()
-    api_client.force_authenticate(user=manager.user)
-    response = api_client.get(
-        reverse_lazy(
-            "api:dishes-reviews",
-            kwargs={"pk": dish.pk},
-        ),
+        reverse_lazy("api:ingredients-list"),
     )
     assert response.status_code == status.HTTP_200_OK
 
@@ -171,68 +49,11 @@ def test_read_dish_by_manager(
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_remove_dish_by_manager(
-    manager,
-    api_client,
-) -> None:
-    dish = DishFactory.create()
-    api_client.force_authenticate(user=manager.user)
-    api_client.delete(
-        reverse_lazy(
-            "api:dishes-detail",
-            kwargs={"pk": dish.pk},
-        ),
-    )
-    assert dish not in Dish.objects.all()
-
-
-def test_create_dish_by_client(
-    client,
-    api_client,
-) -> None:
-    dish = DishFactory.build()
-    category = CategoryFactory.create()
-    api_client.force_authenticate(user=client.user)
-    response = api_client.post(
-        reverse_lazy("api:dishes-list"),
-        data={
-            "category": category.pk,
-            "name": dish.name,
-            "description": dish.description,
-            "short_description": dish.short_description,
-            "compound": dish.compound,
-            "weight": dish.weight,
-        },
-    )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-
-def test_update_dish_by_client(
-    client,
-    api_client,
-) -> None:
-    dish = DishFactory.create()
-    api_client.force_authenticate(user=client.user)
-    new_name = "New name"
-    response = api_client.patch(
-        reverse_lazy(
-            "api:dishes-detail",
-            kwargs={"pk": dish.pk},
-        ),
-        data={
-            "name": new_name,
-        },
-    )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-
 def test_read_dishes_by_client(
     client,
     api_client,
 ) -> None:
-    DishFactory.create_batch(
-        size=DISH_COUNT,
-    )
+    DishFactory.create_batch(size=DISH_COUNT)
     api_client.force_authenticate(user=client.user)
     response = api_client.get(
         reverse_lazy(
@@ -242,34 +63,16 @@ def test_read_dishes_by_client(
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_read_dish_orders_by_client(
+def test_read_ingredients_by_client(
     client,
     api_client,
 ) -> None:
-    dish = DishFactory.create()
+    IngredientFactory.create_batch(size=INGREDIENT_COUNT)
     api_client.force_authenticate(user=client.user)
     response = api_client.get(
-        reverse_lazy(
-            "api:dishes-orders",
-            kwargs={"pk": dish.pk},
-        ),
+        reverse_lazy("api:ingredients-list"),
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
-
-
-def test_read_dish_reviews_by_client(
-    client,
-    api_client,
-) -> None:
-    dish = DishFactory.create()
-    api_client.force_authenticate(user=client.user)
-    response = api_client.get(
-        reverse_lazy(
-            "api:dishes-reviews",
-            kwargs={"pk": dish.pk},
-        ),
-    )
-    assert response.status_code == status.HTTP_200_OK
 
 
 def test_read_dish_by_client(
@@ -287,63 +90,10 @@ def test_read_dish_by_client(
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_remove_dish_by_client(
-    client,
-    api_client,
-) -> None:
-    dish = DishFactory.create()
-    api_client.force_authenticate(user=client.user)
-    response = api_client.delete(
-        reverse_lazy(
-            "api:dishes-detail",
-            kwargs={"pk": dish.pk},
-        ),
-    )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-
-def test_create_dish_by_not_auth(
-    api_client,
-) -> None:
-    dish = DishFactory.build()
-    category = CategoryFactory.create()
-    response = api_client.post(
-        reverse_lazy("api:dishes-list"),
-        data={
-            "category": category.pk,
-            "name": dish.name,
-            "description": dish.description,
-            "short_description": dish.short_description,
-            "compound": dish.compound,
-            "weight": dish.weight,
-        },
-    )
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-
-def test_update_dish_by_not_auth(
-    api_client,
-) -> None:
-    dish = DishFactory.create()
-    new_name = "New name"
-    response = api_client.patch(
-        reverse_lazy(
-            "api:dishes-detail",
-            kwargs={"pk": dish.pk},
-        ),
-        data={
-            "name": new_name,
-        },
-    )
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-
 def test_read_dishes_by_not_auth(
     api_client,
 ) -> None:
-    DishFactory.create_batch(
-        size=DISH_COUNT,
-    )
+    DishFactory.create_batch(size=DISH_COUNT)
     response = api_client.get(
         reverse_lazy(
             "api:dishes-list",
@@ -352,30 +102,14 @@ def test_read_dishes_by_not_auth(
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_read_dish_orders_by_not_auth(
+def test_read_ingredients_by_not_auth(
     api_client,
 ) -> None:
-    dish = DishFactory.create()
+    IngredientFactory.create_batch(size=INGREDIENT_COUNT)
     response = api_client.get(
-        reverse_lazy(
-            "api:dishes-orders",
-            kwargs={"pk": dish.pk},
-        ),
+        reverse_lazy("api:ingredients-list"),
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-
-def test_read_dish_reviews_by_not_auth(
-    api_client,
-) -> None:
-    dish = DishFactory.create()
-    response = api_client.get(
-        reverse_lazy(
-            "api:dishes-reviews",
-            kwargs={"pk": dish.pk},
-        ),
-    )
-    assert response.status_code == status.HTTP_200_OK
 
 
 def test_read_dish_by_not_auth(
@@ -389,16 +123,3 @@ def test_read_dish_by_not_auth(
         ),
     )
     assert response.status_code == status.HTTP_200_OK
-
-
-def test_remove_dish_by_not_auth(
-    api_client,
-) -> None:
-    dish = DishFactory.create()
-    response = api_client.delete(
-        reverse_lazy(
-            "api:dishes-detail",
-            kwargs={"pk": dish.pk},
-        ),
-    )
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED

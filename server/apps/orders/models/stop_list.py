@@ -22,6 +22,7 @@ class StopList(models.Model):
     class Meta:
         verbose_name = "Стоп лист ресторана"
         verbose_name_plural = "Стоп листы ресторанов"
+        unique_together = ('ingredient', 'restaurant')
 
     def __str__(self) -> str:
         return (

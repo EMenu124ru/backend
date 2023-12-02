@@ -1,20 +1,8 @@
-from apps.core.viewsets import (
-    RetrieveListViewSet,
-    ListViewSet,
-)
+from apps.core.viewsets import ListViewSet, RetrieveListViewSet
 from apps.orders.functions import get_available_dishes
-from apps.orders.models import (
-    Dish,
-    Ingredient,
-)
-from apps.orders.permissions import (
-    DishPermission,
-    IngredientPermission,
-)
-from apps.orders.serializers import (
-    DishSerializer,
-    IngredientSerializer,
-)
+from apps.orders.models import Dish, Ingredient
+from apps.orders.permissions import DishPermission, IngredientPermission
+from apps.orders.serializers import DishSerializer, IngredientSerializer
 
 
 class IngredientViewSet(ListViewSet):
@@ -24,15 +12,17 @@ class IngredientViewSet(ListViewSet):
 
 
 class DishViewSet(RetrieveListViewSet):
-    queryset = Dish.objects.prefetch_related("ingredients").all()
     serializer_class = DishSerializer
     permission_classes = (DishPermission,)
 
     def get_queryset(self):
-        if self.request.user.is_authenticated:
-            if not self.request.user.is_client:
-                return get_available_dishes(
-                    self.queryset,
-                    self.request.user.employee.restaurant.id,
-                )
-        return self.queryset
+        queryset = Dish.objects.prefetch_related("ingredients").all()
+        if (
+            self.request.user.is_authenticated and
+            not self.request.user.is_client
+        ):
+            return get_available_dishes(
+                queryset,
+                self.request.user.employee.restaurant.id,
+            )
+        return queryset

@@ -4,7 +4,6 @@ from decimal import Decimal
 from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import (
     Order,
-    Dish,
     OrderAndDish,
     Reservation,
     StopList,
@@ -64,6 +63,11 @@ class OrderSerializer(BaseModelSerializer):
             for key, value in data.items()
         ])
 
+    def get_restaurant_id(self, attrs: OrderedDict) -> int:
+        if attrs.get("reservation") is not None:
+            return attrs["reservation"].restaurant.pk
+        return self._user.employee.restaurant.id
+
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self.instance:
             if (
@@ -71,18 +75,17 @@ class OrderSerializer(BaseModelSerializer):
                 not self.check_fields_by_waiter(self.instance, attrs)
             ):
                 raise serializers.ValidationError(self.Errors.EMPLOYEE_CHANGES)
-        order_dishes = Dish.objects.filter(
-            id__in=attrs["dishes"],
-        ).prefetch_related("ingredients")
-        restaurant_id = self._user.employee.restaurant.id
-        for dish in order_dishes:
-            ingredients_id = dish.ingredients.all().values_list('id', flat=True)
-            stop_list = StopList.objects.filter(
-                ingredient_id__in=ingredients_id,
-                restaurant_id=restaurant_id,
-            ).exists()
-            if stop_list:
-                raise serializers.ValidationError(self.Errors.INVALID_DISH.format(dish.name))
+        if attrs.get("dishes") is not None:
+            order_dishes = [item["dish"] for item in attrs["dishes"]]
+            restaurant_id = self.get_restaurant_id(attrs)
+            for dish in order_dishes:
+                ingredients_id = dish.ingredients.all().values_list('id', flat=True)
+                stop_list = StopList.objects.filter(
+                    ingredient_id__in=ingredients_id,
+                    restaurant_id=restaurant_id,
+                ).exists()
+                if stop_list:
+                    raise serializers.ValidationError(self.Errors.INVALID_DISH.format(dish.name))
         return attrs
 
     def create(self, validated_data: OrderedDict) -> Order:

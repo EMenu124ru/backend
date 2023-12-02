@@ -4,7 +4,7 @@ from rest_framework import status
 
 from apps.orders.factories import OrderFactory, ReservationFactory
 from apps.orders.models import Reservation
-from apps.restaurants.factories import PlaceFactory, RestaurantFactory
+from apps.restaurants.factories import PlaceFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -35,42 +35,23 @@ def test_read_state_places_of_restaurant_by_hostess(
     hostess,
     api_client,
 ):
-    restaurant = hostess.restaurant
     api_client.force_authenticate(user=hostess.user)
     response = api_client.get(
         reverse_lazy(
             "api:restaurants-places",
-            kwargs={"pk": restaurant.pk},
         ),
     )
     assert response.status_code == status.HTTP_200_OK
-
-
-def test_read_state_places_of_restaurant_by_hostess_other_restaurant(
-    hostess,
-    api_client,
-):
-    restaurant = RestaurantFactory.create()
-    api_client.force_authenticate(user=hostess.user)
-    response = api_client.get(
-        reverse_lazy(
-            "api:restaurants-places",
-            kwargs={"pk": restaurant.pk},
-        ),
-    )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_read_state_places_of_restaurant_by_waiter(
     waiter,
     api_client,
 ):
-    restaurant = waiter.restaurant
     api_client.force_authenticate(user=waiter.user)
     response = api_client.get(
         reverse_lazy(
             "api:restaurants-places",
-            kwargs={"pk": restaurant.pk},
         ),
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -82,6 +63,7 @@ def test_state_places_of_restaurant_by_hostess(
 ):
     places = []
     restaurant = hostess.restaurant
+    restaurant.places.all().delete()
     for i in range(15):
         places.append(PlaceFactory.create(restaurant=restaurant, place=f"A{i}"))
     created_busy, created_reserved, created_free = [], [], []
@@ -92,41 +74,41 @@ def test_state_places_of_restaurant_by_hostess(
             place=places[i],
         )
         OrderFactory.create(reservation=reservation)
-        created_busy.append(i)
+        created_busy.append(places[i].pk)
     for i in range(3, 6):
         ReservationFactory.create(
             status=Reservation.Statuses.OPENED,
             restaurant=restaurant,
             place=places[i],
         )
-        created_reserved.append(i)
+        created_reserved.append(places[i].pk)
     for i in range(6, 9):
         ReservationFactory.create(
             status=Reservation.Statuses.CANCELED,
             restaurant=restaurant,
             place=places[i],
         )
-        created_free.append(i)
+        created_free.append(places[i].pk)
     for i in range(9, 12):
         ReservationFactory.create(
             status=Reservation.Statuses.FINISHED,
             restaurant=restaurant,
             place=places[i],
         )
-        created_free.append(i)
-    created_free.extend([12, 13, 14])
+        created_free.append(places[i].pk)
+    for i in range(12, 15):
+        created_free.append(places[i].pk)
     api_client.force_authenticate(user=hostess.user)
     response = api_client.get(
         reverse_lazy(
             "api:restaurants-places",
-            kwargs={"pk": restaurant.pk},
         ),
     )
     assert response.status_code == status.HTTP_200_OK
     free, reserved, busy = response.data["free"], response.data["reserved"], response.data["busy"]
-    assert [item["id"] in created_busy for item in busy]
-    assert [item["id"] in created_reserved for item in reserved]
-    assert [item["id"] in created_free for item in free]
+    assert len(busy) == 3 and all([item["id"] in created_busy for item in busy])
+    assert len(reserved) == 3 and all([item["id"] in created_reserved for item in reserved])
+    assert len(free) == 9 and all([item["id"] in created_free for item in free])
 
 
 def test_read_tags_of_restaurant_by_hostess(
@@ -140,22 +122,6 @@ def test_read_tags_of_restaurant_by_hostess(
     response = api_client.get(
         reverse_lazy(
             "api:restaurants-tags",
-            kwargs={"pk": restaurant.pk},
         ),
     )
     assert response.status_code == status.HTTP_200_OK
-
-
-def test_read_tags_of_restaurant_by_hostess_other_restaurant(
-    hostess,
-    api_client,
-):
-    restaurant = RestaurantFactory.create()
-    api_client.force_authenticate(user=hostess.user)
-    response = api_client.get(
-        reverse_lazy(
-            "api:restaurants-tags",
-            kwargs={"pk": restaurant.pk},
-        ),
-    )
-    assert response.status_code == status.HTTP_403_FORBIDDEN

@@ -1,5 +1,9 @@
 from .category import CategorySerializer
-from .dish import DishSerializer, DishImageSerializer, IngredientSerializer
+from .dish import (
+    DishImageSerializer,
+    DishSerializer,
+    IngredientSerializer,
+)
 from .order import OrderSerializer
 from .order_and_dish import DishCommentSerializer, OrderAndDishSerializer
 from .reservation import ReservationSerializer

@@ -2,7 +2,6 @@ from collections import OrderedDict
 
 from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import Reservation
-from apps.orders.serializers import OrderSerializer
 from apps.restaurants.models import Place, Restaurant
 from apps.restaurants.serializers import PlaceSerializer, RestaurantSerializer
 from apps.users.models import Client, Employee
@@ -22,10 +21,6 @@ class ReservationSerializer(BaseModelSerializer):
         queryset=Place.objects.all(),
         allow_null=True,
         required=False,
-    )
-    order = OrderSerializer(
-        allow_null=True,
-        default=None,
     )
 
     class Errors:
@@ -49,7 +44,6 @@ class ReservationSerializer(BaseModelSerializer):
             "restaurant",
             "client",
             "place",
-            "order",
         )
 
     def check_fields_by_waiter(
@@ -125,22 +119,11 @@ class ReservationSerializer(BaseModelSerializer):
             client = Client.objects.get(pk=client_id)
 
         data["client"] = ClientSerializer(client).data
-        data["orders"] = OrderSerializer(instance.orders.all(), many=True).data
         return data
 
     def create(self, validated_data: OrderedDict) -> Reservation:
-        order_dict = validated_data.pop("order")
         client = None
         if self._user.is_client:
             client = self._user.client
-            validated_data["client"] = client
-        reservation = super().create(validated_data)
-        if order_dict is not None:
-            order_dict["reservation"] = reservation.pk
-            order_dict["client"] = client.id
-            for dish in order_dict["dishes"]:
-                dish["dish"] = dish["dish"].id
-            serializer = OrderSerializer(data=order_dict)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-        return reservation
+        validated_data["client"] = client
+        return super().create(validated_data)

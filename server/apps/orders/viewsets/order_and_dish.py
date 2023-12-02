@@ -7,7 +7,6 @@ from apps.orders.serializers import OrderAndDishSerializer
 
 
 class OrderAndDishViewSet(CreateReadUpdateViewSet):
-    queryset = OrderAndDish.objects.all()
     serializer_class = OrderAndDishSerializer
     permission_classes = (
         permissions.IsAuthenticated & OrderAndDishPermission,

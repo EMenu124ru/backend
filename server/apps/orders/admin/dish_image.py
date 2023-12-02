@@ -1,6 +1,10 @@
 from django.contrib import admin
 
-from apps.orders.models import Dish, DishImage, Ingredient
+from apps.orders.models import (
+    Dish,
+    DishImage,
+    Ingredient,
+)
 
 
 @admin.register(Ingredient)
@@ -22,7 +26,10 @@ class DishAdmin(admin.ModelAdmin):
         "category",
         "name",
         "description",
+        "short_description",
         "price",
+        "compound",
+        "weight",
     )
 
 

@@ -19,5 +19,8 @@ class StopListPermission(permissions.BasePermission):
         return check_role_employee(request.user, Employee.Roles.MANAGER)
 
     def has_object_permission(self, request, view, obj) -> bool:
-        if request.method == "DELETE":
+        if request.method in ("DELETE", "PATCH", "PUT"):
             return check_role_employee(request.user, Employee.Roles.MANAGER)
+        if request.method == "GET":
+            return check_role_employee(request.user, Employee.Roles.WAITER)
+        return False
