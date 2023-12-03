@@ -48,7 +48,13 @@ class OrderSerializer(BaseModelSerializer):
             "client",
             "dishes",
             "reservation",
+            "created",
+            "modified",
         )
+        extra_kwargs = {
+            'created': {'read_only': True},
+            'modified': {'read_only': True},
+        }
 
     def check_fields_by_waiter(
         self,

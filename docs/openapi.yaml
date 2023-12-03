@@ -814,6 +814,8 @@ paths:
       tags:
         - stopLists
       summary: "Получение всех ингредиентов"
+      security:
+        - bearerAuth: []
       responses:
         "200":
           $ref: "#/components/responses/IngredientList200"
@@ -931,6 +933,14 @@ components:
           type: integer
           description: "Id бронирования"
           nullable: true
+        created:
+          description: "Time created"
+          type: string
+          format: date-time
+        modified:
+          description: "Time modified"
+          type: string
+          format: date-time
 
     OrderCreateBase:
       type: object

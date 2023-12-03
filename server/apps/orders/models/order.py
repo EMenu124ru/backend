@@ -1,8 +1,10 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from apps.core.models import BaseModel
 
-class Order(models.Model):
+
+class Order(BaseModel):
     class Statuses(models.TextChoices):
         WAITING_FOR_COOKING = "WAITING_FOR_COOKING", "Передано на кухню"
         COOKING = "COOKING", "Готовится"
