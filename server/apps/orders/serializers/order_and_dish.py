@@ -51,12 +51,14 @@ class OrderAndDishSerializer(BaseModelSerializer):
     )
 
     class Errors:
-        WAITER_CHANGES = "Официант может изменить только комментарий к заказу и статус"
+        WAITER_CHANGES = "Официант может изменить только количество блюд в заказе и статус"
         COOK_CHANGES = "Повар может изменить только статус заказа"
         CHEF_CHANGES = (
             "Шеф и су-шеф могут менять только работника, "
             "который будет готовить блюдо, и статус"
         )
+        SET_CANCELED_STATUS = "Если блюдо нужно убрать из заказа, то поставьте статус отменен"
+        VALID_COUNT_DISHES = "Введите корректное значение для обозначения количества блюд в заказе"
 
     class Meta:
         model = OrderAndDish
@@ -65,7 +67,7 @@ class OrderAndDishSerializer(BaseModelSerializer):
             "status",
             "order",
             "dish",
-            "comment",
+            "count",
             "employee",
         )
 
@@ -100,12 +102,20 @@ class OrderAndDishSerializer(BaseModelSerializer):
         validated_data: OrderedDict,
     ) -> bool:
         data = validated_data.copy()
-        data.pop("comment", None)
+        data.pop("count", None)
         data.pop("status", None)
         return all([
             instance.__getattribute__(key) == value
             for key, value in data.items()
         ])
+
+    def validate_count(self, count: int) -> int:
+        exception_text = self.Errors.VALID_COUNT_DISHES
+        if self.instance:
+            exception_text = self.Errors.SET_CANCELED_STATUS
+        if count <= 0:
+            raise serializers.ValidationError(exception_text)
+        return count
 
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self.instance:

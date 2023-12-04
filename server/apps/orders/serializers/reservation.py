@@ -44,6 +44,7 @@ class ReservationSerializer(BaseModelSerializer):
             "restaurant",
             "client",
             "place",
+            "comment",
         )
 
     def check_fields_by_waiter(

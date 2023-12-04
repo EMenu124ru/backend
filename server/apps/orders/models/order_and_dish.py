@@ -35,9 +35,8 @@ class OrderAndDish(models.Model):
         related_name="dishes",
         verbose_name="Исполняющий сотрудник",
     )
-    comment = models.TextField(
-        default="",
-        verbose_name="Комментарий",
+    count = models.PositiveIntegerField(
+        verbose_name="Количество блюд в заказе",
     )
 
     class Meta:
