@@ -4,8 +4,8 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from apps.orders.viewsets import (
     CategoryViewSet,
-    DishImageViewSet,
     DishViewSet,
+    IngredientViewSet,
     OrderAndDishViewSet,
     OrderViewSet,
     ReservationViewSet,
@@ -27,14 +27,14 @@ router.register(
     basename="dishes",
 )
 router.register(
+    "ingredients",
+    IngredientViewSet,
+    basename="ingredients",
+)
+router.register(
     "orders",
     OrderViewSet,
     basename="orders",
-)
-router.register(
-    "dish-images",
-    DishImageViewSet,
-    basename="dish-images",
 )
 router.register(
     "reservations",

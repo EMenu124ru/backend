@@ -1,11 +1,34 @@
-from factory import Faker, SubFactory
-from factory.django import DjangoModelFactory
+from factory import (
+    Faker,
+    SubFactory,
+    post_generation,
+)
+from factory.django import DjangoModelFactory, ImageField
 
-from apps.orders.models import Dish
+from apps.orders.models import (
+    Dish,
+    DishImage,
+    Ingredient,
+)
 
 from .category import CategoryFactory
 
-REVIEWS_COUNT = 3
+INGREDIENTS_COUNT = 5
+DISH_IMAGES_COUNT = 3
+
+
+class IngredientFactory(DjangoModelFactory):
+    """Factory for Ingredient instance."""
+
+    name = Faker(
+        "language_name",
+    )
+
+    class Meta:
+        django_get_or_create = (
+            "name",
+        )
+        model = Ingredient
 
 
 class DishFactory(DjangoModelFactory):
@@ -44,5 +67,39 @@ class DishFactory(DjangoModelFactory):
         max_value=750,
     )
 
+    @post_generation
+    def ingredients(self, create, extracted, **kwargs):
+        """Create ingredients for dish."""
+        if not create:
+            return
+        ingredients = extracted if extracted is not None else (
+            IngredientFactory() for _ in range(INGREDIENTS_COUNT)
+        )
+        self.ingredients.add(*ingredients)
+
+    @post_generation
+    def images(self, create, extracted, **kwargs):
+        """Create images for dish."""
+        if not create:
+            return
+        images = extracted if extracted is not None else (
+            DishImageFactory(dish=self) for _ in range(DISH_IMAGES_COUNT)
+        )
+        self.images.add(*images)
+
     class Meta:
         model = Dish
+
+
+class DishImageFactory(DjangoModelFactory):
+    """Factory for DishImage instance."""
+
+    image = ImageField(
+        color="green",
+    )
+    dish = SubFactory(
+        DishFactory,
+    )
+
+    class Meta:
+        model = DishImage

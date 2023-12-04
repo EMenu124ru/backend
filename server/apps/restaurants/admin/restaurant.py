@@ -11,11 +11,11 @@ class RestaurantAdmin(admin.ModelAdmin):
         "id",
         "address",
         "get_schedule",
-        "get_plans",
+        "get_places",
     )
 
     def get_schedule(self, obj):
         return obj.schedule.all()
 
-    def get_plans(self, obj):
+    def get_places(self, obj):
         return [place.place for place in obj.places.all()]

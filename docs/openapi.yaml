@@ -17,8 +17,6 @@ tags:
     description: "Category namespace"
   - name: dishes
     description: "Dish namespace"
-  - name: dish-images
-    description: "Dish image namespace"
   - name: restaurants
     description: "Restaurant namespace"
   - name: reservations
@@ -34,7 +32,7 @@ paths:
       tags:
         - auth
         - clients
-      summary: "Login client"
+      summary: "Авторизация клиента"
       requestBody:
         $ref: "#/components/requestBodies/LoginRequestBodyClient"
       responses:
@@ -50,7 +48,7 @@ paths:
       tags:
         - auth
         - employees
-      summary: "Login employee"
+      summary: "Авторизация сотрудника"
       requestBody:
         $ref: "#/components/requestBodies/LoginRequestBodyEmployee"
       responses:
@@ -65,7 +63,7 @@ paths:
     get:
       tags:
         - employees
-      summary: "Retrieve employee"
+      summary: "Просмотр информации о сотруднике"
       security:
         - bearerAuth: []
       responses:
@@ -82,7 +80,7 @@ paths:
     get:
       tags:
         - employees
-      summary: "Retrieve schedule of employee"
+      summary: "Просмотр расписания сотрудника"
       parameters:
         - name: employee_id
           in: path
@@ -106,7 +104,7 @@ paths:
     post:
       tags:
         - employees
-      summary: "Create schedule for employees"
+      summary: "Добавление расписания сотруднику"
       requestBody:
         $ref: "#/components/requestBodies/XLSXFileRequestBody"
       security:
@@ -125,7 +123,7 @@ paths:
     patch:
       tags:
         - employees
-      summary: "Update schedule row"
+      summary: "Обновление элемента расписания сотрудника"
       parameters:
         - name: schedule_id
           in: path
@@ -148,7 +146,7 @@ paths:
     delete:
       tags:
         - employees
-      summary: "Delete schedule row"
+      summary: "Удаление элемента расписания сотрудника"
       parameters:
         - name: schedule_id
           in: path
@@ -174,7 +172,7 @@ paths:
         - auth
         - employees
         - clients
-      summary: "Refresh token"
+      summary: "Обновление токена авторизации"
       requestBody:
         $ref: "#/components/requestBodies/TokenRefreshRequestBody"
       responses:
@@ -189,7 +187,7 @@ paths:
     post:
       tags:
         - clients
-      summary: "Sign up client"
+      summary: "Регистрация клиента"
       requestBody:
         $ref: "#/components/requestBodies/SignUpRequestBodyClient"
       responses:
@@ -202,7 +200,7 @@ paths:
     get:
       tags:
         - clients
-      summary: "Get client"
+      summary: "Просмотр информации о текущем клиенте"
       security:
         - bearerAuth: []
       responses:
@@ -219,7 +217,7 @@ paths:
     get:
       tags:
         - clients
-      summary: "Get client"
+      summary: "Просмотр информации о клиенте по Id"
       parameters:
         - name: client_id
           in: path
@@ -242,7 +240,7 @@ paths:
     patch:
       tags:
         - clients
-      summary: "Update client"
+      summary: "Обновление информации о клиенте по Id"
       parameters:
         - name: client_id
           in: path
@@ -269,7 +267,7 @@ paths:
     delete:
       tags:
         - clients
-      summary: "Delete client"
+      summary: "Удаление клиента по Id"
       parameters:
         - name: client_id
           in: path
@@ -290,28 +288,10 @@ paths:
           $ref: "#/components/responses/NotFound404"
 
   "/api/v1/categories":
-    post:
-      tags:
-        - categories
-      summary: "Create category"
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/CategoryCreateBody"
-      responses:
-        "201":
-          $ref: "#/components/responses/CategoryCreate201"
-        "400":
-          $ref: "#/components/responses/BadRequest400"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-
     get:
       tags:
         - categories
-      summary: "Get list categories"
+      summary: "Получение списка категорий"
       parameters:
         - in: query
           name: page
@@ -339,7 +319,7 @@ paths:
     get:
       tags:
         - categories
-      summary: "Get category"
+      summary: "Просмотр информации о категории"
       parameters:
         - name: category_id
           in: path
@@ -350,56 +330,6 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/Category200"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
-    patch:
-      tags:
-        - categories
-      summary: "Update category"
-      parameters:
-        - name: category_id
-          in: path
-          schema:
-            type: number
-          description: "Id категории"
-          required: true
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/CategoryCreateBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/Category200"
-        "400":
-          $ref: "#/components/responses/BadRequest400"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
-    delete:
-      tags:
-        - categories
-      summary: "Delete category"
-      parameters:
-        - name: category_id
-          in: path
-          schema:
-            type: number
-          description: "Id категории"
-          required: true
-      security:
-        - bearerAuth: []
-      responses:
-        "204":
-          description: "No Content"
         "401":
           $ref: "#/components/responses/Unauthorized401"
         "403":
@@ -412,7 +342,8 @@ paths:
       tags:
         - categories
         - dishes
-      summary: "Get dishes of some category"
+      summary: "Просмотр блюд текущей категории"
+      description: "При указании restaurant_id отдаются блюда, которые не находятся в стоп листе ресторана, иначе отдаются все блюда"
       parameters:
         - name: category_id
           in: path
@@ -420,6 +351,13 @@ paths:
             type: number
           description: "Id категории"
           required: true
+        - in: query
+          name: restaurant_id
+          schema:
+            type: number
+            nullable: true
+          description: "Id ресторана"
+          required: false
         - in: query
           name: page
           schema:
@@ -448,7 +386,7 @@ paths:
     post:
       tags:
         - orders
-      summary: "Create order"
+      summary: "Создание заказа"
       security:
         - bearerAuth: []
       requestBody:
@@ -466,7 +404,8 @@ paths:
     get:
       tags:
         - orders
-      summary: "Get list orders"
+      summary: "Получение списка заказов ресторана"
+      description: "Список заказов в зависимости от ресторана сотрудника"
       security:
         - bearerAuth: []
       parameters:
@@ -496,7 +435,7 @@ paths:
     get:
       tags:
         - orders
-      summary: "Get order"
+      summary: "Просмотр заказа"
       parameters:
         - name: order_id
           in: path
@@ -519,7 +458,7 @@ paths:
     patch:
       tags:
         - orders
-      summary: "Update order"
+      summary: "Обновление заказа"
       parameters:
         - name: order_id
           in: path
@@ -544,28 +483,11 @@ paths:
           $ref: "#/components/responses/NotFound404"
 
   "/api/v1/dishes":
-    post:
-      tags:
-        - dishes
-      summary: "Create dish"
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/DishCreateBody"
-      responses:
-        "201":
-          $ref: "#/components/responses/DishCreate201"
-        "400":
-          $ref: "#/components/responses/BadRequest400"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-
     get:
       tags:
         - dishes
-      summary: "Get list dishes"
+      summary: "Просмотр списка блюд"
+      description: "Клиенту отдаются все блюда. Сотруднику отдаются блюда, которые не находятся в стоп листе"
       parameters:
         - in: query
           name: page
@@ -593,7 +515,7 @@ paths:
     get:
       tags:
         - dishes
-      summary: "Get dish"
+      summary: "Просмотр блюда"
       parameters:
         - name: dish_id
           in: path
@@ -604,145 +526,6 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/Dish200"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
-    patch:
-      tags:
-        - dishes
-      summary: "Update dish"
-      parameters:
-        - name: dish_id
-          in: path
-          schema:
-            type: number
-          description: "Id блюда"
-          required: true
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/DishCreateBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/Dish200"
-        "400":
-          $ref: "#/components/responses/BadRequest400"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
-    delete:
-      tags:
-        - dishes
-      summary: "Delete dish"
-      parameters:
-        - name: dish_id
-          in: path
-          schema:
-            type: number
-          description: "Id блюда"
-          required: true
-      security:
-        - bearerAuth: []
-      responses:
-        "204":
-          description: "No Content"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
-  "/api/v1/dishes/{dish_id}/orders":
-    get:
-      tags:
-        - dishes
-      summary: "Get orders of some dish"
-      parameters:
-        - name: dish_id
-          in: path
-          schema:
-            type: number
-          description: "Id блюда"
-          required: true
-        - in: query
-          name: page
-          schema:
-            type: number
-            nullable: true
-          description: "Номер страницы"
-          required: false
-        - in: query
-          name: page_size
-          schema:
-            type: number
-            nullable: true
-          description: "Количество элементов на странице"
-          required: false
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          $ref: "#/components/responses/OrderList200"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-        "404":
-          $ref: "#/components/responses/NotFound404"
-
-  "/api/v1/dishes/{dish_id}/images":
-    post:
-      tags:
-        - dishes
-        - dish-images
-      summary: "Create dish image"
-      parameters:
-        - name: dish_id
-          in: path
-          schema:
-            type: number
-          description: "Id блюда"
-          required: true
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/DishImageCreateBody"
-      responses:
-        "201":
-          $ref: "#/components/responses/DishImage200"
-        "400":
-          $ref: "#/components/responses/BadRequest400"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
-
-  "/api/v1/dish-images/{dish_image_id}":
-    delete:
-      tags:
-        - dish-images
-      summary: "Delete dish image"
-      parameters:
-        - name: dish_image_id
-          in: path
-          schema:
-            type: number
-          description: "Id фото блюда"
-          required: true
-      security:
-        - bearerAuth: []
-      responses:
-        "204":
-          description: "No Content"
         "401":
           $ref: "#/components/responses/Unauthorized401"
         "403":
@@ -754,14 +537,14 @@ paths:
     post:
       tags:
         - reservations
-      summary: "Create reservation"
+      summary: "Бронирование стола"
       security:
         - bearerAuth: []
       requestBody:
         $ref: "#/components/requestBodies/ReservationRequestBody"
       responses:
         "201":
-          $ref: "#/components/responses/ReservationCreate201"
+          $ref: "#/components/responses/Reservation200"
         "400":
           $ref: "#/components/responses/BadRequest400"
         "401":
@@ -772,7 +555,8 @@ paths:
     get:
       tags:
         - reservations
-      summary: "Get list reservations"
+      summary: "Список броней"
+      description: "Список отдается в зависимости от ресторана сотрудника"
       security:
         - bearerAuth: []
       parameters:
@@ -802,7 +586,7 @@ paths:
     get:
       tags:
         - reservations
-      summary: "Get reservation"
+      summary: "Получение бронирования"
       parameters:
         - name: reservation_id
           in: path
@@ -825,7 +609,7 @@ paths:
     patch:
       tags:
         - reservations
-      summary: "Update reservation"
+      summary: "Обновление бронирования"
       parameters:
         - name: reservation_id
           in: path
@@ -853,14 +637,14 @@ paths:
     post:
       tags:
         - orderAndDishes
-      summary: "Create orderAndDish"
+      summary: "Добавление блюда к заказу"
       security:
         - bearerAuth: []
       requestBody:
         $ref: "#/components/requestBodies/OrderAndDishRequestBody"
       responses:
         "201":
-          $ref: "#/components/responses/OrderAndDishCreate201"
+          $ref: "#/components/responses/OrderAndDish200"
         "400":
           $ref: "#/components/responses/BadRequest400"
         "401":
@@ -872,7 +656,7 @@ paths:
     patch:
       tags:
         - orderAndDishes
-      summary: "Update orderAndDish"
+      summary: "Обновление блюда в заказе"
       parameters:
         - name: orderAndDish_id
           in: path
@@ -900,7 +684,7 @@ paths:
     post:
       tags:
         - stopLists
-      summary: "Create stopList item"
+      summary: "Добавление ингредиента в стоп-лист"
       security:
         - bearerAuth: []
       requestBody:
@@ -918,7 +702,8 @@ paths:
     get:
       tags:
         - stopLists
-      summary: "Get list stopList items"
+      summary: "Получение ингредиентов стоп-листа."
+      description: "Отдается в зависимости от ресторана сотрудника"
       security:
         - bearerAuth: []
       parameters:
@@ -950,13 +735,13 @@ paths:
     delete:
       tags:
         - stopLists
-      summary: "Delete stopList"
+      summary: "Удаление ингредиента из стоп-листа"
       parameters:
         - name: stopList_id
           in: path
           schema:
             type: number
-          description: "Id элемента из стоп листа"
+          description: "Id элемента из стоп-листа"
           required: true
       security:
         - bearerAuth: []
@@ -974,7 +759,7 @@ paths:
     get:
       tags:
         - restaurants
-      summary: "Get list restaurants"
+      summary: "Получение списка ресторанов"
       parameters:
         - in: query
           name: page
@@ -996,18 +781,12 @@ paths:
         "401":
           $ref: "#/components/responses/Unauthorized401"
   
-  "/api/v1/restaurants/{restaurant_id}/places":
+  "/api/v1/restaurants/places":
     get:
       tags:
         - restaurants
-      summary: "Get places of restaurant and it statuses"
+      summary: "Получение столов ресторана, к которому вы прикреплены."
       parameters:
-        - name: restaurant_id
-          in: path
-          schema:
-            type: number
-          required: true
-          description: "Id ресторана"
         - name: tags
           in: query
           schema:
@@ -1024,23 +803,33 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound404"
   
-  "/api/v1/restaurants/{restaurant_id}/tags":
+  "/api/v1/restaurants/tags":
     get:
       tags:
         - restaurants
-      summary: "Get tags of restaurant places"
-      parameters:
-        - name: restaurant_id
-          in: path
-          schema:
-            type: number
-          required: true
-          description: "Id ресторана"
+      summary: "Получение тегов к столам ресторана, к которому вы прикреплены."
       responses:
         "200":
           $ref: "#/components/responses/TagToPlace200"
         "401":
           $ref: "#/components/responses/Unauthorized401"
+        "404":
+          $ref: "#/components/responses/NotFound404"
+  
+  "/api/v1/ingredients":
+    get:
+      tags:
+        - stopLists
+      summary: "Получение всех ингредиентов"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/IngredientList200"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "403":
+          $ref: "#/components/responses/Forbidden403"
         "404":
           $ref: "#/components/responses/NotFound404"
 
@@ -1057,201 +846,226 @@ components:
       properties:
         id:
           type: number
+          description: "Id клиента"
         first_name:
           type: string
+          description: "Имя клиента"
         last_name:
           type: string
+          description: "Фамилия клиента"
         surname:
           type: string
+          description: "Отчество клиента"
         bonuses:
           type: number
+          description: "Количество бонусов"
         phone_number:
           type: string
+          description: "Телефон клиента"
     
     EmployeeBase:
       type: object
       properties:
         id:
           type: number
+          description: "Id сотрудника"
         first_name:
           type: string
+          description: "Имя сотрудника"
         last_name:
           type: string
+          description: "Фамилия сотрудника"
         surname:
           type: string
+          description: "Отчество сотрудника"
         role:
           type: string
+          description: "Роль сотрудника"
+          enum: ["WAITER", "BARTENDER", "COOK", "CHEF", "SOUS_CHEF", "MANAGER", "HOSTESS"]
         restaurant:
           type: number
+          description: "Id ресторана, за которым закреплен сотрудник"
 
     ClientCreateBase:
       type: object
       properties:
         first_name:
           type: string
+          description: "Имя клиента"
         last_name:
           type: string
+          description: "Фамилия клиента"
         surname:
           type: string
+          description: "Отчество клиента"
         password:
           type: string
+          description: "Пароль клиента"
         phone_number:
           type: string
+          description: "Телефон клиента"
 
     OrderBase:
       type: object
       properties:
         id:
           type: number
+          description: "Id заказа"
         status:
           type: string
+          description: "Статус заказа"
+          enum: ["WAITING_FOR_COOKING", "COOKING", "WAITING_FOR_DELIVERY", "IN_PROCESS_DELIVERY", "DELIVERED", "FINISHED", "CANCELED", "PAID"]
         price:
           type: string
+          description: "Цена заказа"
         comment:
           type: string
+          description: "Комментарий к заказу"
         employee:
+          description: "Обслуживающий сотрудник-официант"
           allOf:
             - $ref: "#/components/schemas/EmployeeBase"
           nullable: true
         client:
+          description: "Клиент"
           allOf:
             - $ref: "#/components/schemas/ClientBase"
           nullable: true
         dishes:
           type: array
+          description: "Блюда заказа"
           items:
             $ref: "#/components/schemas/OrderAndDishBase"
+        reservation:
+          type: integer
+          description: "Id бронирования"
+          nullable: true
+        created:
+          description: "Time created"
+          type: string
+          format: date-time
+        modified:
+          description: "Time modified"
+          type: string
+          format: date-time
 
     OrderCreateBase:
       type: object
       properties:
         status:
           type: string
+          description: "Статус заказа"
+          enum: ["WAITING_FOR_COOKING", "COOKING", "WAITING_FOR_DELIVERY", "IN_PROCESS_DELIVERY", "DELIVERED", "FINISHED", "CANCELED", "PAID"]
         comment:
           type: string
+          description: "Комментарий к заказу"
         employee:
           type: number
+          description: "Id обслуживающего сотрудника-официанта"
         client:
           type: number
+          description: "Id клиента"
           nullable: true
         dishes:
           type: array
+          description: "Блюда к заказу"
           items:
             type: object
             properties:
               dish:
                 type: number
+                description: "Id блюда"
               comment:
                 type: string
+                description: "Комментарий к заказу"
         reservation:
           type: number
+          description: "Id резервации"
           nullable: true
-    
+
     OrderCreateReservationBase:
       type: object
       properties:
         status:
           type: string
+          description: "Статус заказа"
+          enum: ["WAITING_FOR_COOKING", "COOKING", "WAITING_FOR_DELIVERY", "IN_PROCESS_DELIVERY", "DELIVERED", "FINISHED", "CANCELED", "PAID"]
         comment:
           type: string
+          description: "Комментарий к заказу"
         employee:
           type: number
+          description: "Id обслуживающего сотрудника-официанта"
         client:
           type: number
+          description: "Id клиента"
           nullable: true
         dishes:
           type: array
+          description: "Блюда к заказу"
           items:
             type: object
             properties:
               dish:
                 type: number
+                description: "Id блюда"
               comment:
                 type: string
+                description: "Комментарий к заказу"
 
     CategoryBase:
       type: object
       properties:
         id:
           type: number
+          description: "Id категории"
         name:
           type: string
-
-    CategoryCreateBase:
-      type: object
-      properties:
-        name:
-          type: string
+          description: "Название категории"
 
     DishImageBase:
       type: object
       properties:
         id:
           type: number
+          description: "Id изображения блюда"
         image:
           type: string
-
-    DishImageBundleCreateBase:
-      type: object
-      properties:
-        images:
-          type: array
-          items:
-            type: string
-
-    DishImageCreateBase:
-      type: object
-      properties:
-        images:
-          type: array
-          items:
-            type: string
+          description: "Ссылка на изображение блюда"
 
     DishBase:
       type: object
       properties:
         id:
           type: number
+          description: "Id блюда"
         category:
-          $ref: "#/components/schemas/CategoryBase"
+          description: "Категория блюда"
+          allOf:
+          - $ref: "#/components/schemas/CategoryBase"
         name:
           type: string
+          description: "Название блюда"
         description:
           type: string
+          description: "Описание блюда"
         short_description:
           type: string
+          description: "Короткое описание блюда"
         price:
           type: string
+          description: "Цена блюда"
         compound:
           type: string
+          description: "Состав блюда"
         weight:
           type: string
+          description: "Вес блюда"
         images:
           type: array
+          description: "Изображения блюда"
           items:
             $ref: "#/components/schemas/DishImageBase"
-
-    DishCreateBase:
-      type: object
-      properties:
-        category:
-          type: number
-        name:
-          type: string
-        description:
-          type: string
-        short_description:
-          type: string
-        price:
-          type: string
-        compound:
-          type: string
-        weight:
-          type: string
-        images:
-          type: array
-          items:
-            type: string
 
     ReservationCreateBase:
       type: object
@@ -1259,73 +1073,97 @@ components:
         arrival_time:
           type: string
           format: date-time
+          description: "Время прибытия"
           nullable: true
         status:
           type: string
+          description: "Статус бронирования"
+          enum: ["OPENED", "FINISHED", "CANCELED"]
           nullable: true
         restaurant:
           type: number
+          description: "Id ресторана"
         order:
+          description: "Заказ к ресторану"
           allOf:
             - $ref: "#/components/schemas/OrderCreateReservationBase"
           nullable: true
+        place:
+          type: number
+          description: "Id стола"
+        client:
+          type: number
+          description: "Id клиента"
 
     ReservationBase:
       type: object
       properties:
         id:
           type: number
+          description: "Id бронирования"
         arrival_time:
           type: string
           format: date-time
+          description: "Время прибытия"
         status:
           type: string
+          description: "Статус бронирования"
+          enum: ["OPENED", "FINISHED", "CANCELED"]
         restaurant:
-          $ref: "#/components/schemas/RestaurantBase"
+          allOf:
+          - $ref: "#/components/schemas/RestaurantBase"
+          description: "Ресторан"
         place:
           allOf:
           - $ref: "#/components/schemas/PlaceBase"
           nullable: true
+          description: "Стол"
         client:
           allOf:
           - $ref: "#/components/schemas/ClientBase"
           nullable: true
-        orders:
-          type: array
-          items:
-            $ref: "#/components/schemas/OrderBase"
+          description: "Клиент"
 
     RestaurantScheduleBase:
       type: object
       properties:
         id:
           type: number
+          description: "Id расписания работы ресторана"
         week_day:
           type: number
+          description: "День недели. 0 - понедельник, 6 - воскресенье."
         time_start:
           type: string
           format: time
+          description: "Время открытия"
         time_finish:
           type: string
           format: time
+          description: "Время закрытия"
 
     PlaceBase:
       type: object
       properties:
         id:
           type: number
+          description: "Id стола"
         place:
           type: string
+          description: "Название стола"
 
     RestaurantBase:
       type: object
       properties:
         id:
           type: number
+          description: "Id ресторана"
         address:
           type: string
+          description: "Адрес ресторана"
         schedule:
           type: array
+          description: "Расписание ресторана"
           items:
             $ref: "#/components/schemas/RestaurantScheduleBase"
 
@@ -1334,6 +1172,8 @@ components:
       properties:
         status:
           type: string
+          description: "Статус блюда к заказу"
+          enum: ["WAITING_FOR_COOKING", "COOKING", "DONE", "CANCELED", "DELIVERED"]
         order:
           type: number
           description: "Id заказа"
@@ -1342,36 +1182,44 @@ components:
           description: "Id блюда"
         employee:
           type: number
-          description: "Id исполняющего работника"
+          description: "Id исполняющего работника-повара"
           nullable: true
         comment:
           type: string
+          description: "Комментарий к блюду"
 
     OrderAndDishBase:
       type: object
       properties:
         id:
           type: number
+          description: "Id блюда к заказу"
         status:
           type: string
+          description: "Статус блюда к заказу"
+          enum: ["WAITING_FOR_COOKING", "COOKING", "DONE", "CANCELED", "DELIVERED"]
         order:
           type: number
+          description: "Id заказа"
         dish:
-          $ref: "#/components/schemas/DishBase"
+          description: "Блюдо"
+          allOf:
+          - $ref: "#/components/schemas/DishBase"
         comment:
           type: string
+          description: "Комментарий к блюду"
         employee:
           allOf:
           - $ref: "#/components/schemas/EmployeeBase"
-          description: "Id исполняющего работника"
+          description: "Исполняющий работник-повар"
           nullable: true
 
     StopListCreateBase:
       type: object
       properties:
-        dish:
+        ingredient:
           type: number
-          description: "Id блюда"
+          description: "Id ингредиента"
         restaurant:
           type: number
           description: "Id ресторана"
@@ -1379,26 +1227,41 @@ components:
     StopListBase:
       type: object
       properties:
-        dish:
+        id:
           type: number
-          description: "Id блюда"
+          description: "Id элемента стоп-листа"
+        ingredient:
+          type: number
+          description: "Id ингредиента"
         restaurant:
           type: number
           description: "Id ресторана"
+        created_at:
+          type: string
+          format: date-time
+          description: "Время добавления в стоп-лист"
+        dishes:
+          description: "Блюда данного ингредиента"
+          type: array
+          items:
+            $ref: "#/components/schemas/DishBase"
     
     PlaceState:
       type: object
       properties:
         free:
           type: array
+          description: "Свободные столы"
           items:
             $ref: "#/components/schemas/PlaceBase"
         reserved:
           type: array
+          description: "Забронированные столы"
           items:
             $ref: "#/components/schemas/PlaceBase"
         busy:
           type: array
+          description: "Занятые столы"
           items:
             $ref: "#/components/schemas/PlaceBase"
     
@@ -1407,23 +1270,42 @@ components:
       properties:
         id:
           type: integer
+          description: "Id тега"
         name:
           type: string
+          description: "Имя тега"
     
     EmployeeScheduleBase:
       type: object
       properties:
         id:
           type: number
+          description: "Id элемента расписания"
         day:
           type: string
           format: date
+          description: "Дата начала смены"
         time_start:
           type: string
           format: time
+          description: "Время начала смены"
         time_finish:
           type: string
           format: time
+          description: "Время конца смены"
+        employee:
+          type: number
+          description: "Id сотрудника"
+
+    IngredientBase:
+      type: object
+      properties:
+        id:
+          type: number
+          description: "Id ингредиента"
+        name:
+          type: string
+          description: "Название ингредиента"
 
   requestBodies:
     LoginRequestBodyClient:
@@ -1434,8 +1316,10 @@ components:
             properties:
               phone_number:
                 type: string
+                description: "Телефон клиента"
               password:
                 type: string
+                description: "Пароль клиента"
       required: true
 
     SignUpRequestBodyClient:
@@ -1453,8 +1337,10 @@ components:
             properties:
               username:
                 type: string
+                description: "Логин сотрудника"
               password:
                 type: string
+                description: "Пароль сотрудника"
       required: true
 
     OrderCreateBody:
@@ -1462,51 +1348,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderCreateBase"
-      required: true
-
-    DishCreateBody:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/DishCreateBase"
-      required: true
-
-    DishImageBundleCreateBody:
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/DishImageBundleCreateBase"
-      required: true
-
-    DishImageCreateBody:
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/DishImageCreateBase"
-      required: true
-
-    CategoryCreateBody:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/CategoryCreateBase"
-      required: true
-
-    TokenObtainRequestBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              email:
-                type: string
-                format: email
-              password:
-                type: string
       required: true
 
     TokenRefreshRequestBody:
@@ -1517,6 +1358,7 @@ components:
             properties:
               refresh:
                 type: string
+                description: "refresh token"
       required: true
 
     ReservationRequestBody:
@@ -1550,7 +1392,7 @@ components:
 
   responses:
     TokenObtain200:
-      description: "Success"
+      description: "Получение токена"
       content:
         application/json:
           schema:
@@ -1564,7 +1406,7 @@ components:
                 description: "refresh token"
 
     TokenObtain400:
-      description: "Bad request"
+      description: "Ошибка получения токена"
       content:
         application/json:
           schema:
@@ -1575,7 +1417,7 @@ components:
                 example: "No active account found with the given credentials"
 
     TokenRefresh200:
-      description: "Success"
+      description: "Получение обновленного токена"
       content:
         application/json:
           schema:
@@ -1589,7 +1431,7 @@ components:
                 description: "refresh token"
 
     TokenRefresh400:
-      description: "Bad request"
+      description: "Ошибка при обновлении токена"
       content:
         application/json:
           schema:
@@ -1603,14 +1445,14 @@ components:
                 example: "token_not_valid"
 
     OrderCreate201:
-      description: "Order created"
+      description: "Создание заказов"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderBase"
 
     OrderList200:
-      description: "Order list"
+      description: "Получение заказов"
       content:
         application/json:
           schema:
@@ -1637,42 +1479,35 @@ components:
                   $ref: "#/components/schemas/OrderBase"
 
     Order200:
-      description: "Order item"
+      description: "Получение заказа"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderBase"
 
     Client200:
-      description: "Client item"
+      description: "Получение клиента"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ClientBase"
     
     ClientCreate201:
-      description: "Client created"
+      description: "Добавление клиента"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ClientBase"
     
     Employee200:
-      description: "Employee item"
+      description: "Получение сотрудника"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/EmployeeBase"
 
-    CategoryCreate201:
-      description: "Category created"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/CategoryBase"
-
     CategoryList200:
-      description: "Category list"
+      description: "Получение категорий"
       content:
         application/json:
           schema:
@@ -1699,21 +1534,14 @@ components:
                   $ref: "#/components/schemas/CategoryBase"
 
     Category200:
-      description: "Category item"
+      description: "Получение категории"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/CategoryBase"
 
-    DishCreate201:
-      description: "Dish create"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/DishBase"
-
     DishList200:
-      description: "Dish list"
+      description: "Получение блюд"
       content:
         application/json:
           schema:
@@ -1740,32 +1568,14 @@ components:
                   $ref: "#/components/schemas/DishBase"
 
     Dish200:
-      description: "Dish item"
+      description: "Получение блюда"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/DishBase"
 
-    DishImageCreate201:
-      description: "Dish image create"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/DishImageBase"
-
-    DishImage200:
-      description: "Dish image get"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/DishImageBase"
-
     ReservationList200:
-      description: "List of reservation"
+      description: "Получение броней"
       content:
         application/json:
           schema:
@@ -1790,44 +1600,30 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/ReservationBase"
-
-    ReservationCreate201:
-      description: "Reservation create"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ReservationBase"
     
     Reservation200:
-      description: "Reservation get"
+      description: "Получение брони"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ReservationBase"
 
-    OrderAndDishCreate201:
-      description: "OrderAndDish create"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/OrderAndDishBase"
-
     OrderAndDish200:
-      description: "OrderAndDish get"
+      description: "Блюдо в заказе"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderAndDishBase"
 
     StopListCreate201:
-      description: "StopList create"
+      description: "Добавление ингредиента в недоступные"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/StopListBase"
 
     StopListList200:
-      description: "StopList get"
+      description: "Получение списка недоступных блюд"
       content:
         application/json:
           schema:
@@ -1836,7 +1632,7 @@ components:
               $ref: "#/components/schemas/StopListBase"
 
     RestaurantList200:
-      description: "Restaurants list get"
+      description: "Получение списка ресторанов"
       content:
         application/json:
           schema:
@@ -1845,14 +1641,14 @@ components:
               $ref: "#/components/schemas/RestaurantBase"
     
     PlaceState200:
-      description: "Places state get"
+      description: "Получение столов ресторана"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PlaceState"
     
     TagToPlace200:
-      description: "TagToPlace get"
+      description: "Получение тегов столов"
       content:
         application/json:
           schema:
@@ -1861,13 +1657,22 @@ components:
               $ref: "#/components/schemas/TagToPlace"
     
     EmployeeSchedule200:
-      description: "EmployeeSchedule list get"
+      description: "Получение расписания сотрудника"
       content:
         application/json:
           schema:
             type: array
             items:
               $ref: "#/components/schemas/EmployeeScheduleBase"
+    
+    IngredientList200:
+      description: "Получение списка ингредиентов"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/IngredientBase"
 
     BadRequest400:
       description: "BadRequest"

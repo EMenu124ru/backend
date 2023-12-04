@@ -6,6 +6,7 @@ from apps.orders.models import (
     Order,
     OrderAndDish,
     Reservation,
+    StopList,
 )
 from apps.users.models import Client, Employee
 from apps.users.serializers import ClientSerializer, EmployeeSerializer
@@ -35,6 +36,7 @@ class OrderSerializer(BaseModelSerializer):
 
     class Errors:
         EMPLOYEE_CHANGES = "Работник может изменить только статус и комментарий к заказу"
+        INVALID_DISH = "Ингредиент в блюде {} находится в стоп листе"
 
     class Meta:
         model = Order
@@ -46,7 +48,13 @@ class OrderSerializer(BaseModelSerializer):
             "client",
             "dishes",
             "reservation",
+            "created",
+            "modified",
         )
+        extra_kwargs = {
+            'created': {'read_only': True},
+            'modified': {'read_only': True},
+        }
 
     def check_fields_by_waiter(
         self,
@@ -61,6 +69,11 @@ class OrderSerializer(BaseModelSerializer):
             for key, value in data.items()
         ])
 
+    def get_restaurant_id(self, attrs: OrderedDict) -> int:
+        if attrs.get("reservation") is not None:
+            return attrs["reservation"].restaurant.pk
+        return self._user.employee.restaurant.id
+
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self.instance:
             if (
@@ -68,6 +81,17 @@ class OrderSerializer(BaseModelSerializer):
                 not self.check_fields_by_waiter(self.instance, attrs)
             ):
                 raise serializers.ValidationError(self.Errors.EMPLOYEE_CHANGES)
+        if attrs.get("dishes") is not None:
+            order_dishes = [item["dish"] for item in attrs["dishes"]]
+            restaurant_id = self.get_restaurant_id(attrs)
+            for dish in order_dishes:
+                ingredients_id = dish.ingredients.all().values_list('id', flat=True)
+                stop_list = StopList.objects.filter(
+                    ingredient_id__in=ingredients_id,
+                    restaurant_id=restaurant_id,
+                ).exists()
+                if stop_list:
+                    raise serializers.ValidationError(self.Errors.INVALID_DISH.format(dish.name))
         return attrs
 
     def create(self, validated_data: OrderedDict) -> Order:

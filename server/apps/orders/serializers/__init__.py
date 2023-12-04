@@ -1,6 +1,9 @@
 from .category import CategorySerializer
-from .dish import DishSerializer
-from .dish_image import DishImageSerializer
+from .dish import (
+    DishImageSerializer,
+    DishSerializer,
+    IngredientSerializer,
+)
 from .order import OrderSerializer
 from .order_and_dish import DishCommentSerializer, OrderAndDishSerializer
 from .reservation import ReservationSerializer
@@ -10,6 +13,7 @@ __all__ = (
     CategorySerializer,
     DishSerializer,
     DishImageSerializer,
+    IngredientSerializer,
     OrderSerializer,
     DishCommentSerializer,
     OrderAndDishSerializer,

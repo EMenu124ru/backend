@@ -12,7 +12,7 @@ class OrderAdmin(admin.ModelAdmin):
         "status",
         "comment",
         "price",
-        "comment",
         "employee",
+        "client",
         "reservation",
     )

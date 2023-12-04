@@ -9,4 +9,7 @@ class StopListAdmin(admin.ModelAdmin):
 
     list_display = (
         "id",
+        "ingredient",
+        "restaurant",
+        "created_at",
     )

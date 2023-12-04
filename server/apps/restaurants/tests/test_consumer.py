@@ -228,6 +228,7 @@ async def test_create_order_by_waiter(waiter):
     order = await database_sync_to_async(OrderFactory.build)(
         status=Order.Statuses.WAITING_FOR_COOKING,
         employee=None,
+        reservation=None,
     )
     order_json = await get_serialized_order(order)
     await communicator.send_json_to({"type": "create_order", "body": order_json})
@@ -254,6 +255,7 @@ async def test_create_order_by_chef(chef):
     order = await database_sync_to_async(OrderFactory.build)(
         status=Order.Statuses.WAITING_FOR_COOKING,
         employee=None,
+        reservation=None,
     )
     order_json = await get_serialized_order(order)
     await communicator.send_json_to({"type": "create_order", "body": order_json})

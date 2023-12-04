@@ -12,6 +12,7 @@ from apps.orders.factories import (
 )
 from apps.orders.models import Reservation
 from apps.restaurants.factories import PlaceFactory, RestaurantFactory
+from apps.restaurants.models import Place
 from apps.users.factories import ClientFactory
 
 pytestmark = pytest.mark.django_db
@@ -376,7 +377,7 @@ def test_create_reservation_by_hostess_set_not_exists_place(
         data={
             "restaurant": reservation.restaurant.pk,
             "arrival_time": reservation.arrival_time,
-            "place": reservation.place.pk+1,
+            "place": Place.objects.all().last().pk+1,
         },
         format='json',
     )

@@ -21,6 +21,7 @@ class Place(models.Model):
     class Meta:
         verbose_name = "Место в ресторане"
         verbose_name_plural = "Места в ресторане"
+        unique_together = ('place', 'restaurant')
 
     def __str__(self) -> str:
         return f"Place {self.place} of {self.restaurant}"
