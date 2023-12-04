@@ -343,7 +343,7 @@ paths:
         - categories
         - dishes
       summary: "Просмотр блюд текущей категории"
-      description: "Клиенту отдаются все блюда. Сотруднику отдаются блюда, которые не находятся в стоп листе"
+      description: "При указании restaurant_id отдаются блюда, которые не находятся в стоп листе ресторана, иначе отдаются все блюда"
       parameters:
         - name: category_id
           in: path
@@ -351,6 +351,13 @@ paths:
             type: number
           description: "Id категории"
           required: true
+        - in: query
+          name: restaurant_id
+          schema:
+            type: number
+            nullable: true
+          description: "Id ресторана"
+          required: false
         - in: query
           name: page
           schema:

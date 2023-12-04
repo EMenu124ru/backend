@@ -23,11 +23,17 @@ class CategoryViewSet(RetrieveListViewSet):
             queryset = category.dishes.all()
             if self.request.user.is_authenticated:
                 if not self.request.user.is_client:
-                    return get_available_dishes(
+                    queryset = get_available_dishes(
                         queryset,
                         self.request.user.employee.restaurant.id,
                     )
-            return queryset
+                else:
+                    restaurant = self.kwargs.get("restaurant_id", None)
+                    if restaurant:
+                        queryset = get_available_dishes(
+                            queryset,
+                            restaurant,
+                        )
         return queryset
 
     @decorators.action(methods=("GET",), detail=True)

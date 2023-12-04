@@ -26,14 +26,14 @@ def test_create_stop_list_by_manager(
             "restaurant": manager.restaurant.pk,
         },
     )
-    assert response.status_code == status.HTTP_201_CREATED
-    assert StopList.objects.filter(
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert not StopList.objects.filter(
         ingredient=ingredient.pk,
         restaurant=manager.restaurant,
     ).exists()
 
 
-def test_read_stop_lists_by_manager(
+def test_read_stop_list_by_manager(
     manager,
     api_client,
 ) -> None:
@@ -41,7 +41,7 @@ def test_read_stop_lists_by_manager(
     response = api_client.get(
         reverse_lazy("api:stopList-list"),
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_remove_stop_list_by_manager(
@@ -56,54 +56,55 @@ def test_remove_stop_list_by_manager(
             kwargs={"pk": stop_list.pk},
         ),
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
-    assert not StopList.objects.filter(id=stop_list.pk).exists()
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert StopList.objects.filter(id=stop_list.pk).exists()
 
 
-def test_create_stop_list_by_cook(
-    cook,
+def test_create_stop_list_by_chef(
+    chef,
     api_client,
 ) -> None:
     ingredient = IngredientFactory.create()
-    api_client.force_authenticate(user=cook.user)
+    api_client.force_authenticate(user=chef.user)
     response = api_client.post(
         reverse_lazy("api:stopList-list"),
         data={
             "ingredient": ingredient.pk,
-            "restaurant": cook.restaurant.pk,
+            "restaurant": chef.restaurant.pk,
         },
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert not StopList.objects.filter(
+    assert response.status_code == status.HTTP_201_CREATED
+    assert StopList.objects.filter(
         ingredient=ingredient.pk,
-        restaurant=cook.restaurant,
+        restaurant=chef.restaurant,
     ).exists()
 
 
-def test_read_stop_lists_by_cook(
-    cook,
+def test_read_stop_lists_by_chef(
+    chef,
     api_client,
 ) -> None:
-    api_client.force_authenticate(user=cook.user)
+    api_client.force_authenticate(user=chef.user)
     response = api_client.get(
         reverse_lazy("api:stopList-list"),
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_200_OK
 
 
-def test_remove_stop_list_by_cook(
-    cook,
+def test_remove_stop_list_by_chef(
+    chef,
     api_client,
 ) -> None:
-    stop_list = StopListFactory.create(restaurant=cook.restaurant)
-    api_client.force_authenticate(user=cook.user)
-    api_client.delete(
+    stop_list = StopListFactory.create(restaurant=chef.restaurant)
+    api_client.force_authenticate(user=chef.user)
+    response = api_client.delete(
         reverse_lazy(
             "api:stopList-detail",
             kwargs={"pk": stop_list.pk},
         ),
     )
-    assert StopList.objects.filter(id=stop_list.pk).exists()
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert not StopList.objects.filter(id=stop_list.pk).exists()
 
 
 def test_create_stop_list_by_waiter(
@@ -131,7 +132,7 @@ def test_read_stop_lists_by_waiter(
     response = api_client.get(
         reverse_lazy("api:stopList-list"),
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_update_stop_list_by_waiter(
