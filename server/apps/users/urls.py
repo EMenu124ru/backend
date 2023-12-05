@@ -9,6 +9,8 @@ from apps.users.views import (
     EmployeeHeaderAuthAPIView,
     EmployeeRetrieveAPIView,
     EmployeeScheduleRetrieveAPIView,
+    EmployeesKitchenRetrieveListAPIView,
+    EmployeesRetrieveListAPIView,
 )
 
 staff_login = (
@@ -28,4 +30,6 @@ urlpatterns = [
     path("staff/me", EmployeeRetrieveAPIView.as_view(), name="staff-detail"),
     path("staff/<int:pk>/schedule", EmployeeScheduleRetrieveAPIView.as_view(), name="staff-schedule"),
     path("auth/token/refresh", TokenRefreshView.as_view()),
+    path("staff/kitchen", EmployeesKitchenRetrieveListAPIView.as_view(), name="staff-kitchen"),
+    path("staff", EmployeesRetrieveListAPIView.as_view(), name="staff-list")
 ]

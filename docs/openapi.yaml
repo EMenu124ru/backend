@@ -76,6 +76,40 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound404"
   
+  "/api/v1/staff/kitchen":
+    get:
+      tags:
+        - employees
+      summary: "Просмотр сотрудников с кухни"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/EmployeeList200"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "403":
+          $ref: "#/components/responses/Forbidden403"
+        "404":
+          $ref: "#/components/responses/NotFound404"
+
+  "/api/v1/staff":
+    get:
+      tags:
+        - employees
+      summary: "Просмотр сотрудников по ролям"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/EmployeeListByRole200"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "403":
+          $ref: "#/components/responses/Forbidden403"
+        "404":
+          $ref: "#/components/responses/NotFound404"
+
   "/api/v1/staff/{employee_id}/schedule":
     get:
       tags:
@@ -1094,6 +1128,9 @@ components:
         client:
           type: number
           description: "Id клиента"
+        comment:
+          type: string
+          description: "Комментарий к бронированию"
 
     ReservationBase:
       type: object
@@ -1123,6 +1160,9 @@ components:
           - $ref: "#/components/schemas/ClientBase"
           nullable: true
           description: "Клиент"
+        comment:
+          type: string
+          description: "Комментарий к бронированию"
 
     RestaurantScheduleBase:
       type: object
@@ -1184,9 +1224,9 @@ components:
           type: number
           description: "Id исполняющего работника-повара"
           nullable: true
-        comment:
-          type: string
-          description: "Комментарий к блюду"
+        count:
+          type: number
+          description: "Количество блюд"
 
     OrderAndDishBase:
       type: object
@@ -1205,14 +1245,14 @@ components:
           description: "Блюдо"
           allOf:
           - $ref: "#/components/schemas/DishBase"
-        comment:
-          type: string
-          description: "Комментарий к блюду"
         employee:
           allOf:
           - $ref: "#/components/schemas/EmployeeBase"
           description: "Исполняющий работник-повар"
           nullable: true
+        count:
+          type: number
+          description: "Количество блюд"
 
     StopListCreateBase:
       type: object
@@ -1245,25 +1285,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DishBase"
-    
-    PlaceState:
-      type: object
-      properties:
-        free:
-          type: array
-          description: "Свободные столы"
-          items:
-            $ref: "#/components/schemas/PlaceBase"
-        reserved:
-          type: array
-          description: "Забронированные столы"
-          items:
-            $ref: "#/components/schemas/PlaceBase"
-        busy:
-          type: array
-          description: "Занятые столы"
-          items:
-            $ref: "#/components/schemas/PlaceBase"
     
     TagToPlace:
       type: object
@@ -1505,6 +1526,15 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/EmployeeBase"
+    
+    EmployeeList200:
+      description: "Получение сотрудников"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/EmployeeBase"
 
     CategoryList200:
       description: "Получение категорий"
@@ -1644,9 +1674,68 @@ components:
       description: "Получение столов ресторана"
       content:
         application/json:
-          schema:
-            $ref: "#/components/schemas/PlaceState"
-    
+          schema:      
+            type: object
+            properties:
+              free:
+                type: array
+                description: "Свободные столы"
+                items:
+                  $ref: "#/components/schemas/PlaceBase"
+              reserved:
+                type: array
+                description: "Забронированные столы"
+                items:
+                  $ref: "#/components/schemas/PlaceBase"
+              busy:
+                type: array
+                description: "Занятые столы"
+                items:
+                  $ref: "#/components/schemas/PlaceBase"
+
+    EmployeeListByRole200:
+      description: "Получение сотрудников ресторана, к которому прикреплен менеджер"
+      content:
+        application/json:
+          schema:      
+            type: object
+            properties:
+              WAITER:
+                type: array
+                description: "Официанты ресторана"
+                items:
+                  $ref: "#/components/schemas/EmployeeBase"
+              BARTENDER:
+                type: array
+                description: "Бармены ресторана"
+                items:
+                  $ref: "#/components/schemas/EmployeeBase"
+              COOK:
+                type: array
+                description: "Повара ресторана"
+                items:
+                  $ref: "#/components/schemas/EmployeeBase"
+              CHEF:
+                type: array
+                description: "Шефы ресторана"
+                items:
+                  $ref: "#/components/schemas/EmployeeBase"
+              SOUS_CHEF:
+                type: array
+                description: "Су-Шефы ресторана"
+                items:
+                  $ref: "#/components/schemas/EmployeeBase"
+              MANAGER:
+                type: array
+                description: "Управляющие ресторана"
+                items:
+                  $ref: "#/components/schemas/EmployeeBase"
+              HOSTESS:
+                type: array
+                description: "Хостес ресторана"
+                items:
+                  $ref: "#/components/schemas/EmployeeBase"
+
     TagToPlace200:
       description: "Получение тегов столов"
       content:

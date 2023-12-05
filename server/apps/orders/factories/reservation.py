@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import pytz
 from factory import (
+    Faker,
     LazyAttribute,
     SubFactory,
     fuzzy,
@@ -30,6 +31,10 @@ class ReservationFactory(DjangoModelFactory):
     )
     place = SubFactory(
         PlaceFactory,
+    )
+    comment = Faker(
+        "text",
+        max_nb_chars=30,
     )
 
     class Meta:

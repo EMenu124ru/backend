@@ -23,9 +23,11 @@ class OrderAndDishFactory(DjangoModelFactory):
     dish = SubFactory(
         DishFactory,
     )
-    comment = Faker(
-        "text",
-        max_nb_chars=30,
+    count = Faker(
+        "pyint",
+        min_value=1,
+        max_value=10,
+        step=1,
     )
     employee = SubFactory(
         EmployeeFactory,
@@ -33,3 +35,7 @@ class OrderAndDishFactory(DjangoModelFactory):
 
     class Meta:
         model = OrderAndDish
+        django_get_or_create = (
+            "dish",
+            "order",
+        )

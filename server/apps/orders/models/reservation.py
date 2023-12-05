@@ -47,6 +47,10 @@ class Reservation(models.Model):
         related_name="reservations",
         verbose_name="Номер места",
     )
+    comment = models.TextField(
+        default="",
+        verbose_name="Комментарий",
+    )
 
     class Meta:
         verbose_name = "Забронированный стол"

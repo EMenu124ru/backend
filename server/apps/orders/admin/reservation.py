@@ -14,4 +14,5 @@ class ReservationAdmin(admin.ModelAdmin):
         "restaurant",
         "client",
         "place",
+        "comment",
     )
