@@ -19,7 +19,6 @@ from apps.users.factories import (
     UserFactory,
 )
 
-
 USERS_COUNT = 20
 CLIENTS_COUNT = EMPLOYEES_COUNT = 10
 EMPLOYEE_SCHEDULE_COUNT = 5

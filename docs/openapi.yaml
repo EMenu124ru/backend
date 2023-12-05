@@ -1705,36 +1705,43 @@ components:
                 description: "Официанты ресторана"
                 items:
                   $ref: "#/components/schemas/EmployeeBase"
+                nullable: true
               BARTENDER:
                 type: array
                 description: "Бармены ресторана"
                 items:
                   $ref: "#/components/schemas/EmployeeBase"
+                nullable: true
               COOK:
                 type: array
                 description: "Повара ресторана"
                 items:
                   $ref: "#/components/schemas/EmployeeBase"
+                nullable: true
               CHEF:
                 type: array
                 description: "Шефы ресторана"
                 items:
                   $ref: "#/components/schemas/EmployeeBase"
+                nullable: true
               SOUS_CHEF:
                 type: array
                 description: "Су-Шефы ресторана"
                 items:
                   $ref: "#/components/schemas/EmployeeBase"
+                nullable: true
               MANAGER:
                 type: array
                 description: "Управляющие ресторана"
                 items:
                   $ref: "#/components/schemas/EmployeeBase"
+                nullable: true
               HOSTESS:
                 type: array
                 description: "Хостес ресторана"
                 items:
                   $ref: "#/components/schemas/EmployeeBase"
+                nullable: true
 
     TagToPlace200:
       description: "Получение тегов столов"
