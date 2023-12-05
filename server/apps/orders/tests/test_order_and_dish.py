@@ -381,6 +381,32 @@ def test_create_order_and_dishes_by_waiter(
     assert Order.objects.get(id=order.id).dishes.exists()
 
 
+def test_create_order_and_dishes_by_waiter_zero_count(
+    waiter,
+    api_client,
+) -> None:
+    order = OrderFactory.create()
+    dish = DishFactory.create()
+    order_and_dishes = OrderAndDishFactory.build(order=order, dish=dish)
+    api_client.force_authenticate(user=waiter.user)
+    response = api_client.post(
+        reverse_lazy("api:orderAndDishes-list"),
+        data={
+            "status": order_and_dishes.status,
+            "order": order_and_dishes.order.pk,
+            "dish": order_and_dishes.dish.pk,
+            "count": 0,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert not OrderAndDish.objects.filter(
+        status=order_and_dishes.status,
+        order=order_and_dishes.order,
+        dish=order_and_dishes.dish,
+        count=0,
+    ).exists()
+
+
 def test_update_order_and_dishes_by_waiter_success(
     waiter,
     api_client,
@@ -409,6 +435,35 @@ def test_update_order_and_dishes_by_waiter_success(
         order=order_and_dishes.order,
         dish=order_and_dishes.dish,
         status=new_status,
+    ).exists()
+
+
+def test_update_order_and_dishes_by_waiter_failed_zero_count(
+    waiter,
+    api_client,
+) -> None:
+    order = OrderFactory.create(employee=waiter)
+    order_and_dishes = OrderAndDishFactory.create(
+        order=order,
+        count=5,
+        status=OrderAndDish.Statuses.COOKING,
+    )
+    api_client.force_authenticate(user=waiter.user)
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orderAndDishes-detail",
+            kwargs={"pk": order_and_dishes.pk},
+        ),
+        data={
+            "count": 0,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert not OrderAndDish.objects.filter(
+        count=0,
+        order=order_and_dishes.order,
+        dish=order_and_dishes.dish,
+        status=order_and_dishes.status,
     ).exists()
 
 
