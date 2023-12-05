@@ -12,7 +12,7 @@ from apps.restaurants.models import Place
 from .restaurant import RestaurantFactory
 from .tag_to_place import TagToPlaceFactory
 
-TAGS_COUNT = 10
+TAGS_COUNT = 2
 
 
 class PlaceFactory(DjangoModelFactory):

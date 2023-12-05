@@ -1,5 +1,10 @@
 from .client import IsCurrentUser
-from .employee import FromSameRestaurantEmployee, IsManager, IsChef, FromSameRestaurantSchedule
+from .employee import (
+    FromSameRestaurantEmployee,
+    FromSameRestaurantSchedule,
+    IsChef,
+    IsManager,
+)
 
 __all__ = (
     IsCurrentUser,

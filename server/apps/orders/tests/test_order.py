@@ -32,8 +32,7 @@ def test_create_order_by_waiter(
             "comment": order.comment,
             "client": client.pk,
             "dishes": [
-                {"dish": dish.id, "comment": "some comment"}
-                for dish in dishes
+                {"dish": dish.id} for dish in dishes
             ],
         },
         format='json',

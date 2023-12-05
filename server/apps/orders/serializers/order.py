@@ -105,7 +105,6 @@ class OrderSerializer(BaseModelSerializer):
             order_and_dish = {
                 "order": order.pk,
                 "dish": item["dish"].pk,
-                "comment": item.get("comment", ""),
             }
             serializer = OrderAndDishSerializer(data=order_and_dish)
             serializer.is_valid(raise_exception=True)

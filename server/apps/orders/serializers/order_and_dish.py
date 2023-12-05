@@ -24,7 +24,6 @@ class DishCommentSerializer(BaseModelSerializer):
         fields = (
             "id",
             "dish",
-            "comment",
         )
 
     def to_representation(self, instance: Order) -> OrderedDict:

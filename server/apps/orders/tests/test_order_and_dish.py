@@ -32,7 +32,7 @@ def test_create_order_and_dishes_by_cook(
             "status": order_and_dishes.status,
             "order": order_and_dishes.order.pk,
             "dish": order_and_dishes.dish.pk,
-            "comment": order_and_dishes.comment,
+            "count": order_and_dishes.count,
         },
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -68,7 +68,7 @@ def test_update_order_and_dishes_by_cook_success(
         status=new_status,
         order=order_and_dishes.order,
         dish=order_and_dishes.dish,
-        comment=order_and_dishes.comment,
+        count=order_and_dishes.count,
     ).exists()
 
 
@@ -103,7 +103,7 @@ def test_update_order_and_dishes_by_chef_success(
         employee=new_employee.pk,
         order=order_and_dishes.order,
         dish=order_and_dishes.dish,
-        comment=order_and_dishes.comment,
+        count=order_and_dishes.count,
     ).exists()
 
 
@@ -138,7 +138,7 @@ def test_update_order_and_dishes_by_sous_chef_success(
         employee=new_employee.pk,
         order=order_and_dishes.order,
         dish=order_and_dishes.dish,
-        comment=order_and_dishes.comment,
+        count=order_and_dishes.count,
     ).exists()
 
 
@@ -367,7 +367,7 @@ def test_create_order_and_dishes_by_waiter(
             "status": order_and_dishes.status,
             "order": order_and_dishes.order.pk,
             "dish": order_and_dishes.dish.pk,
-            "comment": order_and_dishes.comment,
+            "count": order_and_dishes.count,
         },
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -375,7 +375,7 @@ def test_create_order_and_dishes_by_waiter(
         status=order_and_dishes.status,
         order=order_and_dishes.order,
         dish=order_and_dishes.dish,
-        comment=order_and_dishes.comment,
+        count=order_and_dishes.count,
     ).exists()
     assert Dish.objects.get(id=dish.id).orders.exists()
     assert Order.objects.get(id=order.id).dishes.exists()
@@ -391,7 +391,7 @@ def test_update_order_and_dishes_by_waiter_success(
         status=OrderAndDish.Statuses.COOKING,
     )
     api_client.force_authenticate(user=waiter.user)
-    new_comment = "new_comment"
+    new_count = order_and_dishes.count + 1
     new_status = OrderAndDish.Statuses.DELIVERED
     response = api_client.patch(
         reverse_lazy(
@@ -399,13 +399,13 @@ def test_update_order_and_dishes_by_waiter_success(
             kwargs={"pk": order_and_dishes.pk},
         ),
         data={
-            "comment": new_comment,
+            "count": new_count,
             "status": new_status,
         },
     )
     assert response.status_code == status.HTTP_200_OK
     assert OrderAndDish.objects.filter(
-        comment=new_comment,
+        count=new_count,
         order=order_and_dishes.order,
         dish=order_and_dishes.dish,
         status=new_status,
@@ -449,7 +449,7 @@ def test_create_order_and_dishes_by_client(
             "status": order_and_dishes.status,
             "order": order_and_dishes.order.pk,
             "dish": order_and_dishes.dish.pk,
-            "comment": order_and_dishes.comment,
+            "count": order_and_dishes.count,
         },
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -503,7 +503,7 @@ def test_create_order_and_dishes_by_not_auth(
             "status": order_and_dishes.status,
             "order": order_and_dishes.order.pk,
             "dish": order_and_dishes.dish.pk,
-            "comment": order_and_dishes.comment,
+            "count": order_and_dishes.count,
         },
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED

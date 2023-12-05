@@ -1,14 +1,19 @@
 from django.conf import settings
 from django.middleware import csrf
 from rest_framework import status
-from rest_framework.generics import RetrieveAPIView, ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from apps.users.models import Employee
-from apps.users.permissions import FromSameRestaurantEmployee, IsCurrentUser, IsChef, IsManager
+from apps.users.permissions import (
+    FromSameRestaurantEmployee,
+    IsChef,
+    IsCurrentUser,
+    IsManager,
+)
 from apps.users.serializers import (
     EmployeeAuthSerializer,
     EmployeeScheduleSerializer,
@@ -70,7 +75,7 @@ class EmployeesKitchenRetrieveListAPIView(ListAPIView):
         return Employee.objects.filter(
             restaurant=self.request.user.employee.restaurant.id,
             role__in=available_role,
-        ).order_by(Employee.role)
+        ).order_by("role")
 
 
 class EmployeesRetrieveListAPIView(ListAPIView):
@@ -87,7 +92,7 @@ class EmployeesRetrieveListAPIView(ListAPIView):
         for employee in employees:
             if employee.role not in employees_by_roles:
                 employees_by_roles[employee.role] = []
-            employees_by_roles[employee.role].append(employee)
+            employees_by_roles[employee.role].append(EmployeeSerializer(employee).data)
         return Response(employees_by_roles, status=status.HTTP_200_OK)
 
 

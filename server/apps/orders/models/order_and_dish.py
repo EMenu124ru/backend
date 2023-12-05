@@ -36,12 +36,14 @@ class OrderAndDish(models.Model):
         verbose_name="Исполняющий сотрудник",
     )
     count = models.PositiveIntegerField(
+        default=1,
         verbose_name="Количество блюд в заказе",
     )
 
     class Meta:
         verbose_name = "Заказ и блюдо"
         verbose_name_plural = "Заказы и блюда"
+        unique_together = ('dish', 'order')
 
     def __str__(self) -> str:
         return f"OrderAndDish {self.order} {self.dish}"
