@@ -28,6 +28,7 @@ class Schedule(ScheduleBase):
     class Meta:
         verbose_name = "Расписание работы ресторана"
         verbose_name_plural = "Расписания работы ресторанов"
+        unique_together = ("week_day", "restaurant")
 
     def __str__(self) -> str:
         return f"Schedule {self.restaurant} {self.time_start} {self.time_finish} {self.week_day}"

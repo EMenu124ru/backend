@@ -6,7 +6,6 @@ from datetime import (
 )
 
 from factory import (
-    Faker,
     LazyAttribute,
     SubFactory,
     fuzzy,
@@ -24,8 +23,8 @@ class ScheduleFactory(DjangoModelFactory):
     restaurant = SubFactory(
         RestaurantFactory,
     )
-    time_start = Faker(
-        "time",
+    time_start = LazyAttribute(
+        lambda _: datetime(2023, 1, 1, 10).strftime("%H:%M:%S")
     )
     time_finish = LazyAttribute(
         lambda obj: datetime.combine(date.today(), time.fromisoformat(obj.time_start)) + timedelta(hours=8),
@@ -36,3 +35,7 @@ class ScheduleFactory(DjangoModelFactory):
 
     class Meta:
         model = Schedule
+        django_get_or_create = (
+            "restaurant",
+            "week_day",
+        )

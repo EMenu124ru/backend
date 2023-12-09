@@ -13,6 +13,11 @@ class ReservationAdmin(admin.ModelAdmin):
         "arrival_time",
         "restaurant",
         "client",
-        "place",
+        "get_place",
         "comment",
     )
+
+    def get_place(self, obj):
+        if obj.place:
+            return obj.place.place
+        return obj.place
