@@ -18,6 +18,7 @@ class ClientCookieAuthAPIView(TokenObtainPairView):
             serializer.is_valid(raise_exception=True)
         except TokenError as e:
             raise InvalidToken(e.args[0])
+
         response = Response(status=status.HTTP_200_OK)
         response.set_cookie(
             key=settings.SIMPLE_JWT['AUTH_COOKIE_ACCESS'],
