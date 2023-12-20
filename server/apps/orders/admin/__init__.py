@@ -1,5 +1,5 @@
 from .category import CategoryAdmin
-from .dish_image import (
+from .dish import (
     DishAdmin,
     DishImageAdmin,
     IngredientAdmin,

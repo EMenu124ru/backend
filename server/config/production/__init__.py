@@ -13,3 +13,14 @@ SIMPLE_JWT = {**SIMPLE_JWT, **SIMPLE_JWT_PROD}  # noqa F405
 REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = (  # noqa F405
     'apps.core.utils.authenticate.CustomAuthentication',
 )
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CORS_ALLOW_HEADERS = ["*"]

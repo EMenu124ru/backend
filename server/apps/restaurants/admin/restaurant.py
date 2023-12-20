@@ -15,7 +15,12 @@ class RestaurantAdmin(admin.ModelAdmin):
     )
 
     def get_schedule(self, obj):
-        return obj.schedule.all()
+        return ", ".join(
+            map(
+                lambda x: f"{x[2]}: {x[0]}-{x[1]}",
+                obj.schedule.all().values_list("time_start", "time_finish", "week_day")
+            )
+        )
 
     def get_places(self, obj):
-        return [place.place for place in obj.places.all()]
+        return ", ".join(obj.places.all().values_list("place", flat=True))

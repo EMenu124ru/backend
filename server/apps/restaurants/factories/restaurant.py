@@ -4,7 +4,6 @@ from factory.django import DjangoModelFactory
 from apps.restaurants.models import Restaurant
 
 PLACE_COUNT = 10
-SCHEDULES_COUNT = 7
 
 
 class RestaurantFactory(DjangoModelFactory):
@@ -29,12 +28,13 @@ class RestaurantFactory(DjangoModelFactory):
     @post_generation
     def schedule(self, create, extracted, **kwargs):
         """Create schedule for restaurant."""
-        from .schedule import ScheduleFactory
+        from .schedule import Schedule, ScheduleFactory
 
         if not create:
             return
+
         schedule = extracted if extracted is not None else (
-            ScheduleFactory(restaurant=self) for _ in range(SCHEDULES_COUNT)
+            ScheduleFactory(restaurant=self, week_day=week_day) for week_day in Schedule.WeekDays
         )
         self.schedule.add(*schedule)
 
