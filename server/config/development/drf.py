@@ -1,4 +1,3 @@
-import os
 from datetime import timedelta
 
 # django-rest-framework
@@ -13,13 +12,7 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "apps.core.utils.custom_exception_handler",
 }
 
-if cors_origins := os.getenv('CORS_ALLOWED_ORIGINS'):
-    CORS_ALLOWED_ORIGINS = [
-        origin.strip() for origin in cors_origins.split(',')
-    ]
-    CORS_ORIGIN_WHITELIST = CORS_ALLOWED_ORIGINS[::]
-else:
-    CORS_ALLOWED_ORIGINS = []
+CORS_ALLOWED_ORIGINS = []
 
 SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,

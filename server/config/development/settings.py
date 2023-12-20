@@ -22,12 +22,7 @@ ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.routing.application"
 
-if allowed_hosts := os.getenv('ALLOWED_HOSTS'):
-    ALLOWED_HOSTS = [
-        origin.strip() for origin in allowed_hosts.split(',')
-    ]
-else:
-    ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*"]
 
 # DATABASES
 # ------------------------------------------------------------------------------
@@ -37,8 +32,8 @@ DATABASES = {'default': dj_database_url.config(conn_max_age=60)}
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "",
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": os.getenv('REDIS_URL'),
     }
 }
 

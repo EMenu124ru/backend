@@ -481,19 +481,19 @@ Django = ">3.2"
 
 [[package]]
 name = "django"
-version = "3.2.16"
-description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
+version = "4.2"
+description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 files = [
-    {file = "Django-3.2.16-py3-none-any.whl", hash = "sha256:18ba8efa36b69cfcd4b670d0fa187c6fe7506596f0ababe580e16909bcdec121"},
-    {file = "Django-3.2.16.tar.gz", hash = "sha256:3adc285124244724a394fa9b9839cc8cd116faf7d159554c43ecdaa8cdf0b94d"},
+    {file = "Django-4.2-py3-none-any.whl", hash = "sha256:ad33ed68db9398f5dfb33282704925bce044bef4261cd4fb59e4e7f9ae505a78"},
+    {file = "Django-4.2.tar.gz", hash = "sha256:c36e2ab12824e2ac36afa8b2515a70c53c7742f0d6eaefa7311ec379558db997"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.3.2,<4"
-pytz = "*"
-sqlparse = ">=0.2.2"
+asgiref = ">=3.6.0,<4"
+sqlparse = ">=0.3.1"
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
 argon2 = ["argon2-cffi (>=19.1.0)"]
@@ -570,6 +570,24 @@ files = [
 
 [package.dependencies]
 Django = ">=3.2"
+
+[[package]]
+name = "django-redis"
+version = "5.4.0"
+description = "Full featured redis cache backend for Django."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "django-redis-5.4.0.tar.gz", hash = "sha256:6a02abaa34b0fea8bf9b707d2c363ab6adc7409950b2db93602e6cb292818c42"},
+    {file = "django_redis-5.4.0-py3-none-any.whl", hash = "sha256:ebc88df7da810732e2af9987f7f426c96204bf89319df4c6da6ca9a2942edd5b"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+redis = ">=3,<4.0.0 || >4.0.0,<4.0.1 || >4.0.1"
+
+[package.extras]
+hiredis = ["redis[hiredis] (>=3,!=4.0.0,!=4.0.1)"]
 
 [[package]]
 name = "djangorestframework"
@@ -1834,6 +1852,17 @@ files = [
 ]
 
 [[package]]
+name = "tzdata"
+version = "2023.3"
+description = "Provider of IANA time zone data"
+optional = false
+python-versions = ">=2"
+files = [
+    {file = "tzdata-2023.3-py2.py3-none-any.whl", hash = "sha256:7e65763eef3120314099b6939b5546db7adce1e7d6f2e179e3df563c70511eda"},
+    {file = "tzdata-2023.3.tar.gz", hash = "sha256:11ef1e08e54acb0d4f95bdb1be05da659673de4acbd21bf9c69e94cc5e907a3a"},
+]
+
+[[package]]
 name = "watchfiles"
 version = "0.16.1"
 description = "Simple, modern and high performance file watching and code reload in python."
@@ -1947,4 +1976,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10.5"
-content-hash = "8b57fe3d664326b1f76f1b27f62bd279689881d2c8923ce2d2bc193e70b4b6b3"
+content-hash = "2d5055df2cae25c8979d1d36b8588d38db45cf001a83ffb7fc7d82ea8f49ebfc"

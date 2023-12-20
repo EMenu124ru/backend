@@ -14,6 +14,17 @@ REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = (  # noqa F405
     'apps.core.utils.authenticate.CustomAuthentication',
 )
 
+if allowed_hosts := os.getenv('ALLOWED_HOSTS'):
+    ALLOWED_HOSTS = [
+        origin.strip() for origin in allowed_hosts.split(',')
+    ]
+
+if cors_origins := os.getenv('CORS_ALLOWED_ORIGINS'):
+    CORS_ALLOWED_ORIGINS = [
+        origin.strip() for origin in cors_origins.split(',')
+    ]
+    CORS_ORIGIN_WHITELIST = CORS_ALLOWED_ORIGINS[::]
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = [
     'DELETE',

@@ -13,7 +13,7 @@ pytz = "2022.6"
 python-slugify = "6.1.2"
 Pillow = "9.3.0"
 argon2-cffi = "21.3.0"
-django = "3.2.16"
+django = "4.2"
 django-model-utils = "4.3.1"
 djangorestframework = "3.14.0"
 django-cors-headers = "3.13.0"
@@ -28,6 +28,7 @@ channels = {extras = ["daphne"], version = "^4.0.0"}
 channels-redis = "^4.0.0"
 openpyxl = "3.0.10"
 pytest-xdist = "^3.5.0"
+django-redis = "^5.4.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
