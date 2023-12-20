@@ -7,9 +7,8 @@ from apps.users.models import User
 class RestaurantQueries:
 
     @staticmethod
-    @database_sync_to_async
     def check_exists(restaurant_id: int) -> bool:
-        return Restaurant.objects.filter(id=restaurant_id).exists()
+        return Restaurant.objects.filter(id=restaurant_id).aexists()
 
     @staticmethod
     @database_sync_to_async

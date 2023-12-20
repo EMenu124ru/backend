@@ -68,6 +68,17 @@ def test_get_client_own(
     assert response.data["id"] == client.id
 
 
+def test_get_me_client_(
+    client,
+    api_client
+) -> None:
+    api_client.force_authenticate(user=client.user)
+    response = api_client.get(
+        reverse_lazy("api:clients-me"),
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
 def test_get_client_other(
     client,
     api_client,

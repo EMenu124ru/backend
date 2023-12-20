@@ -1,3 +1,5 @@
+import os
+
 from config.development import *  # noqa F403 F401 F405
 
 SIMPLE_JWT_PROD = {
