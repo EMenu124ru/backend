@@ -12,7 +12,7 @@ from apps.orders.factories import (
     OrderFactory,
 )
 from apps.orders.models import Order, OrderAndDish
-from apps.orders.serializers import OrderSerializer
+from apps.orders.serializers import OrderSerializer, OrderAndDishSerializer
 from apps.restaurants.consumers import RestaurantConsumer
 from apps.restaurants.factories import RestaurantFactory
 from apps.users.factories import EmployeeFactory
@@ -37,6 +37,11 @@ def get_serialized_order(order):
     order = OrderSerializer(order).data
     order['price'] = str(order['price'])
     return order
+
+
+@database_sync_to_async
+def get_serialized_order_and_dishes(dishes):
+    return OrderAndDishSerializer(dishes).data
 
 
 @pytest.mark.asyncio
@@ -212,7 +217,7 @@ async def test_employee_orders_list(waiter):
 
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
-async def test_create_order_by_waiter(waiter):
+async def test_create_order_by_waiter_without_dishes(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
     application = JWTQueryParamAuthMiddleware(URLRouter([
@@ -230,7 +235,51 @@ async def test_create_order_by_waiter(waiter):
         employee=None,
         reservation=None,
     )
-    order_json = await get_serialized_order(order)
+    order_json = {
+        "price": str(order.price),
+        "status": order.status,
+        "comment": order.comment,
+        "client": order.client.pk if order.client else None,
+        "employee": order.employee,
+        "reservation": order.reservation,
+        "dishes": [],
+    }
+    await communicator.send_json_to({"type": "create_order", "body": order_json})
+    message = await communicator.receive_json_from()
+    assert message["type"] == "error"
+    await communicator.disconnect()
+
+
+@pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
+async def test_create_order_by_waiter_without_dishes(waiter):
+    token = await get_token(waiter.user)
+    restaurant = waiter.restaurant
+    application = JWTQueryParamAuthMiddleware(URLRouter([
+        path("ws/restaurant/<restaurant_id>/", RestaurantConsumer.as_asgi()),
+    ]))
+    communicator = WebsocketCommunicator(
+        application,
+        f"ws/restaurant/{restaurant.id}/?token={token}",
+    )
+    connected, _ = await communicator.connect()
+    assert connected
+    await communicator.receive_json_from()
+    order = await database_sync_to_async(OrderFactory.build)(
+        status=Order.Statuses.WAITING_FOR_COOKING,
+        employee=None,
+        reservation=None,
+    )
+    dishes = await database_sync_to_async(DishFactory.create_batch)(size=2)
+    order_json = {
+        "price": str(order.price),
+        "status": order.status,
+        "comment": order.comment,
+        "client": order.client.pk if order.client else None,
+        "employee": order.employee,
+        "reservation": order.reservation,
+        "dishes": [{"dish": dish.pk} for dish in dishes],
+    }
     await communicator.send_json_to({"type": "create_order", "body": order_json})
     message = await communicator.receive_json_from()
     assert message["type"] == "new_order"
@@ -257,7 +306,15 @@ async def test_create_order_by_chef(chef):
         employee=None,
         reservation=None,
     )
-    order_json = await get_serialized_order(order)
+    order_json = {
+        "price": str(order.price),
+        "status": order.status,
+        "comment": order.comment,
+        "client": order.client.pk if order.client else None,
+        "employee": order.employee,
+        "reservation": order.reservation,
+        "dishes": [],
+    }
     await communicator.send_json_to({"type": "create_order", "body": order_json})
     message = await communicator.receive_json_from()
     assert message["type"] == "error"

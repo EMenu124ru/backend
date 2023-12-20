@@ -36,6 +36,7 @@ class OrderSerializer(BaseModelSerializer):
 
     class Errors:
         EMPLOYEE_CHANGES = "Работник может изменить только статус и комментарий к заказу"
+        EMPTY_DISHES = "В заказе отсутствуют блюда"
         INVALID_DISH = "Ингредиент в блюде {} находится в стоп листе"
 
     class Meta:
@@ -81,6 +82,8 @@ class OrderSerializer(BaseModelSerializer):
                 not self.check_fields_by_waiter(self.instance, attrs)
             ):
                 raise serializers.ValidationError(self.Errors.EMPLOYEE_CHANGES)
+        if not self.instance and attrs.get("dishes") in (None, []):
+            raise serializers.ValidationError(self.Errors.EMPTY_DISHES)
         if attrs.get("dishes") is not None:
             order_dishes = [item["dish"] for item in attrs["dishes"]]
             restaurant_id = self.get_restaurant_id(attrs)
