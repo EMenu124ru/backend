@@ -65,7 +65,7 @@ paths:
         - employees
       summary: "Просмотр информации о сотруднике"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "200":
           $ref: "#/components/responses/Employee200"
@@ -82,7 +82,7 @@ paths:
         - employees
       summary: "Просмотр сотрудников с кухни"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "200":
           $ref: "#/components/responses/EmployeeList200"
@@ -99,7 +99,7 @@ paths:
         - employees
       summary: "Просмотр сотрудников по ролям"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "200":
           $ref: "#/components/responses/EmployeeListByRole200"
@@ -123,7 +123,7 @@ paths:
           description: "Id сотрудника"
           required: true
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "200":
           $ref: "#/components/responses/EmployeeSchedule200"
@@ -142,7 +142,7 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/XLSXFileRequestBody"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "200":
           $ref: "#/components/responses/EmployeeSchedule200"
@@ -166,7 +166,7 @@ paths:
           description: "Id строки расписания"
           required: true
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "200":
           $ref: "#/components/responses/EmployeeSchedule200"
@@ -189,7 +189,7 @@ paths:
           description: "Id строки расписания"
           required: true
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "204":
           description: "No Content"
@@ -207,8 +207,8 @@ paths:
         - employees
         - clients
       summary: "Обновление токена авторизации"
-      requestBody:
-        $ref: "#/components/requestBodies/TokenRefreshRequestBody"
+      security:
+        - cookieRefresh: []
       responses:
         "200":
           $ref: "#/components/responses/TokenRefresh200"
@@ -236,7 +236,7 @@ paths:
         - clients
       summary: "Просмотр информации о текущем клиенте"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "200":
           $ref: "#/components/responses/Client200"
@@ -260,7 +260,7 @@ paths:
           description: "Id клиента"
           required: true
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "200":
           $ref: "#/components/responses/Client200"
@@ -283,7 +283,7 @@ paths:
           description: "Id клиента"
           required: true
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       requestBody:
         $ref: "#/components/requestBodies/SignUpRequestBodyClient"
       responses:
@@ -310,7 +310,7 @@ paths:
           description: "Id клиента"
           required: true
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "204":
           description: "No Content"
@@ -422,7 +422,7 @@ paths:
         - orders
       summary: "Создание заказа"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       requestBody:
         $ref: "#/components/requestBodies/OrderCreateBody"
       responses:
@@ -441,7 +441,7 @@ paths:
       summary: "Получение списка заказов ресторана"
       description: "Список заказов в зависимости от ресторана сотрудника"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       parameters:
         - in: query
           name: page
@@ -478,7 +478,7 @@ paths:
           description: "Id заказа"
           required: true
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "200":
           $ref: "#/components/responses/Order200"
@@ -501,7 +501,7 @@ paths:
           description: "Id заказа"
           required: true
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       requestBody:
         $ref: "#/components/requestBodies/OrderCreateBody"
       responses:
@@ -573,7 +573,7 @@ paths:
         - reservations
       summary: "Бронирование стола"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       requestBody:
         $ref: "#/components/requestBodies/ReservationRequestBody"
       responses:
@@ -592,7 +592,7 @@ paths:
       summary: "Список броней"
       description: "Список отдается в зависимости от ресторана сотрудника"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       parameters:
         - in: query
           name: page
@@ -629,7 +629,7 @@ paths:
           required: true
           description: "Id бронирования"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "200":
           $ref: "#/components/responses/Reservation200"
@@ -652,7 +652,7 @@ paths:
           description: "Id бронирования"
           required: true
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       requestBody:
         $ref: "#/components/requestBodies/ReservationRequestBody"
       responses:
@@ -673,7 +673,7 @@ paths:
         - orderAndDishes
       summary: "Добавление блюда к заказу"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       requestBody:
         $ref: "#/components/requestBodies/OrderAndDishRequestBody"
       responses:
@@ -699,7 +699,7 @@ paths:
           description: "Id связки ресторана и заказа"
           required: true
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       requestBody:
         $ref: "#/components/requestBodies/OrderAndDishRequestBody"
       responses:
@@ -720,7 +720,7 @@ paths:
         - stopLists
       summary: "Добавление ингредиента в стоп-лист"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       requestBody:
         $ref: "#/components/requestBodies/StopListRequestBody"
       responses:
@@ -739,7 +739,7 @@ paths:
       summary: "Получение ингредиентов стоп-листа."
       description: "Отдается в зависимости от ресторана сотрудника"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       parameters:
         - in: query
           name: page
@@ -778,7 +778,7 @@ paths:
           description: "Id элемента из стоп-листа"
           required: true
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "204":
           description: "No Content"
@@ -856,7 +856,7 @@ paths:
         - stopLists
       summary: "Получение всех ингредиентов"
       security:
-        - bearerAuth: []
+        - cookieAccess: []
       responses:
         "200":
           $ref: "#/components/responses/IngredientList200"
@@ -869,10 +869,15 @@ paths:
 
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    cookieAccess:
+      type: apiKey
+      name: access
+      in: cookie
+    
+    cookieRefresh:
+      type: apiKey
+      name: refresh
+      in: cookie
 
   schemas:
     ClientBase:
@@ -1413,18 +1418,7 @@ components:
 
   responses:
     TokenObtain200:
-      description: "Получение токена"
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              access:
-                type: string
-                description: "access token"
-              refresh:
-                type: string
-                description: "refresh token"
+      description: "Получение токена. В запросе вернутся cookie с токенами"
 
     TokenObtain400:
       description: "Ошибка получения токена"
@@ -1438,18 +1432,7 @@ components:
                 example: "No active account found with the given credentials"
 
     TokenRefresh200:
-      description: "Получение обновленного токена"
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              access:
-                type: string
-                description: "access token"
-              refresh:
-                type: string
-                description: "refresh token"
+      description: "Получение обновленного токена. В запросе вернутся cookie с токенами"
 
     TokenRefresh400:
       description: "Ошибка при обновлении токена"
