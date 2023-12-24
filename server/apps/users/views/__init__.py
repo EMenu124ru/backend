@@ -7,6 +7,7 @@ from .employee import (
     EmployeesKitchenRetrieveListAPIView,
     EmployeesRetrieveListAPIView,
 )
+from .token import TokenRefreshCookieAPIView
 
 __all__ = (
     ClientCookieAuthAPIView,
@@ -17,4 +18,5 @@ __all__ = (
     EmployeeScheduleRetrieveAPIView,
     EmployeesKitchenRetrieveListAPIView,
     EmployeesRetrieveListAPIView,
+    TokenRefreshCookieAPIView,
 )

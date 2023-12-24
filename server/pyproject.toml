@@ -27,7 +27,7 @@ channels = {extras = ["daphne"], version = "^4.0.0"}
 channels-redis = "^4.0.0"
 openpyxl = "3.0.10"
 django-redis = "5.4.0"
-psycopg = "3.1.16"
+psycopg2-binary = "^2.9.9"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"

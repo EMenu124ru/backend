@@ -37,10 +37,3 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 CORS_ALLOW_HEADERS = ["*"]
-
-print(f"{ALLOWED_HOSTS=}")
-print(f"{CORS_ALLOWED_ORIGINS=}")
-print(f"{CORS_ORIGIN_WHITELIST=}")
-print(f"{CORS_ALLOW_CREDENTIALS=}")
-print(f"{CORS_ALLOW_METHODS=}")
-print(f"{CORS_ALLOW_HEADERS=}")

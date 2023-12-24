@@ -11,6 +11,7 @@ from apps.users.views import (
     EmployeeScheduleRetrieveAPIView,
     EmployeesKitchenRetrieveListAPIView,
     EmployeesRetrieveListAPIView,
+    TokenRefreshCookieAPIView,
 )
 
 staff_login = (
@@ -23,13 +24,18 @@ client_login = (
     if settings.DEBUG
     else path("clients/login", ClientCookieAuthAPIView.as_view())
 )
+token_refresh = (
+    path("auth/token/refresh", TokenRefreshView.as_view())
+    if settings.DEBUG
+    else path("auth/token/refresh", TokenRefreshCookieAPIView.as_view())
+)
 
 urlpatterns = [
     staff_login,
     client_login,
+    token_refresh,
     path("staff/me", EmployeeRetrieveAPIView.as_view(), name="staff-detail"),
     path("staff/<int:pk>/schedule", EmployeeScheduleRetrieveAPIView.as_view(), name="staff-schedule"),
-    path("auth/token/refresh", TokenRefreshView.as_view()),
     path("staff/kitchen", EmployeesKitchenRetrieveListAPIView.as_view(), name="staff-kitchen"),
     path("staff", EmployeesRetrieveListAPIView.as_view(), name="staff-list")
 ]
