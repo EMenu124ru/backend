@@ -36,6 +36,7 @@ services:
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - DJANGO_ADMIN_URL=${DJANGO_ADMIN_URL}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
     command: daphne -b 0.0.0.0 -p 8008 config.asgi:application --access-log ./logs/daphne.log -v 3
 
   django:
@@ -56,6 +57,7 @@ services:
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - DJANGO_ADMIN_URL=${DJANGO_ADMIN_URL}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
     command: gunicorn config.wsgi -c ./config/gunicorn.py
 
   redis:
