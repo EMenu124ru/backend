@@ -1,6 +1,14 @@
+from django.core.cache import cache
 from django.db.models import QuerySet
 
-from apps.orders.models import Dish, StopList
+from apps.orders.models import (
+    Category,
+    Dish,
+    StopList,
+)
+
+CACHE_DISHES_KEY = "dishes_category_{}_restaurant_{}"
+CACHE_TIMEOUT = 60 * 60 * 24 * 2
 
 
 def get_available_dishes(dishes: QuerySet, restaurant_id: int) -> QuerySet:
@@ -29,3 +37,14 @@ def get_available_dishes(dishes: QuerySet, restaurant_id: int) -> QuerySet:
         if is_available:
             available_dishes.append(dish.id)
     return Dish.objects.filter(id__in=available_dishes)
+
+
+def get_or_create_cache_dishes(category: Category, restaurant_id: int) -> Dish:
+    key = CACHE_DISHES_KEY.format(category.id, restaurant_id)
+    cached_dishes = cache.get(key)
+    if cached_dishes:
+        return cached_dishes
+    queryset = category.dishes.all()
+    dishes = get_available_dishes(queryset, restaurant_id)
+    cache.set(key, dishes, CACHE_TIMEOUT)
+    return dishes
