@@ -19,6 +19,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "apps.core.apps.CoreConfig",
     "apps.orders.apps.OrdersConfig",
     "apps.restaurants.apps.RestaurantsConfig",
     "apps.users.apps.UsersConfig",

@@ -1,10 +1,12 @@
 from factory import (
     Faker,
+    LazyAttribute,
     SubFactory,
     post_generation,
 )
 from factory.django import DjangoModelFactory, ImageField
 
+from apps.core.factories import ObjectFileFactory
 from apps.orders.models import (
     Dish,
     DishImage,
@@ -94,8 +96,8 @@ class DishFactory(DjangoModelFactory):
 class DishImageFactory(DjangoModelFactory):
     """Factory for DishImage instance."""
 
-    image = ImageField(
-        color="green",
+    image = LazyAttribute(
+        lambda _: ObjectFileFactory.create(file=ImageField()),
     )
     dish = SubFactory(
         DishFactory,
