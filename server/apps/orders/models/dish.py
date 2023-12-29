@@ -4,13 +4,6 @@ from django.db import models
 from apps.core.models import TagBase
 
 
-def get_directory_path(instance, filename) -> str:
-    return (
-        f"dishes/{instance.dish.name.replace(' ', '_')}"
-        f"_{instance.dish.id}/{filename}"
-    )
-
-
 class Ingredient(TagBase):
     dishes = models.ManyToManyField(
         "orders.Dish",
@@ -68,8 +61,9 @@ class Dish(models.Model):
 
 
 class DishImage(models.Model):
-    image = models.ImageField(
-        upload_to=get_directory_path,
+    image = models.ForeignKey(
+        "core.ObjectFile",
+        on_delete=models.CASCADE,
         verbose_name="Картинка",
     )
     dish = models.ForeignKey(

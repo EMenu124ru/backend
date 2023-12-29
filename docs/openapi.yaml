@@ -1071,6 +1071,9 @@ components:
         image:
           type: string
           description: "Ссылка на изображение блюда"
+        image_name:
+          type: string
+          description: "Название изначального файла"
 
     DishBase:
       type: object

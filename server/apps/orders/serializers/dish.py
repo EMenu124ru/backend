@@ -1,6 +1,10 @@
 from collections import OrderedDict
 
-from apps.core.serializers import BaseModelSerializer, serializers
+from apps.core.serializers import (
+    BaseModelSerializer,
+    ObjectFileSerializer,
+    serializers,
+)
 from apps.orders.models import (
     Category,
     Dish,
@@ -25,6 +29,7 @@ class DishImageSerializer(BaseModelSerializer):
         queryset=Dish.objects.all(),
         write_only=True,
     )
+    image = ObjectFileSerializer()
 
     class Meta:
         model = DishImage
@@ -33,6 +38,13 @@ class DishImageSerializer(BaseModelSerializer):
             "dish",
             "image",
         )
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        image = data["image"]
+        data["image"] = image["file"]
+        data["image_name"] = image["filename"]
+        return data
 
 
 class DishSerializer(BaseModelSerializer):
