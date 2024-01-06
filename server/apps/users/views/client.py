@@ -23,16 +23,20 @@ class ClientCookieAuthAPIView(TokenObtainPairView):
         response.set_cookie(
             key=settings.SIMPLE_JWT['AUTH_COOKIE_ACCESS'],
             value=serializer.data["access"],
-            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
             httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+            domain=request.get_host(),
+            path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
             samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
         )
         response.set_cookie(
             key=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
             value=serializer.data["refresh"],
-            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
             httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+            domain=request.get_host(),
+            path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
             samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
         )
         csrf.get_token(request)
         return response

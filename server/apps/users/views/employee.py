@@ -31,20 +31,25 @@ class EmployeeCookieAuthAPIView(TokenObtainPairView):
             serializer.is_valid(raise_exception=True)
         except TokenError as e:
             raise InvalidToken(e.args[0])
+
         response = Response(status=status.HTTP_200_OK)
         response.set_cookie(
             key=settings.SIMPLE_JWT['AUTH_COOKIE_ACCESS'],
             value=serializer.validated_data["access"],
-            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
             httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+            domain=request.get_host(),
+            path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
             samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
         )
         response.set_cookie(
             key=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
             value=serializer.validated_data["refresh"],
-            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
             httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+            domain=request.get_host(),
+            path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
             samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
         )
         csrf.get_token(request)
         return response

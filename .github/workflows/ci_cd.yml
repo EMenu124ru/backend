@@ -31,16 +31,6 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.10.5"
-
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip wheel setuptools poetry
-          cd server && poetry install
-
       - name: Run linters
         run: make linters
 
@@ -49,16 +39,6 @@ jobs:
     steps:
       - name: Checkout Code Repository
         uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.10.5"
-
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip wheel setuptools poetry
-          cd server && poetry install
 
       - name: Run tests
         run: make tests
