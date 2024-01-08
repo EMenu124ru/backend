@@ -8,7 +8,7 @@ def enforce_csrf(request):
     """
     Enforce CSRF validation.
     """
-    def dummy_get_response(request):  # pragma: no cover
+    def dummy_get_response(request):
         return None
 
     check = CSRFCheck(dummy_get_response)
@@ -31,5 +31,5 @@ class CustomAuthentication(JWTAuthentication):
             return None
 
         validated_token = self.get_validated_token(raw_token)
-        # enforce_csrf(request)
+        enforce_csrf(request)
         return self.get_user(validated_token), validated_token

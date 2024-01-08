@@ -14,9 +14,12 @@ services:
       - swagger-ui
     ports:
       - 80:80
+      - 443:443
     volumes:
       - ./server/media:/nginx/media/
-  
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/conf/live/${DOMAIN}:/etc/nginx/ssl/
+
   daphne:
     image: ghcr.io/emenu124ru/django:latest
     container_name: daphne
@@ -110,3 +113,10 @@ services:
     environment:
       - SWAGGER_JSON=/openapi.yaml
       - PORT=5050
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+    command: certonly --webroot --webroot-path=/etc/letsencrypt --force-renewal --email ${EMAIL} --agree-tos --no-eff-email -d ${DOMAIN}

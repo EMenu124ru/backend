@@ -66,6 +66,7 @@ paths:
       summary: "Просмотр информации о сотруднике"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "200":
           $ref: "#/components/responses/Employee200"
@@ -83,6 +84,7 @@ paths:
       summary: "Просмотр сотрудников с кухни"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "200":
           $ref: "#/components/responses/EmployeeList200"
@@ -100,6 +102,7 @@ paths:
       summary: "Просмотр сотрудников по ролям"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "200":
           $ref: "#/components/responses/EmployeeListByRole200"
@@ -124,6 +127,7 @@ paths:
           required: true
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "200":
           $ref: "#/components/responses/EmployeeSchedule200"
@@ -143,6 +147,7 @@ paths:
         $ref: "#/components/requestBodies/XLSXFileRequestBody"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "200":
           $ref: "#/components/responses/EmployeeSchedule200"
@@ -167,6 +172,7 @@ paths:
           required: true
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "200":
           $ref: "#/components/responses/EmployeeSchedule200"
@@ -190,6 +196,7 @@ paths:
           required: true
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "204":
           description: "No Content"
@@ -237,6 +244,7 @@ paths:
       summary: "Просмотр информации о текущем клиенте"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "200":
           $ref: "#/components/responses/Client200"
@@ -261,6 +269,7 @@ paths:
           required: true
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "200":
           $ref: "#/components/responses/Client200"
@@ -284,6 +293,7 @@ paths:
           required: true
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       requestBody:
         $ref: "#/components/requestBodies/SignUpRequestBodyClient"
       responses:
@@ -311,6 +321,7 @@ paths:
           required: true
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "204":
           description: "No Content"
@@ -423,6 +434,7 @@ paths:
       summary: "Создание заказа"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       requestBody:
         $ref: "#/components/requestBodies/OrderCreateBody"
       responses:
@@ -442,6 +454,7 @@ paths:
       description: "Список заказов в зависимости от ресторана сотрудника"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       parameters:
         - in: query
           name: page
@@ -479,6 +492,7 @@ paths:
           required: true
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "200":
           $ref: "#/components/responses/Order200"
@@ -502,6 +516,7 @@ paths:
           required: true
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       requestBody:
         $ref: "#/components/requestBodies/OrderCreateBody"
       responses:
@@ -574,6 +589,7 @@ paths:
       summary: "Бронирование стола"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       requestBody:
         $ref: "#/components/requestBodies/ReservationRequestBody"
       responses:
@@ -593,6 +609,7 @@ paths:
       description: "Список отдается в зависимости от ресторана сотрудника"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       parameters:
         - in: query
           name: page
@@ -630,6 +647,7 @@ paths:
           description: "Id бронирования"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "200":
           $ref: "#/components/responses/Reservation200"
@@ -653,6 +671,7 @@ paths:
           required: true
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       requestBody:
         $ref: "#/components/requestBodies/ReservationRequestBody"
       responses:
@@ -674,6 +693,7 @@ paths:
       summary: "Добавление блюда к заказу"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       requestBody:
         $ref: "#/components/requestBodies/OrderAndDishRequestBody"
       responses:
@@ -700,6 +720,7 @@ paths:
           required: true
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       requestBody:
         $ref: "#/components/requestBodies/OrderAndDishRequestBody"
       responses:
@@ -721,6 +742,7 @@ paths:
       summary: "Добавление ингредиента в стоп-лист"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       requestBody:
         $ref: "#/components/requestBodies/StopListRequestBody"
       responses:
@@ -740,6 +762,7 @@ paths:
       description: "Отдается в зависимости от ресторана сотрудника"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       parameters:
         - in: query
           name: page
@@ -779,6 +802,7 @@ paths:
           required: true
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "204":
           description: "No Content"
@@ -857,6 +881,7 @@ paths:
       summary: "Получение всех ингредиентов"
       security:
         - cookieAccess: []
+        - cookieCSRF: []
       responses:
         "200":
           $ref: "#/components/responses/IngredientList200"
@@ -877,6 +902,11 @@ components:
     cookieRefresh:
       type: apiKey
       name: refresh
+      in: cookie
+
+    cookieCSRF:
+      type: apiKey
+      name: csrftoken
       in: cookie
 
   schemas:
@@ -1421,7 +1451,7 @@ components:
 
   responses:
     TokenObtain200:
-      description: "Получение токена. В запросе вернутся cookie с токенами"
+      description: "Получение токена. В запросе вернутся cookie с токенами и csrf токен"
 
     TokenObtain400:
       description: "Ошибка получения токена"
@@ -1435,7 +1465,7 @@ components:
                 example: "No active account found with the given credentials"
 
     TokenRefresh200:
-      description: "Получение обновленного токена. В запросе вернутся cookie с токенами"
+      description: "Получение обновленного токена. В запросе вернутся cookie с токенами и csrf токен"
 
     TokenRefresh400:
       description: "Ошибка при обновлении токена"

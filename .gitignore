@@ -280,3 +280,7 @@ tags
 .envs/
 .idea
 .vs_code
+
+# https certificates
+certbot
+certbot/
