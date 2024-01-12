@@ -12,13 +12,15 @@ services:
       - django
       - daphne
       - swagger-ui
+      - certbot
     ports:
       - 80:80
       - 443:443
     volumes:
       - ./server/media:/nginx/media/
       - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/conf/live/${DOMAIN}:/etc/nginx/ssl/
+    environment:
+      - BACKEND_DOMAIN=${BACKEND_DOMAIN}
 
   daphne:
     image: ghcr.io/emenu124ru/django:latest
@@ -119,4 +121,4 @@ services:
     container_name: certbot
     volumes:
       - ./certbot/conf:/etc/letsencrypt
-    command: certonly --webroot --webroot-path=/etc/letsencrypt --force-renewal --email ${EMAIL} --agree-tos --no-eff-email -d ${DOMAIN}
+    command: certonly --webroot --webroot-path=/etc/letsencrypt --force-renewal --email ${EMAIL} --agree-tos --no-eff-email -d ${BACKEND_DOMAIN}
