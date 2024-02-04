@@ -121,4 +121,4 @@ services:
     container_name: certbot
     volumes:
       - ./certbot/conf:/etc/letsencrypt
-    command: certonly --webroot --webroot-path=/etc/letsencrypt --force-renewal --email ${EMAIL} --agree-tos --no-eff-email -d ${BACKEND_DOMAIN}
+    command: certonly --webroot --webroot-path=/etc/letsencrypt --expand --agree-tos --no-eff-email -d ${BACKEND_DOMAIN}
