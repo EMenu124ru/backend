@@ -4,7 +4,7 @@ from config.development import *  # noqa F403 F401 F405
 
 
 CSRF_COOKIE_SAMESITE = "None"
-CSRF_COOKIE_PATH = "/api/v1/"
+CSRF_COOKIE_PATH = "/"
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_DOMAIN = os.getenv("SERVER_HOST")
