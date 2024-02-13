@@ -1009,6 +1009,10 @@ components:
           type: integer
           description: "Id бронирования"
           nullable: true
+        place:
+          type: string
+          description: "Обозначение стола"
+          nullable: true
         created:
           description: "Time created"
           type: string

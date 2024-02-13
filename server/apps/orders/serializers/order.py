@@ -134,12 +134,15 @@ class OrderSerializer(BaseModelSerializer):
             client = Client.objects.get(pk=client_id)
 
         order_and_dishes = OrderAndDish.objects.filter(order_id=instance.id)
+        reservation = instance.reservation.pk if instance.reservation else None
+        place = instance.reservation.place if instance.reservation else None
         new_info = {
             "dishes": OrderAndDishSerializer(order_and_dishes, many=True).data,
             "price": instance.price,
             "employee":  None if not employee else EmployeeSerializer(employee).data,
             "client": None if not client else ClientSerializer(client).data,
-            "reservation": instance.reservation.pk if instance.reservation else None,
+            "reservation": reservation,
+            "place": place.place if place else None,
         }
         data.update(new_info)
         return data

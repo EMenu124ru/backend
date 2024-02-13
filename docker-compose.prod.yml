@@ -13,6 +13,7 @@ services:
       - daphne
       - swagger-ui
       - certbot
+      - alexandria
     ports:
       - 80:80
       - 443:443
@@ -122,3 +123,14 @@ services:
     volumes:
       - ./certbot/conf:/etc/letsencrypt
     command: certonly --webroot --webroot-path=/etc/letsencrypt --expand --agree-tos --no-eff-email -d ${BACKEND_DOMAIN}
+
+  alexandria:
+    image: raisultan/alexandria:0.1
+    container_name: alexandria
+    restart: always
+    expose:
+      - 8080
+    volumes:
+      - ./docs/ws.yml:/ws.yml
+    environment:
+      - ALEXANDRIA_YAML=/ws.yml

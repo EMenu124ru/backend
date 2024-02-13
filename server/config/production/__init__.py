@@ -2,7 +2,6 @@ import os
 
 from config.development import *  # noqa F403 F401 F405
 
-
 CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_PATH = "/"
 CSRF_COOKIE_HTTPONLY = True
