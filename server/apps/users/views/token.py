@@ -11,9 +11,7 @@ class TokenRefreshCookieAPIView(TokenObtainPairView):
     serializer_class = TokenRefreshSerializer
 
     def post(self, request, *args, **kwargs):
-        data = {}
-        if "refresh" in request.COOKIES:
-            data["refresh"] = request.COOKIES["refresh"]
+        data = {"refresh": request.COOKIES.get("refresh", None)}
         serializer = self.get_serializer(data=data)
 
         try:
