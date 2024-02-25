@@ -3,11 +3,10 @@ from rest_framework import mixins, viewsets
 from apps.core.utils import PaginationObject
 
 
-class RetrieveListViewSet(
-    mixins.RetrieveModelMixin,
+class ListViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
-    """RetrieveList ViewSet for `list`, `retrieve` action."""
+    """RetrieveList ViewSet for `list` action."""
 
     pagination_class = PaginationObject

@@ -6,7 +6,7 @@ from apps.orders.models import Order, OrderAndDish
 
 
 @receiver(post_save, sender=OrderAndDish)
-def change_order_status_based_on_dishes(instance, created, **kwargs) -> None:
+def change_order_status_based_on_dishes(instance, **kwargs) -> None:
     dishes_from_same_order = OrderAndDish.objects.filter(
         order_id=instance.order.id,
     )

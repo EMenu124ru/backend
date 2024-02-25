@@ -170,6 +170,8 @@ paths:
             type: number
           description: "Id строки расписания"
           required: true
+      requestBody:
+        $ref: "#/components/requestBodies/EmployeeScheduleRequestBody"
       security:
         - cookieAccess: []
         - cookieCSRF: []
@@ -530,35 +532,6 @@ paths:
           $ref: "#/components/responses/Forbidden403"
         "404":
           $ref: "#/components/responses/NotFound404"
-
-  "/api/v1/dishes":
-    get:
-      tags:
-        - dishes
-      summary: "Просмотр списка блюд"
-      description: "Клиенту отдаются все блюда. Сотруднику отдаются блюда, которые не находятся в стоп листе"
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: number
-            nullable: true
-          description: "Номер страницы"
-          required: false
-        - in: query
-          name: page_size
-          schema:
-            type: number
-            nullable: true
-          description: "Количество элементов на странице"
-          required: false
-      responses:
-        "200":
-          $ref: "#/components/responses/DishList200"
-        "401":
-          $ref: "#/components/responses/Unauthorized401"
-        "403":
-          $ref: "#/components/responses/Forbidden403"
 
   "/api/v1/dishes/{dish_id}":
     get:
@@ -1338,6 +1311,25 @@ components:
           type: string
           description: "Имя тега"
     
+    EmployeeScheduleCreateBase:
+      type: object
+      properties:
+        day:
+          type: string
+          format: date
+          description: "Дата начала смены"
+        time_start:
+          type: string
+          format: time
+          description: "Время начала смены"
+        time_finish:
+          type: string
+          format: time
+          description: "Время конца смены"
+        employee:
+          type: number
+          description: "Id сотрудника"
+    
     EmployeeScheduleBase:
       type: object
       properties:
@@ -1444,13 +1436,23 @@ components:
           schema:
             $ref: "#/components/schemas/StopListCreateBase"
       required: true
+
+    EmployeeScheduleRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EmployeeScheduleCreateBase"
+      required: true
     
     XLSXFileRequestBody:
+      description: "Файлик формата .xlsx"
       content:
         application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
           schema:
-            type: string
-            format: binary
+            properties:
+              file:
+                type: string
+                format: binary
       required: true
 
   responses:

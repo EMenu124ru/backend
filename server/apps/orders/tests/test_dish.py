@@ -10,18 +10,6 @@ DISH_COUNT = INGREDIENT_COUNT = 3
 DISH_IMAGES_COUNT = 5
 
 
-def test_read_dishes_by_manager(
-    manager,
-    api_client,
-) -> None:
-    DishFactory.create_batch(size=DISH_COUNT)
-    api_client.force_authenticate(user=manager.user)
-    response = api_client.get(
-        reverse_lazy("api:dishes-list"),
-    )
-    assert response.status_code == status.HTTP_200_OK
-
-
 def test_read_ingredients_by_manager(
     manager,
     api_client,
@@ -49,20 +37,6 @@ def test_read_dish_by_manager(
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_read_dishes_by_client(
-    client,
-    api_client,
-) -> None:
-    DishFactory.create_batch(size=DISH_COUNT)
-    api_client.force_authenticate(user=client.user)
-    response = api_client.get(
-        reverse_lazy(
-            "api:dishes-list",
-        ),
-    )
-    assert response.status_code == status.HTTP_200_OK
-
-
 def test_read_ingredients_by_client(
     client,
     api_client,
@@ -85,18 +59,6 @@ def test_read_dish_by_client(
         reverse_lazy(
             "api:dishes-detail",
             kwargs={"pk": dish.pk},
-        ),
-    )
-    assert response.status_code == status.HTTP_200_OK
-
-
-def test_read_dishes_by_not_auth(
-    api_client,
-) -> None:
-    DishFactory.create_batch(size=DISH_COUNT)
-    response = api_client.get(
-        reverse_lazy(
-            "api:dishes-list",
         ),
     )
     assert response.status_code == status.HTTP_200_OK
