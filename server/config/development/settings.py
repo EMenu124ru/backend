@@ -7,7 +7,11 @@ ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 
 # GENERAL
 # ------------------------------------------------------------------------------
-DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
+DEBUG = (
+    os.getenv("DJANGO_DEBUG") == "True"
+    if os.getenv("DJANGO_DEBUG") is not None
+    else False
+)
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
     "qaEhm3Sc0WuO93idsME1e7vmiwWpuLqTJX6PRRyBpgUUDPQPqhBObwZ6UgqT6OuG",

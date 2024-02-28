@@ -1,12 +1,8 @@
 upstream localhost {
-    server django_1:8000;
-    server django_2:8000;
-    server django_3:8000;
+    server django:8000;
 }
 upstream websocket {
-    server daphne_1:8008;
-    server daphne_2:8008;
-    server daphne_3:8008;
+    server daphne:8008;
 }
 
 server {

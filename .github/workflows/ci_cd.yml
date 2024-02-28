@@ -43,25 +43,6 @@ jobs:
       - name: Run tests
         run: make tests
 
-  publish-nginx:
-    name: publish nginx image
-    needs: [tests, linters]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Login
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.PAT }}
-
-      - name: Build and Publish
-        run: |
-          docker build . -f ./nginx/Dockerfile --tag ${{ env.REGISTRY }}/${{ env.NGINX_IMAGE_NAME }}
-          docker push ${{ env.REGISTRY }}/${{ env.NGINX_IMAGE_NAME }}
-
   publish-django:
     name: publish django image
     needs: [tests, linters]
@@ -83,6 +64,28 @@ jobs:
         run: |
           docker build ./server --tag ${{ env.REGISTRY }}/${{ env.DJANGO_IMAGE_NAME }}
           docker push ${{ env.REGISTRY }}/${{ env.DJANGO_IMAGE_NAME }}
+
+  publish-nginx:
+    name: publish nginx image
+    needs: [tests, linters, publish-django]
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PAT }}
+
+      - name: Build and Publish
+        run: |
+          docker build . -f ./nginx/Dockerfile --tag ${{ env.REGISTRY }}/${{ env.NGINX_IMAGE_NAME }}
+          docker push ${{ env.REGISTRY }}/${{ env.NGINX_IMAGE_NAME }}
 
   deploy:
     runs-on: ubuntu-latest

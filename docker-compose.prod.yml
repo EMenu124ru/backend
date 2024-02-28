@@ -31,9 +31,6 @@ services:
       - redis
     expose:
       - 8008
-    deploy:
-      mode: replicated
-      replicas: ${DAPHNE_REPLICAS}
     volumes:
       - ./server/media:/server/media/
       - ./server/logs/:/server/logs/
@@ -56,9 +53,6 @@ services:
       - redis
     expose:
       - 8000
-    deploy:
-      mode: replicated
-      replicas: ${DJANGO_REPLICAS}
     volumes:
       - ./server/media:/server/media/
       - ./server/logs/:/server/logs/

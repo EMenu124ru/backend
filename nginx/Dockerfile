@@ -1,19 +1,4 @@
-# FROM python:3.10.5-slim-bullseye AS server
-
-# ARG APP_HOME=/server/
-
-# RUN apt-get update && \
-#     apt-get install --no-install-recommends -y build-essential
-
-# COPY ./server ${APP_HOME}
-
-# WORKDIR ${APP_HOME}
-
-# RUN pip install poetry && \
-#     poetry config virtualenvs.create false && \
-#     poetry install --no-interaction --no-ansi
-
-FROM emenu124ru/django:latest as server
+FROM ghcr.io/emenu124ru/django:latest as server
 
 RUN python ./manage.py collectstatic --noinput
 
