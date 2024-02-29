@@ -1,6 +1,4 @@
-FROM ghcr.io/emenu124ru/django:latest as server
-
-RUN python ./manage.py collectstatic --noinput
+FROM ghcr.io/emenu124ru/django:latest AS server
 
 #########################################
 
