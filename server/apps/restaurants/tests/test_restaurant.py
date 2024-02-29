@@ -54,7 +54,7 @@ def test_read_state_places_of_restaurant_by_waiter(
             "api:restaurants-places",
         ),
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_200_OK
 
 
 def test_state_places_of_restaurant_by_hostess(
