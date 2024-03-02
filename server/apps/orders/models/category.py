@@ -6,6 +6,11 @@ class Category(models.Model):
         max_length=128,
         verbose_name="Название",
     )
+    icon = models.ForeignKey(
+        "core.ObjectFile",
+        on_delete=models.CASCADE,
+        verbose_name="Иконка",
+    )
 
     class Meta:
         verbose_name = "Категория"

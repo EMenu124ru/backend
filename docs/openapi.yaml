@@ -1068,6 +1068,14 @@ components:
         name:
           type: string
           description: "Название категории"
+        icon:
+          type: string
+          format: binary
+          description: "Ссылка на иконку категории"
+        icon_name:
+          type: string
+          format: binary
+          description: "Название изначального файла"
 
     DishImageBase:
       type: object
@@ -1077,9 +1085,11 @@ components:
           description: "Id изображения блюда"
         image:
           type: string
+          format: binary
           description: "Ссылка на изображение блюда"
         image_name:
           type: string
+          format: binary
           description: "Название изначального файла"
 
     DishBase:
