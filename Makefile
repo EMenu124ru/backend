@@ -22,58 +22,61 @@ help: ##@Help Show this help
 	@echo -e "Usage: make [target] ...\n"
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
-docker-up-build:  ##@Application Run and build application server
+docker-up-build:  ##@ApplicationDev Run and build application server
 	docker-compose up --build --remove-orphans
 
-docker-up-buildd:  ##@Application Run and build application server in daemon
+docker-up-buildd:  ##@ApplicationDev Run and build application server in daemon
 	docker-compose up -d --build --remove-orphans
 
-docker-up:  ##@Application Run application server
+docker-up:  ##@ApplicationDev Run application server
 	docker-compose up
 
-docker-upd:  ##@Application Run application server in daemon
+docker-upd:  ##@ApplicationDev Run application server in daemon
 	docker-compose up -d
 
-docker-up-build-prod:  ##@Application Run application server in prod
+docker-up-build-prod:  ##@ApplicationProd Run application server in prod
 	docker-compose -f docker-compose.prod.yml up --build --remove-orphans
 
-docker-up-buildd-prod:  ##@Application Run application server in prod in daemon
+docker-up-buildd-prod:  ##@ApplicationProd Run application server in prod in daemon
 	docker-compose -f docker-compose.prod.yml up -d --build --remove-orphans
 
-docker-down:  ##@Application Stop application in docker
+docker-down:  ##@ApplicationDev Stop application in docker
 	docker-compose down --remove-orphans
 
-docker-downv:  ##@Application Stop application in docker and remove volumes
+docker-downv:  ##@ApplicationDev Stop application in docker and remove volumes
 	docker-compose down -v --remove-orphans
 
-docker-down-prod:  ##@Application Stop application in docker in prod
+docker-down-prod:  ##@ApplicationProd Stop application in docker in prod
 	docker-compose -f docker-compose.prod.yml down --remove-orphans
 
-docker-downv-prod:  ##@Application Stop application in docker and remove volumes in prod
+docker-downv-prod:  ##@ApplicationProd Stop application in docker and remove volumes in prod
 	docker-compose -f docker-compose.prod.yml down -v --remove-orphans
 
-docker-django-run:  ##@Application Run django container with command
+docker-django-run:  ##@ApplicationDev Run django container with command
 	docker-compose run --rm django $(args)
 
-docker-django-run-prod:  ##@Application Run django container with command in prod
+docker-django-run-prod:  ##@ApplicationProd Run django container with command in prod
 	docker-compose -f docker-compose.prod.yml run --rm django $(args)
 
-fill_sample_data:  ##@Application Run script for create sample data in db
+fill_sample_data:  ##@ApplicationDev Run script for create sample data in db
 	make docker-django-run "python manage.py runscript fill_sample_data"
 
-migrate:  ##@Application Apply migrations
+migrate:  ##@ApplicationDev Apply migrations
 	make docker-django-run "python manage.py migrate"
 
-makemigrations:  ##@Application Create migrations
+makemigrations:  ##@ApplicationDev Create migrations
 	make docker-django-run "python manage.py makemigrations"
 
-createsuperuser:  ##@Application Create superuser
+createsuperuser:  ##@ApplicationDev Create superuser
 	make docker-django-run "python manage.py createsuperuser"
 
-migrate-prod:  ##@Application Apply migrations in prod
+createsuperuser-prod:  ##@ApplicationProd Create superuser
+	make docker-django-run "python manage.py createsuperuser"
+
+migrate-prod:  ##@ApplicationProd Apply migrations in prod
 	make docker-django-run-prod "python manage.py migrate"
 
-shell:  ##@Application Run django shell
+shell:  ##@ApplicationDev Run django shell
 	make docker-django-run "python manage.py shell"
 
 open-db:  ##@Database Open database inside docker-image
@@ -90,7 +93,7 @@ linters:  ##@Linters Run linters
 	make docker-django-run "isort . --settings-file=./setup.cfg"
 	make docker-django-run "flake8 . --config=./setup.cfg"
 
-docker-login:
+docker-login:  ##@Application Login in GitHub Container Registry
 	echo $(PAT) | docker login ghcr.io -u $(USERNAME) --password-stdin
 
 docker-clean:  ##@Application Remove all unused docker objects
