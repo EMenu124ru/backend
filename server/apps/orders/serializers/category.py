@@ -3,7 +3,7 @@ from apps.orders.models import Category
 
 
 class CategorySerializer(BaseModelSerializer):
-    image = ObjectFileSerializer()
+    icon = ObjectFileSerializer()
 
     class Meta:
         model = Category
