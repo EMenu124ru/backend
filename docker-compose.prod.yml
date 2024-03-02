@@ -25,6 +25,7 @@ services:
 
   daphne:
     image: ghcr.io/emenu124ru/django:latest
+    container_name: daphne
     restart: always
     depends_on:
       - postgres
@@ -47,6 +48,7 @@ services:
 
   django:
     image: ghcr.io/emenu124ru/django:latest
+    container_name: django
     restart: always
     depends_on:
       - postgres
@@ -59,6 +61,7 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - REDIS_URL=${REDIS_URL}
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - DJANGO_ADMIN_URL=${DJANGO_ADMIN_URL}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}

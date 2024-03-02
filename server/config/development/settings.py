@@ -7,11 +7,8 @@ ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 
 # GENERAL
 # ------------------------------------------------------------------------------
-DEBUG = (
-    os.getenv("DJANGO_DEBUG") == "True"
-    if os.getenv("DJANGO_DEBUG") is not None
-    else False
-)
+DEBUG = os.environ.get("DJANGO_DEBUG", "false") == "true"
+
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
     "qaEhm3Sc0WuO93idsME1e7vmiwWpuLqTJX6PRRyBpgUUDPQPqhBObwZ6UgqT6OuG",
@@ -34,10 +31,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 DATABASES = {'default': dj_database_url.config(conn_max_age=60)}
 
+REDIS_URL = os.getenv('REDIS_URL')
+
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": os.getenv('REDIS_URL'),
+        "LOCATION": REDIS_URL,
     }
 }
 
@@ -45,7 +44,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('redis', 6379)],
+            'hosts': [REDIS_URL],
         },
     },
 }

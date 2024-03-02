@@ -34,6 +34,12 @@ docker-up:  ##@ApplicationDev Run application server
 docker-upd:  ##@ApplicationDev Run application server in daemon
 	docker-compose up -d
 
+docker-up-prod:  ##@ApplicationProd Run application server
+	docker-compose up
+
+docker-upd-prod:  ##@ApplicationProd Run application server in daemon
+	docker-compose up -d
+
 docker-up-build-prod:  ##@ApplicationProd Run application server in prod
 	docker-compose -f docker-compose.prod.yml up --build --remove-orphans
 
@@ -71,7 +77,7 @@ createsuperuser:  ##@ApplicationDev Create superuser
 	make docker-django-run "python manage.py createsuperuser"
 
 createsuperuser-prod:  ##@ApplicationProd Create superuser
-	make docker-django-run "python manage.py createsuperuser"
+	make docker-django-run-prod "python manage.py createsuperuser"
 
 migrate-prod:  ##@ApplicationProd Apply migrations in prod
 	make docker-django-run-prod "python manage.py migrate"

@@ -18,6 +18,8 @@ server {
     ssl_certificate /etc/letsencrypt/live/${BACKEND_DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${BACKEND_DOMAIN}/privkey.pem;
 
+    root /nginx;
+
     location ^~ /.well-known/acme-challenge/ {
         root /etc/letsencrypt;
     }
@@ -27,18 +29,12 @@ server {
         log_not_found  off;
     }
 
-    types {
-        text/css css;
+    location /static/ {
+        autoindex on;
     }
 
-    location /static {
+    location /media/ {
         autoindex on;
-        alias /nginx/static;
-    }
-
-    location /media {
-        autoindex on;
-        alias /nginx/media;
     }
 
     location /docs/api/ {
