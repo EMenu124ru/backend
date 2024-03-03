@@ -14,11 +14,10 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "name",
-        "get_dishes",
     )
-
-    def get_dishes(self, obj):
-        return ", ".join(obj.dishes.all().values_list("name", flat=True))
+    filter_horizontal = (
+        "dishes",
+    )
 
 
 @admin.register(Dish)

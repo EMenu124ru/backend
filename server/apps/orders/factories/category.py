@@ -1,7 +1,4 @@
-from factory import (
-    Faker,
-    LazyAttribute,
-)
+from factory import Faker, LazyAttribute
 from factory.django import DjangoModelFactory, ImageField
 
 from apps.core.factories import ObjectFileFactory

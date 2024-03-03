@@ -13,6 +13,9 @@ class PlaceAdmin(admin.ModelAdmin):
         "place",
         "get_tags",
     )
+    filter_horizontal = (
+        "tags",
+    )
 
     def get_tags(self, obj):
         return ", ".join(obj.tags.all().values_list("name", flat=True))
