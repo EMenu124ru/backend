@@ -129,7 +129,6 @@ services:
     expose:
       - 5050
     environment:
-      - SWAGGER_JSON=/openapi.yaml
       - PORT=5050
 
   certbot:
