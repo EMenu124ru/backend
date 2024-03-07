@@ -33,7 +33,7 @@ if cors_origins := os.getenv('CORS_ALLOWED_ORIGINS'):
         origin.strip() for origin in cors_origins.split(',')
     ]
 CORS_ORIGIN_WHITELIST = CORS_ALLOWED_ORIGINS[::]
-CSRF_TRUSTED_ORIGINS = ["*"]
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS[::]
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = [

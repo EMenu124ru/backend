@@ -43,7 +43,7 @@ services:
       - postgres
       - redis
     expose:
-      - ${DAPHNE_PORT}
+      - 8008
     volumes:
       - ./server/media:/server/media/
       - ./server/logs/:/server/logs/
@@ -51,7 +51,7 @@ services:
       - ./.envs/django.env
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 2
       update_config:
         parallelism: 1
         order: start-first
@@ -66,11 +66,11 @@ services:
         max_attempts: 3
         window: 60s
     healthcheck:
-      test: curl --fail http://127.0.0.1:${DAPHNE_PORT} || echo 1
+      test: ["CMD-SHELL", "curl --fail http://0.0.0.0:8008 || echo 1"]
       interval: 30s
       timeout: 5s
       retries: 5
-    command: ["daphne", "-b", "0.0.0.0", "-p", "${DAPHNE_PORT}", "config.asgi:application", "--access-log", "./logs/daphne.log", "-v", "3"]
+    entrypoint: daphne -b 0.0.0.0 -p 8008 config.asgi:application --access-log ./logs/daphne.log -v 3
 
   django:
     image: ghcr.io/emenu124ru/django:latest
@@ -78,7 +78,7 @@ services:
       - postgres
       - redis
     expose:
-      - ${DJANGO_PORT}
+      - 8000
     volumes:
       - ./server/media:/server/media/
       - ./server/logs/:/server/logs/
@@ -86,7 +86,7 @@ services:
       - ./.envs/django.env
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 2
       update_config:
         parallelism: 1
         order: start-first
@@ -101,11 +101,11 @@ services:
         max_attempts: 3
         window: 60s
     healthcheck:
-      test: curl --fail http://127.0.0.1:${DJANGO_PORT} || echo 1
+      test: ["CMD-SHELL", "curl --fail http://0.0.0.0:8000 || echo 1"]
       interval: 30s
       timeout: 5s
       retries: 5
-    command: ["gunicorn", "config.wsgi", "-c", "./config/gunicorn.py"]
+    entrypoint: gunicorn config.wsgi -c ./config/gunicorn.py
 
   redis:
     image: redis:6

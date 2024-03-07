@@ -112,7 +112,10 @@ docker-pull-prod:  ##@Docker Pulling containers
 	docker-compose -f docker-compose.prod.yml pull
 
 docker-stack-deploy:  ##@Docker Deploy containers in stack in docker swarm
-	docker stack deploy --with-registry-auth --resolve-image changed --prune --compose-file docker-compose.prod.yml backend
+	docker stack deploy --with-registry-auth --resolve-image always --prune --compose-file docker-compose.prod.yml backend
+
+docker-stack-deploy-portainer:  ##@Docker Deploy containers in stack in docker swarm
+	docker stack deploy --with-registry-auth --resolve-image always --prune --compose-file portainer-agent-stack.yml portainer
 
 docker-stop:  ##@Docker Stop all docker containers
 	@docker rm -f $$(docker ps -aq) || true
