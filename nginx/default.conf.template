@@ -1,8 +1,8 @@
 upstream localhost {
-    server backend_django:${DJANGO_PORT};
+    server backend_django:${BACKEND_DOMAIN};
 }
 upstream websocket {
-    server backend_daphne:${DAPHNE_PORT};
+    server backend_daphne:${BACKEND_DOMAIN};
 }
 
 server {

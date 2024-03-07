@@ -18,10 +18,8 @@ services:
     volumes:
       - ./server/media:/nginx/media/
       - ./certbot/conf:/etc/letsencrypt
-    environment:
-      - BACKEND_DOMAIN=${BACKEND_DOMAIN}
-      - DJANGO_PORT=${DJANGO_PORT}
-      - DAPHNE_PORT=${DAPHNE_PORT}
+    env_file:
+      - ./.envs/nginx.env
     deploy:
       mode: replicated
       replicas: 2
@@ -35,9 +33,9 @@ services:
         order: stop-first
       restart_policy:
         condition: any
-        delay: 5s
+        delay: 10s
         max_attempts: 3
-        window: 120s
+        window: 60s
 
   daphne:
     image: ghcr.io/emenu124ru/django:latest
@@ -66,7 +64,7 @@ services:
         condition: any
         delay: 5s
         max_attempts: 3
-        window: 120s
+        window: 60s
     healthcheck:
       test: curl --fail http://127.0.0.1:${DAPHNE_PORT} || echo 1
       interval: 30s
@@ -101,7 +99,7 @@ services:
         condition: any
         delay: 5s
         max_attempts: 3
-        window: 120s
+        window: 60s
     healthcheck:
       test: curl --fail http://127.0.0.1:${DJANGO_PORT} || echo 1
       interval: 30s
