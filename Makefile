@@ -40,29 +40,8 @@ docker-down:  ##@ApplicationDev Stop application in docker
 docker-downv:  ##@ApplicationDev Stop application in docker and remove volumes
 	docker-compose down -v --remove-orphans
 
-docker-up-prod:  ##@ApplicationProd Run application server
-	docker-compose up
-
-docker-upd-prod:  ##@ApplicationProd Run application server in daemon
-	docker-compose up -d
-
-docker-up-build-prod:  ##@ApplicationProd Run application server in prod
-	docker-compose -f docker-compose.prod.yml up --build --remove-orphans
-
-docker-up-buildd-prod:  ##@ApplicationProd Run application server in prod in daemon
-	docker-compose -f docker-compose.prod.yml up -d --build --remove-orphans
-
-docker-down-prod:  ##@ApplicationProd Stop application in docker in prod
-	docker-compose -f docker-compose.prod.yml down --remove-orphans
-
-docker-downv-prod:  ##@ApplicationProd Stop application in docker and remove volumes in prod
-	docker-compose -f docker-compose.prod.yml down -v --remove-orphans
-
 docker-django-run:  ##@ApplicationDev Run django container with command
 	docker-compose run --rm django $(args)
-
-docker-django-run-prod:  ##@ApplicationProd Run django container with command in prod
-	docker-compose -f docker-compose.prod.yml run --rm django $(args)
 
 fill_sample_data:  ##@ApplicationDev Run script for create sample data in db
 	make docker-django-run "python manage.py runscript fill_sample_data"
@@ -76,14 +55,35 @@ makemigrations:  ##@ApplicationDev Create migrations
 createsuperuser:  ##@ApplicationDev Create superuser
 	make docker-django-run "python manage.py createsuperuser"
 
-createsuperuser-prod:  ##@ApplicationProd Create superuser
-	make docker-django-run-prod "python manage.py createsuperuser"
+shell:  ##@ApplicationDev Run django shell
+	make docker-django-run "python manage.py shell"
+
+docker-up-build-prod:  ##@ApplicationProd Run application server in prod
+	docker-compose -f docker-compose.prod.yml up --build --remove-orphans
+
+docker-up-buildd-prod:  ##@ApplicationProd Run application server in prod in daemon
+	docker-compose -f docker-compose.prod.yml up -d --build --remove-orphans
+
+docker-up-prod:  ##@ApplicationProd Run application server
+	docker-compose up
+
+docker-upd-prod:  ##@ApplicationProd Run application server in daemon
+	docker-compose up -d
+
+docker-down-prod:  ##@ApplicationProd Stop application in docker in prod
+	docker-compose -f docker-compose.prod.yml down --remove-orphans
+
+docker-downv-prod:  ##@ApplicationProd Stop application in docker and remove volumes in prod
+	docker-compose -f docker-compose.prod.yml down -v --remove-orphans
+
+docker-django-run-prod:  ##@ApplicationProd Run django container with command in prod
+	docker-compose -f docker-compose.prod.yml run --rm django $(args)
 
 migrate-prod:  ##@ApplicationProd Apply migrations in prod
 	make docker-django-run-prod "python manage.py migrate"
 
-shell:  ##@ApplicationDev Run django shell
-	make docker-django-run "python manage.py shell"
+createsuperuser-prod:  ##@ApplicationProd Create superuser
+	make docker-django-run-prod "python manage.py createsuperuser"
 
 open-db:  ##@Database Open database inside docker-image
 	docker exec -it postgres psql -d $(POSTGRES_DB) -U $(POSTGRES_USER) -p $(POSTGRES_PORT)
@@ -99,22 +99,22 @@ linters:  ##@Linters Run linters
 	make docker-django-run "isort . --settings-file=./setup.cfg"
 	make docker-django-run "flake8 . --config=./setup.cfg"
 
-docker-login:  ##@ApplicationProd Login in GitHub Container Registry
+docker-login:  ##@Docker Login in GitHub Container Registry
 	echo $(PAT) | docker login ghcr.io -u $(USERNAME) --password-stdin
 
-docker-clean:  ##@Application Remove all unused docker objects
+docker-clean:  ##@Docker Remove all unused docker objects
 	docker system prune --all -f
 
-docker-cleanv:  ##@Application Remove all docker objects with volumes
+docker-cleanv:  ##@Docker Remove all docker objects with volumes
 	docker system prune --all --volumes -f
 
-docker-pull-prod:  ##@ApplicationProd Pulling containers
+docker-pull-prod:  ##@Docker Pulling containers
 	docker-compose -f docker-compose.prod.yml pull
 
-docker-stack-deploy:  ##@ApplicationProd Deploy containers in stack in docker swarm
+docker-stack-deploy:  ##@Docker Deploy containers in stack in docker swarm
 	docker stack deploy --with-registry-auth --resolve-image changed --prune --compose-file docker-compose.prod.yml backend
 
-docker-stop:  ##@Application Stop all docker containers
+docker-stop:  ##@Docker Stop all docker containers
 	@docker rm -f $$(docker ps -aq) || true
 
 %::
