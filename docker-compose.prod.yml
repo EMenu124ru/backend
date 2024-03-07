@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.7'
 
 volumes:
   postgres_data:
@@ -7,7 +7,6 @@ services:
   nginx:
     image: ghcr.io/emenu124ru/nginx:latest
     container_name: nginx
-    restart: always
     depends_on:
       - django
       - daphne
@@ -32,11 +31,18 @@ services:
         order: start-first
         failure_action: rollback
         delay: 10s
+      rollback_config:
+        parallelism: 0
+        order: stop-first
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
 
   daphne:
     image: ghcr.io/emenu124ru/django:latest
     container_name: daphne
-    restart: always
     depends_on:
       - postgres
       - redis
@@ -55,6 +61,9 @@ services:
         order: start-first
         failure_action: rollback
         delay: 10s
+      rollback_config:
+        parallelism: 0
+        order: stop-first
       restart_policy:
         condition: any
         delay: 5s
@@ -70,7 +79,6 @@ services:
   django:
     image: ghcr.io/emenu124ru/django:latest
     container_name: django
-    restart: always
     depends_on:
       - postgres
       - redis
@@ -89,6 +97,9 @@ services:
         order: start-first
         failure_action: rollback
         delay: 10s
+      rollback_config:
+        parallelism: 0
+        order: stop-first
       restart_policy:
         condition: any
         delay: 5s
@@ -139,7 +150,6 @@ services:
   alexandria:
     image: ghcr.io/emenu124ru/alexandria:latest
     container_name: alexandria
-    restart: always
     expose:
       - 8080
     environment:

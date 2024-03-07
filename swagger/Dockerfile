@@ -1,5 +1,5 @@
 FROM swaggerapi/swagger-ui
 
-ADD ./openapi.yaml /app/openapi.yaml
+ADD ./openapi.yaml /openapi.yaml
 
 EXPOSE 5050
