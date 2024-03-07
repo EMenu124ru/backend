@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 
 volumes:
   postgres_data:
@@ -51,13 +51,10 @@ services:
       mode: replicated
       replicas: 3
       update_config:
-        parallelism: 2
+        parallelism: 1
         order: start-first
         failure_action: rollback
         delay: 10s
-      rollback_config:
-        parallelism: 0
-        order: stop-first
       restart_policy:
         condition: any
         delay: 5s
@@ -88,13 +85,10 @@ services:
       mode: replicated
       replicas: 3
       update_config:
-        parallelism: 2
+        parallelism: 1
         order: start-first
         failure_action: rollback
         delay: 10s
-      rollback_config:
-        parallelism: 0
-        order: stop-first
       restart_policy:
         condition: any
         delay: 5s
