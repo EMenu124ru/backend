@@ -10,7 +10,7 @@ class IngredientPermission(permissions.BasePermission):
         if request.method == "GET":
             return (
                 request.user.is_authenticated and
-                check_role_employee(request.user, Employee.Roles.MANAGER)
+                check_role_employee(request.user, Employee.Roles.CHEF)
             )
         return False
 

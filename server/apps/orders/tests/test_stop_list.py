@@ -132,7 +132,7 @@ def test_read_stop_lists_by_waiter(
     response = api_client.get(
         reverse_lazy("api:stopList-list"),
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_200_OK
 
 
 def test_update_stop_list_by_waiter(

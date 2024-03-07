@@ -7,20 +7,6 @@ from apps.users.models import Employee
 class ReservationPermission(permissions.BasePermission):
 
     def has_permission(self, request, view) -> bool:
-        if all([
-            request.method == "GET",
-            view.action == "list",
-        ]):
-            return any([
-                request.user.is_client,
-                check_role_employee(request.user, Employee.Roles.HOSTESS),
-                check_role_employee(request.user, Employee.Roles.WAITER),
-            ])
-        if request.method == "POST":
-            return any([
-                request.user.is_client,
-                check_role_employee(request.user, Employee.Roles.HOSTESS),
-            ])
         return any([
             request.user.is_client,
             check_role_employee(request.user, Employee.Roles.HOSTESS),

@@ -248,6 +248,8 @@ actions:
                 type: integer
               comment:
                 type: string
+        reservation:
+          type: number
     response_to_group:
       event: new_order
       order:

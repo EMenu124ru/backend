@@ -276,7 +276,7 @@ tags
 
 .pytest_cache/
 .ipython/
-.env
+*.env
 .envs/
 .idea
 .vs_code

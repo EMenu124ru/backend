@@ -12,10 +12,3 @@ class CategorySerializer(BaseModelSerializer):
             "name",
             "icon",
         )
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        icon = data["icon"]
-        data["icon"] = icon["file"]
-        data["icon_name"] = icon["filename"]
-        return data

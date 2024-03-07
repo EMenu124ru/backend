@@ -19,6 +19,18 @@ def test_read_ingredients_by_manager(
     response = api_client.get(
         reverse_lazy("api:ingredients-list"),
     )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_read_ingredients_by_chef(
+    chef,
+    api_client,
+) -> None:
+    IngredientFactory.create_batch(size=INGREDIENT_COUNT)
+    api_client.force_authenticate(user=chef.user)
+    response = api_client.get(
+        reverse_lazy("api:ingredients-list"),
+    )
     assert response.status_code == status.HTTP_200_OK
 
 

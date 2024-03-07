@@ -28,6 +28,7 @@ class ClientCookieAuthAPIView(TokenObtainPairView):
             path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
             samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
             secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+            expires=settings.SIMPLE_JWT['AUTH_COOKIE_EXPIRES'],
         )
         response.set_cookie(
             key=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
@@ -37,6 +38,7 @@ class ClientCookieAuthAPIView(TokenObtainPairView):
             path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
             samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
             secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+            expires=settings.SIMPLE_JWT['AUTH_COOKIE_EXPIRES'],
         )
         csrf.get_token(request)
         return response

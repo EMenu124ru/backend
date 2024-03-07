@@ -40,7 +40,7 @@ def test_create_reservation_by_waiter(
         },
         format='json',
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_201_CREATED
 
 
 def test_read_reservations_by_waiter(

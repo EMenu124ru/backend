@@ -1069,13 +1069,15 @@ components:
           type: string
           description: "Название категории"
         icon:
-          type: string
-          format: binary
-          description: "Ссылка на иконку категории"
-        icon_name:
-          type: string
-          format: binary
-          description: "Название изначального файла"
+          type: object
+          properties:
+            file:
+              type: string
+              format: binary
+              description: "Ссылка на иконку категории"
+            filename:
+              type: string
+              description: "Название изначального файла"
 
     DishImageBase:
       type: object
@@ -1216,6 +1218,10 @@ components:
         place:
           type: string
           description: "Название стола"
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/TagToPlace"
 
     RestaurantBase:
       type: object
@@ -1285,9 +1291,6 @@ components:
         ingredient:
           type: number
           description: "Id ингредиента"
-        restaurant:
-          type: number
-          description: "Id ресторана"
 
     StopListBase:
       type: object
@@ -1296,8 +1299,14 @@ components:
           type: number
           description: "Id элемента стоп-листа"
         ingredient:
-          type: number
-          description: "Id ингредиента"
+          type: object
+          properties:
+            id:
+              type: number
+              description: "Id ингредиента"
+            name:
+              type: string
+              description: "Название ингредиента"
         restaurant:
           type: number
           description: "Id ресторана"

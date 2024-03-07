@@ -160,6 +160,26 @@ def test_read_orders_by_waiter(
     assert response.status_code == status.HTTP_200_OK
 
 
+def test_read_orders_by_manager(
+    manager,
+    waiter,
+    api_client,
+) -> None:
+    waiter.restaurant = manager.restaurant
+    waiter.save()
+    OrderFactory.create_batch(
+        employee=waiter,
+        size=ORDERS_COUNT,
+    )
+    api_client.force_authenticate(user=manager.user)
+    response = api_client.get(
+        reverse_lazy(
+            "api:orders-list",
+        ),
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
 def test_read_order_by_waiter(
     waiter,
     api_client,

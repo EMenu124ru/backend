@@ -7,7 +7,9 @@ from apps.users.models import Employee
 class StopListPermission(permissions.BasePermission):
 
     def has_permission(self, request, view) -> bool:
-        return (
-            request.user.is_authenticated and
-            check_role_employee(request.user, Employee.Roles.CHEF)
-        )
+        if not request.user.is_authenticated:
+            return False
+        is_waiter = check_role_employee(request.user, Employee.Roles.WAITER)
+        if request.method == "GET" and is_waiter:
+            return True
+        return check_role_employee(request.user, Employee.Roles.CHEF)

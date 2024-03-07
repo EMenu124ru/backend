@@ -15,3 +15,6 @@ class StopListViewSet(CreateReadDestroyViewSet):
                 restaurant=self.request.user.employee.restaurant,
             )
         return queryset
+
+    def perform_create(self, serializer):
+        serializer.save(restaurant=self.request.user.employee.restaurant)

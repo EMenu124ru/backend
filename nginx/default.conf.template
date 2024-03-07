@@ -1,8 +1,8 @@
 upstream localhost {
-    server django:8000;
+    server django:${DJANGO_PORT};
 }
 upstream websocket {
-    server daphne:8008;
+    server daphne:${DAPHNE_PORT};
 }
 
 server {

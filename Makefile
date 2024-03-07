@@ -34,6 +34,12 @@ docker-up:  ##@ApplicationDev Run application server
 docker-upd:  ##@ApplicationDev Run application server in daemon
 	docker-compose up -d
 
+docker-down:  ##@ApplicationDev Stop application in docker
+	docker-compose down --remove-orphans
+
+docker-downv:  ##@ApplicationDev Stop application in docker and remove volumes
+	docker-compose down -v --remove-orphans
+
 docker-up-prod:  ##@ApplicationProd Run application server
 	docker-compose up
 
@@ -45,12 +51,6 @@ docker-up-build-prod:  ##@ApplicationProd Run application server in prod
 
 docker-up-buildd-prod:  ##@ApplicationProd Run application server in prod in daemon
 	docker-compose -f docker-compose.prod.yml up -d --build --remove-orphans
-
-docker-down:  ##@ApplicationDev Stop application in docker
-	docker-compose down --remove-orphans
-
-docker-downv:  ##@ApplicationDev Stop application in docker and remove volumes
-	docker-compose down -v --remove-orphans
 
 docker-down-prod:  ##@ApplicationProd Stop application in docker in prod
 	docker-compose -f docker-compose.prod.yml down --remove-orphans
@@ -99,7 +99,7 @@ linters:  ##@Linters Run linters
 	make docker-django-run "isort . --settings-file=./setup.cfg"
 	make docker-django-run "flake8 . --config=./setup.cfg"
 
-docker-login:  ##@Application Login in GitHub Container Registry
+docker-login:  ##@ApplicationProd Login in GitHub Container Registry
 	echo $(PAT) | docker login ghcr.io -u $(USERNAME) --password-stdin
 
 docker-clean:  ##@Application Remove all unused docker objects
@@ -108,8 +108,11 @@ docker-clean:  ##@Application Remove all unused docker objects
 docker-cleanv:  ##@Application Remove all docker objects with volumes
 	docker system prune --all --volumes -f
 
-docker-pull-prod:  ##@Application Pulling containers
+docker-pull-prod:  ##@ApplicationProd Pulling containers
 	docker-compose -f docker-compose.prod.yml pull
+
+docker-stack-deploy:  ##@ApplicationProd Deploy containers in stack in docker swarm
+	docker stack deploy --with-registry-auth --resolve-image changed --prune --compose-file docker-compose.prod.yml backend
 
 docker-stop:  ##@Application Stop all docker containers
 	@docker rm -f $$(docker ps -aq) || true
