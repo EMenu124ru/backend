@@ -6,7 +6,6 @@ volumes:
 services:
   nginx:
     image: ghcr.io/emenu124ru/nginx:latest
-    container_name: nginx
     depends_on:
       - django
       - daphne
@@ -42,7 +41,6 @@ services:
 
   daphne:
     image: ghcr.io/emenu124ru/django:latest
-    container_name: daphne
     depends_on:
       - postgres
       - redis
@@ -78,7 +76,6 @@ services:
 
   django:
     image: ghcr.io/emenu124ru/django:latest
-    container_name: django
     depends_on:
       - postgres
       - redis
@@ -114,15 +111,11 @@ services:
 
   redis:
     image: redis:6
-    container_name: redis
-    restart: always
     expose:
       - ${REDIS_PORT}
 
   postgres:
     image: postgres:14.4
-    container_name: postgres
-    restart: always
     expose:
       - ${POSTGRES_PORT}
     volumes:
@@ -133,7 +126,6 @@ services:
 
   swagger-ui:
     image: ghcr.io/emenu124ru/swagger:latest
-    container_name: swagger-ui
     expose:
       - 5050
     environment:
@@ -142,14 +134,12 @@ services:
 
   certbot:
     image: certbot/certbot
-    container_name: certbot
     volumes:
       - ./certbot/conf:/etc/letsencrypt
     command: ["certonly", "--webroot", "--webroot-path=/etc/letsencrypt", "--expand", "--agree-tos", "--no-eff-email", "-d", "${BACKEND_DOMAIN}"]
 
   alexandria:
     image: ghcr.io/emenu124ru/alexandria:latest
-    container_name: alexandria
     expose:
       - 8080
     environment:

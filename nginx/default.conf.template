@@ -1,8 +1,8 @@
 upstream localhost {
-    server django:${DJANGO_PORT};
+    server backend_django:${DJANGO_PORT};
 }
 upstream websocket {
-    server daphne:${DAPHNE_PORT};
+    server backend_daphne:${DAPHNE_PORT};
 }
 
 server {
@@ -38,14 +38,14 @@ server {
     }
 
     location /docs/api/ {
-        proxy_pass http://swagger-ui:5050/;
+        proxy_pass http://backend_swagger-ui:5050/;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Host $host;
         proxy_redirect off;
     }
 
     location /docs/ws/ {
-        proxy_pass http://alexandria:8080/;
+        proxy_pass http://backend_alexandria:8080/;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Host $host;
         proxy_redirect off;
