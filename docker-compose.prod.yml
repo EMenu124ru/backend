@@ -1,8 +1,5 @@
 version: '3.7'
 
-volumes:
-  postgres_data:
-
 services:
   nginx:
     image: ghcr.io/emenu124ru/nginx:latest
@@ -141,3 +138,6 @@ services:
       - 8080
     environment:
       - ALEXANDRIA_YAML=/ws.yml
+
+volumes:
+  postgres_data:
