@@ -16,7 +16,7 @@ HELP_FUN = \
     print"$$_:\n", map"  $$_->[0]".(" "x(20-length($$_->[0])))."$$_->[1]\n",\
     @{$$help{$$_}},"\n" for keys %help; \
 
-SERVICES := nginx daphne django redis postgres swagger-ui certbot alexandria
+SERVICES := nginx swagger-ui alexandria daphne django
 
 # Commands
 help: ##@Help Show this help

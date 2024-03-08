@@ -30,9 +30,9 @@ services:
         order: stop-first
       restart_policy:
         condition: any
-        delay: 10s
+        delay: 5s
         max_attempts: 3
-        window: 120s
+        window: 60s
 
   daphne:
     image: ghcr.io/emenu124ru/django:latest
@@ -61,10 +61,10 @@ services:
         condition: any
         delay: 5s
         max_attempts: 3
-        window: 120s
+        window: 60s
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://0.0.0.0:8008 || echo 1"]
-      interval: 60s
+      interval: 30s
       timeout: 10s
       retries: 3
     command: ["make", "run-daphne-prod"]
@@ -96,10 +96,10 @@ services:
         condition: any
         delay: 5s
         max_attempts: 3
-        window: 120s
+        window: 60s
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://0.0.0.0:8000 || echo 1"]
-      interval: 60s
+      interval: 30s
       timeout: 10s
       retries: 3
     command: ["make", "run-django-prod"]
