@@ -32,7 +32,7 @@ services:
         condition: any
         delay: 10s
         max_attempts: 3
-        window: 60s
+        window: 120s
 
   daphne:
     image: ghcr.io/emenu124ru/django:latest
@@ -61,7 +61,7 @@ services:
         condition: any
         delay: 5s
         max_attempts: 3
-        window: 60s
+        window: 120s
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://0.0.0.0:8008 || echo 1"]
       interval: 60s
@@ -96,7 +96,7 @@ services:
         condition: any
         delay: 5s
         max_attempts: 3
-        window: 60s
+        window: 120s
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://0.0.0.0:8000 || echo 1"]
       interval: 60s

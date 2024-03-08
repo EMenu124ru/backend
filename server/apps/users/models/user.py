@@ -10,6 +10,7 @@ class User(AbstractUser):
         blank=True,
         null=True,
         verbose_name='Отчество',
+        default="",
     )
 
     @property
