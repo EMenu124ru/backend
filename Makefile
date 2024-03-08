@@ -22,68 +22,41 @@ help: ##@Help Show this help
 	@echo -e "Usage: make [target] ...\n"
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
-docker-up-build:  ##@ApplicationDev Run and build application server
+docker-up-build:  ##@Application Run and build application server
 	docker-compose up --build --remove-orphans
 
-docker-up-buildd:  ##@ApplicationDev Run and build application server in daemon
+docker-up-buildd:  ##@Application Run and build application server in daemon
 	docker-compose up -d --build --remove-orphans
 
-docker-up:  ##@ApplicationDev Run application server
+docker-up:  ##@Application Run application server
 	docker-compose up
 
-docker-upd:  ##@ApplicationDev Run application server in daemon
+docker-upd:  ##@Application Run application server in daemon
 	docker-compose up -d
 
-docker-down:  ##@ApplicationDev Stop application in docker
+docker-down:  ##@Application Stop application in docker
 	docker-compose down --remove-orphans
 
-docker-downv:  ##@ApplicationDev Stop application in docker and remove volumes
+docker-downv:  ##@Application Stop application in docker and remove volumes
 	docker-compose down -v --remove-orphans
 
-docker-django-run:  ##@ApplicationDev Run django container with command
+docker-django-run:  ##@Application Run django container with command
 	docker-compose run --rm django $(args)
 
-fill_sample_data:  ##@ApplicationDev Run script for create sample data in db
+fill_sample_data:  ##@Application Run script for create sample data in db
 	make docker-django-run "make fill_sample_data"
 
-migrate:  ##@ApplicationDev Apply migrations
+migrate:  ##@Application Apply migrations
 	make docker-django-run "make migrate"
 
-makemigrations:  ##@ApplicationDev Create migrations
+makemigrations:  ##@Application Create migrations
 	make docker-django-run "make makemigrations"
 
-createsuperuser:  ##@ApplicationDev Create superuser
+createsuperuser:  ##@Application Create superuser
 	make docker-django-run "make createsuperuser"
 
-shell:  ##@ApplicationDev Run django shell
+shell:  ##@Application Run django shell
 	make docker-django-run "make shell"
-
-docker-up-build-prod:  ##@ApplicationProd Run application server in prod
-	docker-compose -f docker-compose.prod.yml up --build --remove-orphans
-
-docker-up-buildd-prod:  ##@ApplicationProd Run application server in prod in daemon
-	docker-compose -f docker-compose.prod.yml up -d --build --remove-orphans
-
-docker-up-prod:  ##@ApplicationProd Run application server
-	docker-compose up
-
-docker-upd-prod:  ##@ApplicationProd Run application server in daemon
-	docker-compose up -d
-
-docker-down-prod:  ##@ApplicationProd Stop application in docker in prod
-	docker-compose -f docker-compose.prod.yml down --remove-orphans
-
-docker-downv-prod:  ##@ApplicationProd Stop application in docker and remove volumes in prod
-	docker-compose -f docker-compose.prod.yml down -v --remove-orphans
-
-docker-django-run-prod:  ##@ApplicationProd Run django container with command in prod
-	docker-compose -f docker-compose.prod.yml run --rm django $(args)
-
-migrate-prod:  ##@ApplicationProd Apply migrations in prod
-	make docker-django-run-prod "make migrate"
-
-createsuperuser-prod:  ##@ApplicationProd Create superuser
-	make docker-django-run-prod "make createsuperuser"
 
 open-db:  ##@Database Open database inside docker-image
 	docker exec -it postgres psql -d $(POSTGRES_DB) -U $(POSTGRES_USER) -p $(POSTGRES_PORT)
