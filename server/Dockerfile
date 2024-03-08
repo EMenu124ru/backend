@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y libpq-dev build-essential && \
+    apt-get install --no-install-recommends -y curl libpq-dev build-essential && \
     apt-get clean
 
 COPY . ${APP_HOME}
