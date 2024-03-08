@@ -44,19 +44,19 @@ docker-django-run:  ##@ApplicationDev Run django container with command
 	docker-compose run --rm django $(args)
 
 fill_sample_data:  ##@ApplicationDev Run script for create sample data in db
-	make docker-django-run "python manage.py runscript fill_sample_data"
+	make docker-django-run "make fill_sample_data"
 
 migrate:  ##@ApplicationDev Apply migrations
-	make docker-django-run "python manage.py migrate"
+	make docker-django-run "make migrate"
 
 makemigrations:  ##@ApplicationDev Create migrations
-	make docker-django-run "python manage.py makemigrations"
+	make docker-django-run "make makemigrations"
 
 createsuperuser:  ##@ApplicationDev Create superuser
-	make docker-django-run "python manage.py createsuperuser"
+	make docker-django-run "make createsuperuser"
 
 shell:  ##@ApplicationDev Run django shell
-	make docker-django-run "python manage.py shell"
+	make docker-django-run "make shell"
 
 docker-up-build-prod:  ##@ApplicationProd Run application server in prod
 	docker-compose -f docker-compose.prod.yml up --build --remove-orphans
@@ -80,24 +80,22 @@ docker-django-run-prod:  ##@ApplicationProd Run django container with command in
 	docker-compose -f docker-compose.prod.yml run --rm django $(args)
 
 migrate-prod:  ##@ApplicationProd Apply migrations in prod
-	make docker-django-run-prod "python manage.py migrate"
+	make docker-django-run-prod "make migrate"
 
 createsuperuser-prod:  ##@ApplicationProd Create superuser
-	make docker-django-run-prod "python manage.py createsuperuser"
+	make docker-django-run-prod "make createsuperuser"
 
 open-db:  ##@Database Open database inside docker-image
 	docker exec -it postgres psql -d $(POSTGRES_DB) -U $(POSTGRES_USER) -p $(POSTGRES_PORT)
 
 tests:  ##@Testing Test application with pytest
-	make docker-django-run "pytest -n 3 --disable-pytest-warnings --verbosity=2 --showlocals --log-level=INFO --full-trace"
+	make docker-django-run "make tests"
 
 tests-cov:  ##@Testing Test application with pytest and create coverage report
-	make docker-django-run "coverage run -m pytest --cov-config=setup.cfg" && \
-	make docker-django-run "coverage html"
+	make docker-django-run "make tests-cov"
 
 linters:  ##@Linters Run linters
-	make docker-django-run "isort . --settings-file=./setup.cfg"
-	make docker-django-run "flake8 . --config=./setup.cfg"
+	make docker-django-run "make linters"
 
 docker-login:  ##@Docker Login in GitHub Container Registry
 	echo $(PAT) | docker login ghcr.io -u $(USERNAME) --password-stdin

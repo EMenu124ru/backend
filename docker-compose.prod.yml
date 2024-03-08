@@ -40,7 +40,7 @@ services:
       - postgres
       - redis
     expose:
-      - 8008
+      - ${DAPHNE_PORT}
     volumes:
       - ./server/media:/server/media/
       - ./server/logs/:/server/logs/
@@ -67,7 +67,7 @@ services:
       interval: 30s
       timeout: 5s
       retries: 5
-    entrypoint: daphne -b 0.0.0.0 -p 8008 config.asgi:application --access-log ./logs/daphne.log -v 3
+    entrypoint: ["make", "run-daphne-prod"]
 
   django:
     image: ghcr.io/emenu124ru/django:latest
@@ -102,7 +102,7 @@ services:
       interval: 30s
       timeout: 5s
       retries: 5
-    entrypoint: gunicorn config.wsgi -c ./config/gunicorn.py
+    entrypoint: ["make", "run-django-prod"]
 
   redis:
     image: redis:6
@@ -122,20 +122,20 @@ services:
   swagger-ui:
     image: ghcr.io/emenu124ru/swagger:latest
     expose:
-      - 5050
+      - ${SWAGGER_PORT}
     environment:
-      - PORT=5050
+      - PORT=${SWAGGER_PORT}
 
   certbot:
     image: certbot/certbot
     volumes:
       - ./certbot/conf:/etc/letsencrypt
-    command: ["certonly", "--webroot", "--webroot-path=/etc/letsencrypt", "--expand", "--agree-tos", "--no-eff-email", "-d", "${BACKEND_DOMAIN}"]
+    command: certonly --webroot --webroot-path=/etc/letsencrypt --expand --agree-tos --no-eff-email -d ${BACKEND_DOMAIN}
 
   alexandria:
     image: ghcr.io/emenu124ru/alexandria:latest
     expose:
-      - 8080
+      - ${ALEXANDRIA_PORT}
     environment:
       - ALEXANDRIA_YAML=/ws.yml
 
