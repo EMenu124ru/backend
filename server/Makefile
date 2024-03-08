@@ -2,7 +2,6 @@ ifeq ($(shell test -e '.env' && echo -n yes),yes)
 	include .env
 endif
 
-
 args := $(wordlist 2, 100, $(MAKECMDGOALS))
 ifndef args
 MESSAGE = "No such command (or you pass two or many targets to ). List of possible commands: make help"
