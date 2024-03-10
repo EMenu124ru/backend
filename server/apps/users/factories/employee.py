@@ -1,10 +1,12 @@
 from factory import (
+    Faker,
     SubFactory,
     fuzzy,
     post_generation,
 )
 from factory.django import DjangoModelFactory
 
+from apps.core.factories import ObjectFileFactory
 from apps.restaurants.factories import RestaurantFactory
 from apps.users.models import Employee
 
@@ -24,6 +26,33 @@ class EmployeeFactory(DjangoModelFactory):
     )
     restaurant = SubFactory(
         RestaurantFactory,
+    )
+    education = Faker(
+        "company",
+    )
+    place_of_birth = Faker(
+        "company",
+    )
+    citizenship = Faker(
+        "company",
+    )
+    personnel_number = Faker(
+        "pyint",
+        min_value=0,
+        max_value=10000,
+        step=1,
+    )
+    medical_checkup = Faker(
+        "date",
+    )
+    employment_contract = Faker(
+        "day_of_week",
+    )
+    work_experience = Faker(
+        "day_of_month",
+    )
+    image = SubFactory(
+        ObjectFileFactory,
     )
 
     @post_generation

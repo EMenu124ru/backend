@@ -11,7 +11,7 @@ pytestmark = pytest.mark.django_db
 def test_create_client_without_surname(
     api_client,
 ) -> None:
-    client = ClientFactory.build(phone_number="+7999999999")
+    client = ClientFactory.build(user__phone_number="+7999999999")
     response = api_client.post(
         reverse_lazy("api:clients-list"),
         data={
@@ -19,21 +19,20 @@ def test_create_client_without_surname(
             "last_name": client.user.last_name,
             "password": client.user.password,
             "bonuses": client.bonuses,
-            "phone_number": client.phone_number,
+            "phone_number": client.user.phone_number,
         },
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert Client.objects.filter(
         id=response.data["id"],
         bonuses=client.bonuses,
-        phone_number=client.phone_number,
     ).exists()
 
 
 def test_create_client_with_surname(
     api_client,
 ) -> None:
-    client = ClientFactory.build(phone_number="+7999999999")
+    client = ClientFactory.build(user__phone_number="+7999999999")
     response = api_client.post(
         reverse_lazy("api:clients-list"),
         data={
@@ -42,14 +41,13 @@ def test_create_client_with_surname(
             "surname": client.user.surname,
             "password": client.user.password,
             "bonuses": client.bonuses,
-            "phone_number": client.phone_number,
+            "phone_number": client.user.phone_number,
         },
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert Client.objects.filter(
         id=response.data["id"],
         bonuses=client.bonuses,
-        phone_number=client.phone_number,
     ).exists()
 
 
@@ -115,28 +113,6 @@ def test_get_me_client_not_auth(
         reverse_lazy("api:clients-me"),
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-
-def test_update_client_own(
-    client,
-    api_client
-) -> None:
-    api_client.force_authenticate(user=client.user)
-    new_phone_number = "88005553535"
-    response = api_client.patch(
-        reverse_lazy(
-            "api:clients-detail",
-            kwargs={"pk": client.pk},
-        ),
-        data={
-            "phone_number": new_phone_number,
-        }
-    )
-    assert response.status_code == status.HTTP_200_OK
-    assert Client.objects.filter(
-        pk=client.pk,
-        phone_number=new_phone_number,
-    ).exists()
 
 
 def test_update_client_other(

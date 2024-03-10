@@ -12,6 +12,15 @@ class EmployeeAdmin(admin.ModelAdmin):
         "first_name",
         "last_name",
         "role",
+        "restaurant",
+        "education",
+        "place_of_birth",
+        "citizenship",
+        "personnel_number",
+        "medical_checkup",
+        "employment_contract",
+        "work_experience",
+        "image",
     )
     autocomplete_fields = (
         "user",
@@ -28,3 +37,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     @admin.display(empty_value='???')
     def surname(self, obj):
         return obj.user.surname
+
+    @admin.display(empty_value='???')
+    def phone_number(self, obj):
+        return obj.user.phone_number

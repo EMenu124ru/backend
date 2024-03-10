@@ -47,6 +47,9 @@ linters:  ##@Linters Run linters
 	isort . --settings-file=./setup.cfg
 	flake8 . --config=./setup.cfg
 
+run-django-dev:  ##@ApplicationDev Run django
+	python manage.py runserver 0.0.0.0:8000
+
 run-django-prod:  ##@ApplicationProd Run django in production
 	gunicorn config.wsgi -c ./config/gunicorn.py
 

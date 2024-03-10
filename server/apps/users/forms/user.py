@@ -6,7 +6,12 @@ from apps.users.models import User
 class UserCreationFormNew(UserCreationForm):
     class Meta:
         model = User
-        fields = ("username",)
+        fields = (
+            "username",
+            "first_name",
+            "last_name",
+            "surname",
+        )
 
 
 class UserChangeFormNew(UserChangeForm):

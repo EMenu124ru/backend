@@ -11,8 +11,9 @@ class ClientAdmin(admin.ModelAdmin):
         "id",
         "first_name",
         "last_name",
-        "bonuses",
+        "surname",
         "phone_number",
+        "bonuses",
     )
     autocomplete_fields = (
         "user",
@@ -29,3 +30,7 @@ class ClientAdmin(admin.ModelAdmin):
     @admin.display(empty_value='???')
     def surname(self, obj):
         return obj.user.surname
+
+    @admin.display(empty_value='???')
+    def phone_number(self, obj):
+        return obj.user.phone_number

@@ -10,31 +10,31 @@ class ClientAuthSerializer(serializers.Serializer):
     class Errors:
         CLIENT_ALREADY_EXISTS = "Клиента с таким номером телефона не найдено"
         WRONG_PASSWORD = 'Не верный пароль'
-        ISNT_ACTIVE = 'Пользователь не активен'
+        IS_NOT_ACTIVE = 'Пользователь не активен'
         NOT_FOUND = 'Пользователь с такими данными не найден'
 
     def to_representation(self, data):
         client = Client.objects.filter(
-            phone_number=data['phone_number'],
+            user__phone_number=data['phone_number'],
         ).first()
         return get_jwt_tokens(client.user)
 
     def validate_phone_number(self, phone_number: str) -> str:
-        if Client.objects.filter(phone_number=phone_number).exists():
-            return phone_number
-        raise serializers.ValidationError(self.Errors.CLIENT_ALREADY_EXISTS)
+        if not Client.objects.filter(user__phone_number=phone_number).exists():
+            raise serializers.ValidationError(self.Errors.CLIENT_ALREADY_EXISTS)
+        return phone_number
 
     def validate(self, attrs):
         if (
             client :=
             Client.objects.filter(
-                phone_number=attrs['phone_number'],
+                user__phone_number=attrs['phone_number'],
             ).first()
         ):
             if not client:
                 raise serializers.ValidationError(self.Errors.NOT_FOUND)
             if not client.user.is_active:
-                raise serializers.ValidationError(self.Errors.ISNT_ACTIVE)
+                raise serializers.ValidationError(self.Errors.IS_NOT_ACTIVE)
             if not client.user.check_password(attrs['password']):
                 raise serializers.ValidationError(self.Errors.WRONG_PASSWORD)
 
@@ -45,6 +45,7 @@ class ClientSerializer(BaseModelSerializer):
     first_name = serializers.CharField(source="user.first_name")
     last_name = serializers.CharField(source="user.last_name")
     surname = serializers.CharField(source="user.surname", default="")
+    phone_number = serializers.CharField(source="user.phone_number")
     password = serializers.CharField(source="user.password", write_only=True)
     bonuses = serializers.IntegerField(default=0)
 
@@ -67,20 +68,20 @@ class ClientSerializer(BaseModelSerializer):
         user_fields = validated_data['user']
         username = (
             f"{user_fields['first_name']}_{user_fields['last_name']}"
-            f"_{user_fields['surname']}_{validated_data['phone_number']}"
+            f"_{user_fields['surname']}_{user_fields['phone_number']}"
         )
         user = User.objects.create(
             username=username,
             first_name=user_fields['first_name'],
             last_name=user_fields['last_name'],
             surname=user_fields['surname'],
+            phone_number=user_fields['phone_number'],
         )
         user.set_password(user_fields['password'])
         user.save()
         client = Client.objects.create(
             user=user,
             bonuses=validated_data['bonuses'],
-            phone_number=validated_data['phone_number'],
         )
         return client
 
@@ -96,14 +97,12 @@ class ClientSerializer(BaseModelSerializer):
             instance.user.surname = (
                 user_fields.get("surname", instance.user.surname)
             )
+            instance.user.phone_number = (
+                validated_data.get("phone_number", instance.user.phone_number)
+            )
             if "password" in validated_data["user"]:
-                instance.user.set_password(
-                    user_fields.pop("password")
-                )
+                instance.user.set_password(user_fields.pop("password"))
             instance.user.save()
-        instance.phone_number = (
-            validated_data.get("phone_number", instance.phone_number)
-        )
         if "bonuses" in validated_data:
             raise serializers.ValidationError(self.Errors.CANT_CHANGE_BONUSES)
         instance.save()

@@ -23,13 +23,15 @@ services:
     environment:
       - REDIS_URL=${REDIS_URL}
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - DJANGO_DEBUG=true
+    command: ["make", "run-django-dev"]
 
   postgres:
     image: postgres:14.4
     container_name: postgres
     restart: always
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    expose:
+      - "${POSTGRES_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:

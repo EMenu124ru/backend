@@ -25,9 +25,26 @@ class UserFactory(DjangoModelFactory):
     password = Faker(
         "password",
     )
+    phone_number = Faker(
+        "phone_number",
+    )
+    date_of_birth = Faker(
+        "date_time",
+    )
+    address = Faker(
+        "address",
+    )
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        obj = model_class(*args, **kwargs)
+        obj.phone_number = obj.phone_number[:17]
+        obj.save()
+        return obj
 
     class Meta:
         django_get_or_create = (
             "username",
+            "phone_number",
         )
         model = User

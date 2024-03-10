@@ -42,6 +42,26 @@ class ObjectFile(models.Model):
         return f"File {self.filename}"
 
     def save(self, *args, **kwargs):
-        init_directories()
-        self.filename = self.file.name
         super().save(*args, **kwargs)
+        init_directories()
+        if self.file.name:
+            self.filename = self.file.name
+
+    def delete(self, *args, **kwargs):
+        self.file.storage.delete(self.file.path)
+        super().delete(*args, **kwargs)
+
+    @classmethod
+    def create_default_object(cls):
+        path = Path(settings.STATIC_ROOT)
+        name = "default"
+        filename = f"{name}.png"
+        default_image = path / "app" / "img" / filename
+        if (file := cls.objects.filter(filename=name)) and file.exists():
+            return file.first().id
+        obj = cls(filename=name)
+        with open(default_image.absolute(), mode="rb") as file:
+            obj.file.save(name=filename, content=file, save=False)
+        obj.filename = name
+        obj.save()
+        return obj.id
