@@ -75,7 +75,7 @@ services:
       - postgres
       - redis
     expose:
-      - 8000
+      - ${DJANGO_PORT}
     volumes:
       - ./server/media:/server/media/
       - ./server/logs/:/server/logs/
