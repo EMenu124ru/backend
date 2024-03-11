@@ -13,6 +13,7 @@ class UserAdminNew(UserAdmin):
             {
                 'fields': (
                     'username',
+                    'phone_number',
                     'password',
                 ),
             },
@@ -21,11 +22,10 @@ class UserAdminNew(UserAdmin):
             _('Personal info'),
             {
                 'fields': (
+                    'email',
                     'first_name',
                     'last_name',
-                    'email',
                     'surname',
-                    'phone_number',
                     'date_of_birth',
                     'address',
                 ),
@@ -51,6 +51,21 @@ class UserAdminNew(UserAdmin):
                     'date_joined',
                 ),
             },
+        ),
+    )
+    add_fieldsets = (
+        (
+            None, {
+                'fields': (
+                    'username',
+                    'first_name',
+                    'last_name',
+                    'surname',
+                    'phone_number',
+                    'password1',
+                    'password2',
+                ),
+            }
         ),
     )
     form = UserChangeFormNew

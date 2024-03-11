@@ -8,6 +8,7 @@ class UserCreationFormNew(UserCreationForm):
         model = User
         fields = (
             "username",
+            "phone_number",
             "first_name",
             "last_name",
             "surname",
