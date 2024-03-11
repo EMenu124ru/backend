@@ -13,7 +13,6 @@ class UserAdminNew(UserAdmin):
             {
                 'fields': (
                     'username',
-                    'phone_number',
                     'password',
                 ),
             },
@@ -26,6 +25,7 @@ class UserAdminNew(UserAdmin):
                     'first_name',
                     'last_name',
                     'surname',
+                    'phone_number',
                     'date_of_birth',
                     'address',
                 ),

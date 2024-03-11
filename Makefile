@@ -16,7 +16,7 @@ HELP_FUN = \
     print"$$_:\n", map"  $$_->[0]".(" "x(20-length($$_->[0])))."$$_->[1]\n",\
     @{$$help{$$_}},"\n" for keys %help; \
 
-SERVICES := nginx swagger-ui alexandria daphne django
+SERVICES := swagger-ui alexandria daphne django nginx
 
 # Commands
 help: ##@Help Show this help
@@ -86,7 +86,7 @@ docker-pull-prod:  ##@Docker Pulling containers
 docker-stack-deploy:  ##@Docker Deploy containers in stack in docker swarm
 	docker stack deploy --with-registry-auth --resolve-image changed --prune --compose-file docker-compose.prod.yml backend
 
-docker-stack-deploy-update:  ##@Docker Deploy containers in stack in docker swarm
+docker-stack-update:  ##@Docker Deploy containers in stack in docker swarm
 	for service in $(SERVICES); do \
 		docker service update --force backend_$$service; \
 	done
