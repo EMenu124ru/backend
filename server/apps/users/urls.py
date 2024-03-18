@@ -15,19 +15,19 @@ from apps.users.views import (
 )
 
 staff_login = (
-    path("staff/login", EmployeeHeaderAuthAPIView.as_view())
+    path("staff/login", EmployeeHeaderAuthAPIView.as_view(), name="staff-login")
     if settings.DEBUG
-    else path("staff/login", EmployeeCookieAuthAPIView.as_view())
+    else path("staff/login", EmployeeCookieAuthAPIView.as_view(), name="staff-login")
 )
 client_login = (
-    path("clients/login", ClientHeaderAuthAPIView.as_view())
+    path("clients/login", ClientHeaderAuthAPIView.as_view(), name="client-login")
     if settings.DEBUG
-    else path("clients/login", ClientCookieAuthAPIView.as_view())
+    else path("clients/login", ClientCookieAuthAPIView.as_view(), name="client-login")
 )
 token_refresh = (
-    path("auth/token/refresh", TokenRefreshView.as_view())
+    path("auth/token/refresh", TokenRefreshView.as_view(), name="refresh")
     if settings.DEBUG
-    else path("auth/token/refresh", TokenRefreshCookieAPIView.as_view())
+    else path("auth/token/refresh", TokenRefreshCookieAPIView.as_view(), name="refresh")
 )
 
 urlpatterns = [
