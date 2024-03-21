@@ -15,10 +15,7 @@ class IgnoreCookieMiddleware:
 
     def __call__(self, request):
         urls = self.URLS_IGNORE_COOKIE.get(request.method.lower())
-        print(request.COOKIES)
         if urls and request.path in urls:
             request.COOKIES = {}
-        print(request.COOKIES)
         response = self.get_response(request)
-        print(request.COOKIES)
         return response

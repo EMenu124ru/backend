@@ -1005,9 +1005,6 @@ components:
         comment:
           type: string
           description: "Комментарий к заказу"
-        employee:
-          type: number
-          description: "Id обслуживающего сотрудника-официанта"
         client:
           type: number
           description: "Id клиента"
@@ -1039,9 +1036,6 @@ components:
         comment:
           type: string
           description: "Комментарий к заказу"
-        employee:
-          type: number
-          description: "Id обслуживающего сотрудника-официанта"
         client:
           type: number
           description: "Id клиента"
