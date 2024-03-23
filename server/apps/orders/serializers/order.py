@@ -1,6 +1,8 @@
 from collections import OrderedDict
 from decimal import Decimal
 
+from django.utils import timezone
+
 from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import (
     Order,
@@ -8,6 +10,7 @@ from apps.orders.models import (
     Reservation,
     StopList,
 )
+from apps.restaurants.models import Restaurant
 from apps.users.models import Client, Employee
 from apps.users.serializers import ClientSerializer, EmployeeSerializer
 
@@ -99,6 +102,14 @@ class OrderSerializer(BaseModelSerializer):
 
     def create(self, validated_data: OrderedDict) -> Order:
         dishes = validated_data.pop("dishes")
+        if validated_data.get("reservation", None) is None:
+            restaurant_id = self.get_restaurant_id(validated_data)
+            reservation = Reservation.objects.create(
+                arrival_time=timezone.now(),
+                restaurant=Restaurant.objects.get(pk=restaurant_id),
+                client=validated_data["client"],
+            )
+            validated_data["reservation"] = reservation
         validated_data.update(
             {"price": sum([Decimal(item["dish"].price) for item in dishes])}
         )

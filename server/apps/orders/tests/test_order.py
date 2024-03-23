@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
 
-from apps.orders.factories import DishFactory, OrderFactory
+from apps.orders.factories import DishFactory, OrderFactory, ReservationFactory
 from apps.orders.models import Order
 from apps.users.factories import ClientFactory, EmployeeFactory
 from apps.users.models import Employee
@@ -38,12 +38,52 @@ def test_create_order_by_waiter(
         format='json',
     )
     assert response.status_code == status.HTTP_201_CREATED
+    query = Order.objects.filter(
+        status=order.status,
+        price=sum_dishes_prices,
+        comment=order.comment,
+        client=client.pk,
+        employee=waiter.pk,
+    )
+    assert query.exists()
+    order = query.first()
+    assert order.reservation is not None
+
+
+def test_create_order_by_waiter_with_reservation(
+    waiter,
+    api_client,
+) -> None:
+    client = ClientFactory.create()
+    order = OrderFactory.build()
+    dishes = DishFactory.create_batch(
+        size=DISHES_COUNT,
+    )
+    reservation = ReservationFactory.create(restaurant=waiter.restaurant)
+    api_client.force_authenticate(user=waiter.user)
+    sum_dishes_prices = sum([dish.price for dish in dishes])
+    response = api_client.post(
+        reverse_lazy("api:orders-list"),
+        data={
+            "status": order.status,
+            "price": sum_dishes_prices,
+            "comment": order.comment,
+            "client": client.pk,
+            "dishes": [
+                {"dish": dish.id} for dish in dishes
+            ],
+            "reservation": reservation.pk,
+        },
+        format='json',
+    )
+    assert response.status_code == status.HTTP_201_CREATED
     assert Order.objects.filter(
         status=order.status,
         price=sum_dishes_prices,
         comment=order.comment,
         client=client.pk,
         employee=waiter.pk,
+        reservation=reservation.pk
     ).exists()
 
 

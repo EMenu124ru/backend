@@ -179,7 +179,7 @@ def test_create_reservation_by_client_success(
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert Reservation.objects.filter(
-        restaurant=restaurant.pk,
+        restaurant=reservation.restaurant.pk,
         arrival_time=reservation.arrival_time,
     ).exists()
 

@@ -33,6 +33,7 @@ class ReservationSerializer(BaseModelSerializer):
             "Редактируя бронь, хостес может менять только стол, "
             "время прибытия и статус"
         )
+        WAITER_CHANGES = "Редактируя бронь, официант может менять только стол и статус"
         HOSTESS_CANT_CREATE_ORDER = "Создавая бронь, хостес не может создать заказ"
 
     class Meta:
@@ -94,6 +95,11 @@ class ReservationSerializer(BaseModelSerializer):
                 not self.check_fields_by_hostess(self.instance, attrs)
             ):
                 raise serializers.ValidationError(self.Errors.HOSTESS_CHANGES)
+            if (
+                self._user.employee.role == Employee.Roles.WAITER and
+                not self.check_fields_by_waiter(self.instance, attrs)
+            ):
+                raise serializers.ValidationError(self.Errors.WAITER_CHANGES)
             return attrs
         if (
             self._user.employee.role == Employee.Roles.HOSTESS and
