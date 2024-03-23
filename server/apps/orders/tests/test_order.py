@@ -2,7 +2,11 @@ import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
 
-from apps.orders.factories import DishFactory, OrderFactory, ReservationFactory
+from apps.orders.factories import (
+    DishFactory,
+    OrderFactory,
+    ReservationFactory,
+)
 from apps.orders.models import Order
 from apps.users.factories import ClientFactory, EmployeeFactory
 from apps.users.models import Employee

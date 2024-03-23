@@ -384,6 +384,32 @@ def test_create_reservation_by_hostess_set_not_exists_place(
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
+def test_create_reservation_by_hostess_set_busy_place(
+    hostess,
+    api_client,
+) -> None:
+    place = PlaceFactory.create(restaurant=hostess.restaurant)
+    ReservationFactory.create(
+        restaurant=hostess.restaurant,
+        place=place,
+    )
+    reservation = ReservationFactory.build(
+        restaurant=hostess.restaurant,
+        place=place,
+    )
+    api_client.force_authenticate(user=hostess.user)
+    response = api_client.post(
+        reverse_lazy("api:reservations-list"),
+        data={
+            "restaurant": reservation.restaurant.pk,
+            "arrival_time": reservation.arrival_time,
+            "place": place.pk,
+        },
+        format='json',
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
 def test_update_reservation_by_hostess_set_other_restaurant(
     hostess,
     api_client,
