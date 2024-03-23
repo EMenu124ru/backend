@@ -12,6 +12,11 @@ from apps.restaurants.models import Restaurant
 class CategoryViewSet(RetrieveListViewSet):
     permission_classes = (CategoryPermission,)
 
+    def paginate_queryset(self, queryset):
+        if self.action == "list":
+            self.pagination_class = None
+        return super().paginate_queryset(queryset)
+
     def get_serializer_class(self):
         if self.action == "dishes":
             return DishSerializer

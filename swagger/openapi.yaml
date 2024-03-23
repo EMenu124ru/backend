@@ -339,21 +339,6 @@ paths:
       tags:
         - categories
       summary: "Получение списка категорий"
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: number
-            nullable: true
-          description: "Номер страницы"
-          required: false
-        - in: query
-          name: page_size
-          schema:
-            type: number
-            nullable: true
-          description: "Количество элементов на странице"
-          required: false
       responses:
         "200":
           $ref: "#/components/responses/CategoryList200"
@@ -1067,7 +1052,6 @@ components:
           properties:
             file:
               type: string
-              format: binary
               description: "Ссылка на иконку категории"
             filename:
               type: string
@@ -1576,27 +1560,9 @@ components:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              links:
-                type: object
-                properties:
-                  next:
-                    type: string
-                    format: url
-                    nullable: true
-                  previous:
-                    type: string
-                    format: url
-                    nullable: true
-              count:
-                type: number
-              total_pages:
-                type: number
-              results:
-                type: array
-                items:
-                  $ref: "#/components/schemas/CategoryBase"
+            type: array
+            items:
+              $ref: "#/components/schemas/CategoryBase"
 
     Category200:
       description: "Получение категории"

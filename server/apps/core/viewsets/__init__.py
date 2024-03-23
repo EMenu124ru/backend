@@ -5,9 +5,11 @@ from .create_read_update import CreateReadUpdateViewSet
 from .create_read_update_destroy import CreateReadUpdateDestroyViewSet
 from .create_update_destroy import CreateUpdateDestroyViewSet
 from .destroy import DestroyViewSet
-from .list_viewset import ListViewSet
-from .read import RetrieveViewSet
-from .read_list import RetrieveListViewSet
+from .read import (
+    ListViewSet,
+    RetrieveListViewSet,
+    RetrieveViewSet,
+)
 
 __all__ = (
     BaseViewSet,

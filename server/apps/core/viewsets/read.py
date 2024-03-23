@@ -10,3 +10,22 @@ class RetrieveViewSet(
     """RetrieveList ViewSet for `retrieve` action."""
 
     pagination_class = PaginationObject
+
+
+class RetrieveListViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
+    """RetrieveList ViewSet for `list`, `retrieve` action."""
+
+    pagination_class = PaginationObject
+
+
+class ListViewSet(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
+    """RetrieveList ViewSet for `list` action."""
+
+    pagination_class = PaginationObject
