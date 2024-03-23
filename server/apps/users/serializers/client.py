@@ -51,6 +51,7 @@ class ClientSerializer(BaseModelSerializer):
 
     class Errors:
         CANT_CHANGE_BONUSES = "Пользователь не может изменять количество бонусов"
+        CLIENT_ALREADY_EXISTS = "Клиент с такими данными уже существует"
 
     class Meta:
         model = Client
@@ -70,13 +71,15 @@ class ClientSerializer(BaseModelSerializer):
             f"{user_fields['first_name']}_{user_fields['last_name']}"
             f"_{user_fields['surname']}_{user_fields['phone_number']}"
         )
-        user = User.objects.create(
+        user, created = User.objects.get_or_create(
             username=username,
             first_name=user_fields['first_name'],
             last_name=user_fields['last_name'],
             surname=user_fields['surname'],
             phone_number=user_fields['phone_number'],
         )
+        if not created:
+            raise serializers.ValidationError(self.Errors.CLIENT_ALREADY_EXISTS)
         user.set_password(user_fields['password'])
         user.save()
         client = Client.objects.create(

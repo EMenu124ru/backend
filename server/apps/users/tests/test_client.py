@@ -29,6 +29,38 @@ def test_create_client_without_surname(
     ).exists()
 
 
+def test_crate_client_with_same_info(
+    api_client,
+) -> None:
+    client = ClientFactory.build(user__phone_number="+7999999999")
+    response = api_client.post(
+        reverse_lazy("api:clients-list"),
+        data={
+            "first_name": client.user.first_name,
+            "last_name": client.user.last_name,
+            "password": client.user.password,
+            "bonuses": client.bonuses,
+            "phone_number": client.user.phone_number,
+        },
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert Client.objects.filter(
+        id=response.data["id"],
+        bonuses=client.bonuses,
+    ).exists()
+    response = api_client.post(
+        reverse_lazy("api:clients-list"),
+        data={
+            "first_name": client.user.first_name,
+            "last_name": client.user.last_name,
+            "password": client.user.password,
+            "bonuses": client.bonuses,
+            "phone_number": client.user.phone_number,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
 def test_create_client_with_surname(
     api_client,
 ) -> None:
