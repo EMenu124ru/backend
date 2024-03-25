@@ -13,6 +13,14 @@ class Employee(models.Model):
         MANAGER = "MANAGER", "Управляющий"
         HOSTESS = "HOSTESS", "Хостес"
 
+    class Statuses(models.TextChoices):
+        ON_WORK_SHIFT_FROM_TO = "ON_WORK_SHIFT_FROM_TO", "На смене с {} до {}"
+        DAY_OFF = "DAY_OFF", "Выходной"
+        WILL_BE_ON_WORK_SHIFT_FROM_TO = "WILL_BE_ON_WORK_SHIFT_FROM_TO", "Будет на смене с {} до {}"
+        SICK_LEAVE = "SICK_LEAVE", "Больничный"
+        VACATION = "VACATION", "Отпуск"
+        NOT_ON_WORK_SHIFT = "NOT_ON_WORK_SHIFT", "Не на смене"
+
     user = models.OneToOneField(
         "users.User",
         related_name="employee",

@@ -8,8 +8,7 @@ from apps.orders.models import Order
 class OrderQueries:
 
     @staticmethod
-    @database_sync_to_async
-    def get_orders_by_restaurant(restaurant_id: int) -> QuerySet:
+    def get_orders_by_restaurant_sync(restaurant_id: int) -> QuerySet:
         access_status = [
             Order.Statuses.WAITING_FOR_COOKING,
             Order.Statuses.COOKING,
@@ -20,6 +19,11 @@ class OrderQueries:
             employee__restaurant_id=restaurant_id,
             status__in=access_status,
         ).all()
+
+    @staticmethod
+    @database_sync_to_async
+    def get_orders_by_restaurant(restaurant_id: int) -> QuerySet:
+        return OrderQueries.get_orders_by_restaurant_sync(restaurant_id)
 
     @staticmethod
     @database_sync_to_async

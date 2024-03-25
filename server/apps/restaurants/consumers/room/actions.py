@@ -19,33 +19,30 @@ class RestaurantActionsMixin:
         if (await UserQueries.check_role_employee_cant_create_order(self.user)):
             await self.send_error(Errors.CANT_CREATE_ORDER)
         try:
-            order_body = {
-                "order": await OrderService.create_order(body, self.user),
-            }
+            await OrderService.create_order(body, self.user)
         except (ValidationError, ValidationErrorDjango) as ex:
             error_message = get_errors(ex.detail)
             error_message_str = (
                 f"{error_message[0]['field']} - {error_message[0]['message']}"
             )
             await self.send_error(error_message_str)
-        else:
-            await self.response_to_group(Events.NEW_ORDER, order_body)
 
     async def edit_order(self, body: dict) -> None:
         try:
             cant_edit = await UserQueries.check_role_employee_cant_edit_order(self.user)
-            if cant_edit and not (await OrderAndDishService.check_can_edit_order(body)):
+            editable = await OrderAndDishService.check_can_edit_order(body)
+            if cant_edit and not editable:
                 await self.send_error(Errors.CANT_EDIT_ORDER)
+                return
             order = await OrderQueries.get_order(body["id"])
             dishes = body.pop("dishes", [])
-            await OrderAndDishService.edit_dishes(dishes, order.id, self.user)
-            edited_order = await OrderService.edit_order(body, order, self.user)
-            body = {"order": edited_order}
+            if dishes:
+                await OrderAndDishService.edit_dishes(dishes, order.id, self.user)
+            if body:
+                await OrderService.edit_order(body, order, self.user)
         except (ValidationError, ValidationErrorDjango) as ex:
             error_message = get_errors(ex.detail)
             error_message_str = (
                 f"{error_message[0]['field']} - {error_message[0]['message']}"
             )
             await self.send_error(error_message_str)
-        else:
-            await self.response_to_group(Events.ORDER_CHANGED, body)

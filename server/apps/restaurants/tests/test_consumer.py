@@ -252,6 +252,31 @@ async def test_create_order_by_waiter_without_dishes_failed(waiter):
 
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
+async def test_create_order_by_waiter_not_by_websocket(waiter):
+    token = await get_token(waiter.user)
+    restaurant = waiter.restaurant
+    application = JWTQueryParamAuthMiddleware(URLRouter([
+        path("ws/restaurant/<restaurant_id>/", RestaurantConsumer.as_asgi()),
+    ]))
+    communicator = WebsocketCommunicator(
+        application,
+        f"ws/restaurant/{restaurant.id}/?token={token}",
+    )
+    connected, _ = await communicator.connect()
+    assert connected
+    await communicator.receive_json_from()
+    await database_sync_to_async(OrderFactory.create)(
+        status=Order.Statuses.WAITING_FOR_COOKING,
+        employee=waiter,
+        reservation=None,
+    )
+    message = await communicator.receive_json_from(timeout=5)
+    assert message["type"] == "list_orders"
+    await communicator.disconnect()
+
+
+@pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_create_order_by_waiter_without_dishes(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -282,7 +307,7 @@ async def test_create_order_by_waiter_without_dishes(waiter):
     }
     await communicator.send_json_to({"type": "create_order", "body": order_json})
     message = await communicator.receive_json_from()
-    assert message["type"] == "new_order"
+    assert message["type"] == "list_orders"
     await communicator.disconnect()
 
 
@@ -329,6 +354,7 @@ async def test_edit_order_waiter(waiter):
     order = await database_sync_to_async(OrderFactory.create)(
         status=Order.Statuses.COOKING,
         employee=waiter,
+        reservation=None,
     )
     application = JWTQueryParamAuthMiddleware(URLRouter([
         path("ws/restaurant/<restaurant_id>/", RestaurantConsumer.as_asgi()),
@@ -339,14 +365,14 @@ async def test_edit_order_waiter(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
+    await communicator.receive_json_from()
     body = {
         "id": order.id,
         "status": Order.Statuses.FINISHED,
     }
-    await communicator.receive_json_from()
     await communicator.send_json_to({"type": "edit_order", "body": body})
     message = await communicator.receive_json_from()
-    assert message["type"] == "order_changed"
+    assert message["type"] == "list_orders"
     await communicator.disconnect()
 
 
@@ -372,11 +398,11 @@ async def test_edit_order_chef_failed(chef):
     )
     connected, _ = await communicator.connect()
     assert connected
+    await communicator.receive_json_from()
     body = {
         "id": order.id,
         "status": Order.Statuses.FINISHED,
     }
-    await communicator.receive_json_from()
     await communicator.send_json_to({"type": "edit_order", "body": body})
     message = await communicator.receive_json_from()
     assert message["type"] == "error"
@@ -395,6 +421,7 @@ async def test_edit_order_chef_success(chef):
     order = await database_sync_to_async(OrderFactory.create)(
         status=Order.Statuses.COOKING,
         employee=waiter,
+        reservation=None,
     )
     await database_sync_to_async(OrderAndDishFactory.create_batch)(size=5, order=order)
     application = JWTQueryParamAuthMiddleware(URLRouter([
@@ -407,16 +434,16 @@ async def test_edit_order_chef_success(chef):
     connected, _ = await communicator.connect()
     assert connected
     dish = await database_sync_to_async(order.dishes.first)()
+    await communicator.receive_json_from()
     body = {
         "id": order.id,
         "dishes": [
             {"id": dish.id, "status": OrderAndDish.Statuses.DONE},
         ],
     }
-    await communicator.receive_json_from()
     await communicator.send_json_to({"type": "edit_order", "body": body})
     message = await communicator.receive_json_from()
-    assert message["type"] == "order_changed"
+    assert message["type"] == "list_orders"
     await communicator.disconnect()
 
 
@@ -425,13 +452,10 @@ async def test_edit_order_chef_success(chef):
 async def test_edit_order_waiter_add_dish(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
-    waiter = await database_sync_to_async(EmployeeFactory.create)(
-        role=Employee.Roles.WAITER,
-        restaurant=restaurant,
-    )
     order = await database_sync_to_async(OrderFactory.create)(
         status=Order.Statuses.COOKING,
         employee=waiter,
+        reservation=None,
     )
     dish = await database_sync_to_async(DishFactory.create)()
     application = JWTQueryParamAuthMiddleware(URLRouter([
@@ -443,14 +467,14 @@ async def test_edit_order_waiter_add_dish(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
+    await communicator.receive_json_from()
     body = {
         "id": order.id,
         "dishes": [{"dish": dish.id}],
     }
-    await communicator.receive_json_from()
     await communicator.send_json_to({"type": "edit_order", "body": body})
     message = await communicator.receive_json_from()
-    assert message["type"] == "order_changed"
+    assert message["type"] == "list_orders"
     await communicator.disconnect()
 
 
@@ -477,11 +501,11 @@ async def test_edit_order_chef_add_dish(chef):
     )
     connected, _ = await communicator.connect()
     assert connected
+    await communicator.receive_json_from()
     body = {
         "id": order.id,
         "dishes": [{"dish": dish.id}],
     }
-    await communicator.receive_json_from()
     await communicator.send_json_to({"type": "edit_order", "body": body})
     message = await communicator.receive_json_from()
     assert message["type"] == "error"

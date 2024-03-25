@@ -10,11 +10,6 @@ def iterate_by_ingredients(stop_list):
         get_or_create_cache_dishes(dish.category, stop_list.restaurant.id)
 
 
-@receiver(post_save, sender=StopList)
-def update_stop_list_cache_post_save(instance, **kwargs) -> None:
-    iterate_by_ingredients(instance)
-
-
-@receiver(post_delete, sender=StopList)
-def update_stop_list_cache_post_delete(instance, **kwargs) -> None:
+@receiver([post_save, post_delete], sender=StopList)
+def update_stop_list_cache(instance, **kwargs) -> None:
     iterate_by_ingredients(instance)

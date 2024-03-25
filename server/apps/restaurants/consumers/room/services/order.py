@@ -11,12 +11,16 @@ from apps.users.models import User
 class OrderService:
 
     @staticmethod
-    @database_sync_to_async
-    def get_orders_list(orders: QuerySet) -> list:
+    def get_orders_list_sync(orders: QuerySet) -> list:
         orders = OrderSerializer(orders, many=True).data
         for order in orders:
             order['price'] = str(order['price'])
         return orders
+
+    @staticmethod
+    @database_sync_to_async
+    def get_orders_list(orders: QuerySet) -> list:
+        return OrderService.get_orders_list_sync(orders)
 
     @staticmethod
     @database_sync_to_async

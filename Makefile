@@ -65,6 +65,9 @@ open-db:  ##@Database Open database inside docker-image
 tests:  ##@Testing Test application with pytest
 	make docker-django-run "make tests"
 
+tests-fast:  ##@Testing Test application with pytest
+	make docker-django-run "make tests-fast"
+
 tests-cov:  ##@Testing Test application with pytest and create coverage report
 	make docker-django-run "make tests-cov"
 
