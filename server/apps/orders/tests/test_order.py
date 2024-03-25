@@ -54,6 +54,41 @@ def test_create_order_by_waiter(
     assert order.reservation is not None
 
 
+def test_create_order_by_waiter_without_client(
+    waiter,
+    api_client,
+) -> None:
+    order = OrderFactory.build()
+    dishes = DishFactory.create_batch(
+        size=DISHES_COUNT,
+    )
+    api_client.force_authenticate(user=waiter.user)
+    sum_dishes_prices = sum([dish.price for dish in dishes])
+    response = api_client.post(
+        reverse_lazy("api:orders-list"),
+        data={
+            "status": order.status,
+            "price": sum_dishes_prices,
+            "comment": order.comment,
+            "dishes": [
+                {"dish": dish.id} for dish in dishes
+            ],
+        },
+        format='json',
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    query = Order.objects.filter(
+        status=order.status,
+        price=sum_dishes_prices,
+        comment=order.comment,
+        client=None,
+        employee=waiter.pk,
+    )
+    assert query.exists()
+    order = query.first()
+    assert order.reservation is not None
+
+
 def test_create_order_by_waiter_with_reservation(
     waiter,
     api_client,

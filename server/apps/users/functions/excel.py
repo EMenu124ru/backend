@@ -22,6 +22,7 @@ def import_schedule(request) -> list:
         return {
             'file': ScheduleErrors.BAD_FILE,
         }
+    workbook.active = 0
     sheet = workbook.active
     employees = {}
     for row in sheet.iter_rows(min_row=2):

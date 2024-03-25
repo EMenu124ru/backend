@@ -107,7 +107,7 @@ class OrderSerializer(BaseModelSerializer):
             reservation = Reservation.objects.create(
                 arrival_time=timezone.now(),
                 restaurant=Restaurant.objects.get(pk=restaurant_id),
-                client=validated_data["client"],
+                client=validated_data.get("client", None),
             )
             validated_data["reservation"] = reservation
         validated_data.update(

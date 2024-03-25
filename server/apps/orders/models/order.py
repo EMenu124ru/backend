@@ -27,7 +27,8 @@ class Order(BaseModel):
         verbose_name="Цена",
     )
     comment = models.TextField(
-        default="",
+        blank=True,
+        null=True,
         verbose_name="Комментарий",
     )
     employee = models.ForeignKey(
