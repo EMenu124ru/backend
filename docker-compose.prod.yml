@@ -126,18 +126,18 @@ services:
     env_file:
       - ./.envs/swagger.env
 
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-    command: certonly --webroot --webroot-path=/etc/letsencrypt --expand --agree-tos --no-eff-email -d ${BACKEND_DOMAIN}
-
   alexandria:
     image: ghcr.io/emenu124ru/alexandria:latest
     expose:
       - ${ALEXANDRIA_PORT}
     environment:
       - ALEXANDRIA_YAML=/ws.yml
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+    command: certonly --webroot --webroot-path=/etc/letsencrypt --expand --agree-tos --no-eff-email -d ${BACKEND_DOMAIN}
 
 volumes:
   postgres_data:
