@@ -898,13 +898,45 @@ components:
           description: "Id сотрудника"
         first_name:
           type: string
-          description: "Имя сотрудника"
+          description: "Имя"
         last_name:
           type: string
-          description: "Фамилия сотрудника"
+          description: "Фамилия"
         surname:
           type: string
-          description: "Отчество сотрудника"
+          description: "Отчество"
+        phone_number:
+          type: string
+          description: "Телефон"
+        date_of_birth:
+          type: string
+          format: date
+          description: "Дата рождения"
+        address:
+          type: string
+          description: "Адрес"
+        education:
+          type: string
+          description: "Образование"
+        place_of_birth:
+          type: string
+          description: "Место рождения"
+        citizenship:
+          type: string
+          description: "Гражданство"
+        personnel_number:
+          type: integer
+          description: "Табельный номер"
+        medical_checkup:
+          type: string
+          format: date
+          description: "Дата медицинского осмотра"
+        employment_contract:
+          type: string
+          description: "Трудовой договор"
+        work_experience:
+          type: string
+          description: "Стаж работы"
         role:
           type: string
           description: "Роль сотрудника"
@@ -912,6 +944,15 @@ components:
         restaurant:
           type: number
           description: "Id ресторана, за которым закреплен сотрудник"
+        image:
+          type: object
+          properties:
+            file:
+              type: string
+              description: "Ссылка на фото сотрудника"
+            filename:
+              type: string
+              description: "Название изначального файла"
 
     ClientCreateBase:
       type: object
