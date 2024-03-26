@@ -13,4 +13,5 @@ class ScheduleAdmin(admin.ModelAdmin):
         "time_start",
         "time_finish",
         "day",
+        "type",
     )

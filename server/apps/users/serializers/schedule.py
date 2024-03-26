@@ -5,7 +5,6 @@ from apps.users.models import Employee, Schedule
 class EmployeeScheduleSerializer(BaseModelSerializer):
     employee = serializers.PrimaryKeyRelatedField(
         queryset=Employee.objects.all(),
-        write_only=True,
     )
 
     class Meta:
@@ -16,4 +15,5 @@ class EmployeeScheduleSerializer(BaseModelSerializer):
             "time_finish",
             "employee",
             "day",
+            "type",
         )

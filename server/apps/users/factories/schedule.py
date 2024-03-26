@@ -10,6 +10,7 @@ from factory import (
     Faker,
     LazyAttribute,
     SubFactory,
+    fuzzy,
 )
 from factory.django import DjangoModelFactory
 
@@ -34,6 +35,9 @@ class ScheduleFactory(DjangoModelFactory):
     )
     day = LazyAttribute(
         lambda _: date.today() + timedelta(days=randint(1, 10)),
+    )
+    type = fuzzy.FuzzyChoice(
+        [item[0] for item in Schedule.Types.choices],
     )
 
     class Meta:

@@ -1326,6 +1326,10 @@ components:
         employee:
           type: number
           description: "Id сотрудника"
+        type:
+          type: string
+          description: "Тип времени"
+          enum: ["WORK", "SICK_LEAVE", "VACATION", "DAY_OFF"]
     
     EmployeeScheduleBase:
       type: object
@@ -1348,6 +1352,10 @@ components:
         employee:
           type: number
           description: "Id сотрудника"
+        type:
+          type: string
+          description: "Тип времени"
+          enum: ["WORK", "SICK_LEAVE", "VACATION", "DAY_OFF"]
 
     IngredientBase:
       type: object

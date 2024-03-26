@@ -1,3 +1,11 @@
-from .schedule import ScheduleErrors, ScheduleFile
+from .schedule import (
+    ScheduleColors,
+    ScheduleErrors,
+    ScheduleFile,
+)
 
-__all__ = (ScheduleErrors, ScheduleFile)
+__all__ = (
+    ScheduleColors,
+    ScheduleErrors,
+    ScheduleFile,
+)

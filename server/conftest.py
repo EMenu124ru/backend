@@ -16,6 +16,7 @@ def client(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():
         created_client = ClientFactory()
         yield created_client
+        created_client.user.delete()
         created_client.delete()
 
 
@@ -25,6 +26,7 @@ def waiter(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.WAITER)
         yield created_employee
+        created_employee.user.delete()
         created_employee.delete()
 
 
@@ -34,6 +36,7 @@ def bartender(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.BARTENDER)
         yield created_employee
+        created_employee.user.delete()
         created_employee.delete()
 
 
@@ -43,6 +46,7 @@ def cook(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.COOK)
         yield created_employee
+        created_employee.user.delete()
         created_employee.delete()
 
 
@@ -52,6 +56,7 @@ def chef(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.CHEF)
         yield created_employee
+        created_employee.user.delete()
         created_employee.delete()
 
 
@@ -61,6 +66,7 @@ def sous_chef(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.SOUS_CHEF)
         yield created_employee
+        created_employee.user.delete()
         created_employee.delete()
 
 
@@ -70,6 +76,7 @@ def manager(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.MANAGER)
         yield created_employee
+        created_employee.user.delete()
         created_employee.delete()
 
 
@@ -79,6 +86,7 @@ def hostess(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.HOSTESS)
         yield created_employee
+        created_employee.user.delete()
         created_employee.delete()
 
 
