@@ -10,7 +10,7 @@ from apps.orders.models import (
     Reservation,
     StopList,
 )
-from apps.restaurants.models import Restaurant
+from apps.restaurants.models import Place, Restaurant
 from apps.users.models import Client, Employee
 from apps.users.serializers import ClientSerializer, EmployeeSerializer
 
@@ -36,11 +36,19 @@ class OrderSerializer(BaseModelSerializer):
     dishes = DishCommentSerializer(
         many=True,
     )
+    place = serializers.PrimaryKeyRelatedField(
+        queryset=Place.objects.all(),
+        allow_null=True,
+        required=False,
+    )
 
     class Errors:
         EMPLOYEE_CHANGES = "Работник может изменить только статус и комментарий к заказу"
         EMPTY_DISHES = "В заказе отсутствуют блюда"
         INVALID_DISH = "Ингредиент в блюде {} находится в стоп листе"
+        INVALID_PLACE = "Не указан стол для создания пустой резервации"
+        PLACE_DONT_EXISTS = "Данного места нет в ресторане"
+        PLACE_ALREADY_BUSY = "Данное место занято"
 
     class Meta:
         model = Order
@@ -52,6 +60,7 @@ class OrderSerializer(BaseModelSerializer):
             "client",
             "dishes",
             "reservation",
+            "place",
             "created",
             "modified",
         )
@@ -85,8 +94,20 @@ class OrderSerializer(BaseModelSerializer):
                 not self.check_fields_by_waiter(self.instance, attrs)
             ):
                 raise serializers.ValidationError(self.Errors.EMPLOYEE_CHANGES)
-        if not self.instance and attrs.get("dishes") in (None, []):
-            raise serializers.ValidationError(self.Errors.EMPTY_DISHES)
+        if not self.instance:
+            if attrs.get("dishes") in (None, []):
+                raise serializers.ValidationError(self.Errors.EMPTY_DISHES)
+            if not attrs.get("reservation") and not attrs.get("place"):
+                raise serializers.ValidationError(self.Errors.INVALID_PLACE)
+            if not attrs.get("reservation") and attrs.get("place"):
+                place = attrs.get("place")
+                restaurant_id = self.get_restaurant_id(attrs)
+                restaurant = Restaurant.objects.get(pk=restaurant_id)
+                if not restaurant.places.filter(pk=place.id).exists():
+                    raise serializers.ValidationError(self.Errors.PLACE_DONT_EXISTS)
+                if Reservation.objects.filter(place=place, status=Reservation.Statuses.OPENED).exists():
+                    raise serializers.ValidationError(self.Errors.PLACE_ALREADY_BUSY)
+
         if attrs.get("dishes") is not None:
             order_dishes = [item["dish"] for item in attrs["dishes"]]
             restaurant_id = self.get_restaurant_id(attrs)
@@ -102,12 +123,14 @@ class OrderSerializer(BaseModelSerializer):
 
     def create(self, validated_data: OrderedDict) -> Order:
         dishes = validated_data.pop("dishes")
+        place = validated_data.pop("place", None)
         if validated_data.get("reservation", None) is None:
             restaurant_id = self.get_restaurant_id(validated_data)
             reservation = Reservation.objects.create(
                 arrival_time=timezone.now(),
                 restaurant=Restaurant.objects.get(pk=restaurant_id),
                 client=validated_data.get("client", None),
+                place=place,
             )
             validated_data["reservation"] = reservation
         validated_data.update(

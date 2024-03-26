@@ -8,6 +8,7 @@ from apps.orders.factories import (
     ReservationFactory,
 )
 from apps.orders.models import Order
+from apps.restaurants.factories import PlaceFactory
 from apps.users.factories import ClientFactory, EmployeeFactory
 from apps.users.models import Employee
 
@@ -26,8 +27,10 @@ def test_create_order_by_waiter(
     dishes = DishFactory.create_batch(
         size=DISHES_COUNT,
     )
+    place = PlaceFactory.create(restaurant=waiter.restaurant)
     api_client.force_authenticate(user=waiter.user)
     sum_dishes_prices = sum([dish.price for dish in dishes])
+    place_pk = place.pk
     response = api_client.post(
         reverse_lazy("api:orders-list"),
         data={
@@ -38,6 +41,7 @@ def test_create_order_by_waiter(
             "dishes": [
                 {"dish": dish.id} for dish in dishes
             ],
+            "place": place_pk,
         },
         format='json',
     )
@@ -52,6 +56,7 @@ def test_create_order_by_waiter(
     assert query.exists()
     order = query.first()
     assert order.reservation is not None
+    assert order.reservation.place.pk == place_pk
 
 
 def test_create_order_by_waiter_without_client(
@@ -62,8 +67,10 @@ def test_create_order_by_waiter_without_client(
     dishes = DishFactory.create_batch(
         size=DISHES_COUNT,
     )
+    place = PlaceFactory.create(restaurant=waiter.restaurant)
     api_client.force_authenticate(user=waiter.user)
     sum_dishes_prices = sum([dish.price for dish in dishes])
+    place_pk = place.pk
     response = api_client.post(
         reverse_lazy("api:orders-list"),
         data={
@@ -73,6 +80,7 @@ def test_create_order_by_waiter_without_client(
             "dishes": [
                 {"dish": dish.id} for dish in dishes
             ],
+            "place": place_pk,
         },
         format='json',
     )
@@ -87,6 +95,7 @@ def test_create_order_by_waiter_without_client(
     assert query.exists()
     order = query.first()
     assert order.reservation is not None
+    assert order.reservation.place.pk == place_pk
 
 
 def test_create_order_by_waiter_with_reservation(

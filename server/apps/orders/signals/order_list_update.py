@@ -22,9 +22,7 @@ def update_order_list(restaurant_id: int) -> None:
 
     group_name = f"restaurant_{restaurant_id}"
     orders = OrderQueries.get_orders_by_restaurant_sync(restaurant_id)
-    print(orders)
     body = {"orders": OrderService.get_orders_list_sync(orders)}
-    print(body)
     async_to_sync(get_channel_layer().group_send)(
         group_name,
         {
@@ -47,7 +45,6 @@ def get_restaurant_id(order: Order):
 @receiver(post_save, sender=Order)
 def order_update_order_list(instance, **kwargs) -> None:
     restaurant_id = get_restaurant_id(instance)
-    print("order ", restaurant_id)
     if restaurant_id:
         update_order_list(restaurant_id)
 
@@ -55,6 +52,5 @@ def order_update_order_list(instance, **kwargs) -> None:
 @receiver(post_save, sender=OrderAndDish)
 def order_and_dish_update_order_list(instance, **kwargs) -> None:
     restaurant_id = get_restaurant_id(instance.order)
-    print("order and dish ", restaurant_id)
     if restaurant_id:
         update_order_list(restaurant_id)
