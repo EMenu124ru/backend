@@ -580,6 +580,8 @@ def test_update_reservation_by_hostess_success(
     )
     api_client.force_authenticate(user=hostess.user)
     new_place = PlaceFactory.create(restaurant=hostess.restaurant)
+    while new_place.place == place.place:
+        new_place = PlaceFactory.create(restaurant=hostess.restaurant)
     new_arrival_time = datetime.now(pytz.UTC) + timedelta(days=3)
     response = api_client.patch(
         reverse_lazy(
@@ -592,7 +594,6 @@ def test_update_reservation_by_hostess_success(
             "status": Reservation.Statuses.FINISHED,
         },
     )
-    print(response.__dict__)
     assert response.status_code == status.HTTP_200_OK
     assert Reservation.objects.filter(
         id=reservation.pk,
