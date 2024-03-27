@@ -6,7 +6,6 @@ from rest_framework import (
     status,
 )
 
-from apps.core.utils import PaginationObject
 from apps.orders.models import Reservation
 from apps.restaurants.models import Restaurant
 from apps.restaurants.permissions import RestaurantPermission
@@ -19,12 +18,9 @@ from apps.restaurants.serializers import (
 
 class RestaurantListAPIView(generics.ListAPIView):
     serializer_class = RestaurantSerializer
-    pagination_class = PaginationObject
 
     def get_queryset(self):
-        return Restaurant.objects.prefetch_related(
-            "schedule",
-        ).all()
+        return Restaurant.objects.prefetch_related("schedule").all()
 
 
 class RestaurantPlacesAPIView(generics.RetrieveAPIView):

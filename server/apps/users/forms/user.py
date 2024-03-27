@@ -9,8 +9,8 @@ class UserCreationFormNew(UserCreationForm):
         fields = (
             "username",
             "phone_number",
-            "first_name",
             "last_name",
+            "first_name",
             "surname",
         )
 

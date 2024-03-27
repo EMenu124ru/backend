@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
@@ -20,20 +18,20 @@ def test_update_schedule_manager(
     )
     schedule = ScheduleFactory.create(employee=waiter)
     api_client.force_authenticate(user=manager.user)
-    new_day = schedule.day + timedelta(days=1)
+    new_approve = not schedule.is_approve
     response = api_client.patch(
         reverse_lazy(
             "api:employeeSchedule-detail",
             kwargs={"pk": schedule.pk},
         ),
         data={
-            "day": new_day,
+            "is_approve": new_approve,
         },
     )
     assert response.status_code == status.HTTP_200_OK
     assert Schedule.objects.filter(
         pk=schedule.pk,
-        day=new_day,
+        is_approve=new_approve,
     ).exists()
 
 
@@ -43,14 +41,14 @@ def test_update_schedule_waiter(
 ):
     schedule = ScheduleFactory.create(employee=waiter)
     api_client.force_authenticate(user=waiter.user)
-    new_day = schedule.day + timedelta(days=1)
+    new_approve = not schedule.is_approve
     response = api_client.patch(
         reverse_lazy(
             "api:employeeSchedule-detail",
             kwargs={"pk": schedule.pk},
         ),
         data={
-            "day": new_day,
+            "is_approve": new_approve,
         },
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -65,14 +63,14 @@ def test_update_schedule_in_other_restaurant(
         waiter = EmployeeFactory.create(role=Employee.Roles.WAITER)
     schedule = ScheduleFactory.create(employee=waiter)
     api_client.force_authenticate(user=manager.user)
-    new_day = schedule.day + timedelta(days=1)
+    new_approve = not schedule.is_approve
     response = api_client.patch(
         reverse_lazy(
             "api:employeeSchedule-detail",
             kwargs={"pk": schedule.pk},
         ),
         data={
-            "day": new_day,
+            "is_approve": new_approve,
         },
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -86,14 +84,14 @@ def test_update_schedule_not_auth(
     while waiter.restaurant.id == manager.restaurant.id:
         waiter = EmployeeFactory.create(role=Employee.Roles.WAITER)
     schedule = ScheduleFactory.create(employee=waiter)
-    new_day = schedule.day + timedelta(days=1)
+    new_approve = not schedule.is_approve
     response = api_client.patch(
         reverse_lazy(
             "api:employeeSchedule-detail",
             kwargs={"pk": schedule.pk},
         ),
         data={
-            "day": new_day,
+            "is_approve": new_approve,
         },
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED

@@ -1,9 +1,12 @@
+# from datetime import datetime, timezone
+from django.db.models import Q
+from django.utils import timezone
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from apps.core.serializers import BaseModelSerializer, ObjectFileSerializer
 from apps.restaurants.models import Restaurant
-from apps.users.models import Employee
+from apps.users.models import Employee, Schedule
 
 
 class EmployeeAuthSerializer(TokenObtainPairSerializer):
@@ -58,3 +61,38 @@ class EmployeeSerializer(BaseModelSerializer):
             'restaurant',
             'image',
         )
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        datetime_format = "%d.%m.%Y %H:%M"
+        current_time = timezone.localtime(timezone.now())
+        schedule = Schedule.objects.filter(
+            Q(employee=instance) &
+            (
+                Q(time_start__date=current_time.date()) |
+                Q(time_finish__date=current_time.date())
+            )
+        )
+        mapping_statuses = {
+            Schedule.Types.DAY_OFF: Employee.Statuses.DAY_OFF,
+            Schedule.Types.SICK_LEAVE: Employee.Statuses.SICK_LEAVE,
+            Schedule.Types.VACATION: Employee.Statuses.VACATION,
+        }
+        status = Employee.Statuses.NOT_ON_WORK_SHIFT.label
+        if schedule.exists():
+            schedule = schedule.first()
+            if schedule.is_approve:
+                if schedule.type in mapping_statuses:
+                    status = mapping_statuses[schedule.type].label
+                else:
+                    times = (
+                        timezone.localtime(schedule.time_start).strftime(datetime_format),
+                        timezone.localtime(schedule.time_finish).strftime(datetime_format),
+                    )
+                    if current_time < schedule.time_start:
+                        status = Employee.Statuses.WILL_BE_ON_WORK_SHIFT_FROM_TO.label
+                    else:
+                        status = Employee.Statuses.ON_WORK_SHIFT_FROM_TO.label
+                    status = status.format(*times)
+        data["status"] = status
+        return data

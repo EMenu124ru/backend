@@ -592,6 +592,7 @@ def test_update_reservation_by_hostess_success(
             "status": Reservation.Statuses.FINISHED,
         },
     )
+    print(response.__dict__)
     assert response.status_code == status.HTTP_200_OK
     assert Reservation.objects.filter(
         id=reservation.pk,

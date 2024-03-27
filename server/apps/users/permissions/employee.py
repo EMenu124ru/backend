@@ -28,4 +28,8 @@ class FromSameRestaurantEmployee(permissions.BasePermission):
 class FromSameRestaurantSchedule(IsManager):
 
     def has_object_permission(self, request, view, obj):
-        return request.user.employee.restaurant.id == obj.employee.restaurant.id
+        return all([
+            not request.user.is_client,
+            check_role_employee(request.user, Employee.Roles.MANAGER),
+            request.user.employee.restaurant.id == obj.employee.restaurant.id,
+        ])

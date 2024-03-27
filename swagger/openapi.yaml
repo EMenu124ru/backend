@@ -953,6 +953,10 @@ components:
             filename:
               type: string
               description: "Название изначального файла"
+        status:
+          type: string
+          description: "Статус сотрудника"
+          enum: ["На смене с {} до {}", "Будет на смене с {} до {}", "Выходной", "Больничный", "Отпуск", "Не на смене"]
 
     ClientCreateBase:
       type: object
@@ -1356,10 +1360,6 @@ components:
     EmployeeScheduleCreateBase:
       type: object
       properties:
-        day:
-          type: string
-          format: date
-          description: "Дата начала смены"
         time_start:
           type: string
           format: time
@@ -1382,17 +1382,13 @@ components:
         id:
           type: number
           description: "Id элемента расписания"
-        day:
-          type: string
-          format: date
-          description: "Дата начала смены"
         time_start:
           type: string
-          format: time
+          format: date-time
           description: "Время начала смены"
         time_finish:
           type: string
-          format: time
+          format: date-time
           description: "Время конца смены"
         employee:
           type: number

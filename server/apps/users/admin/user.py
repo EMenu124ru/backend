@@ -22,8 +22,8 @@ class UserAdminNew(UserAdmin):
             {
                 'fields': (
                     'email',
-                    'first_name',
                     'last_name',
+                    'first_name',
                     'surname',
                     'phone_number',
                     'date_of_birth',
@@ -58,8 +58,8 @@ class UserAdminNew(UserAdmin):
             None, {
                 'fields': (
                     'username',
-                    'first_name',
                     'last_name',
+                    'first_name',
                     'surname',
                     'phone_number',
                     'password1',
@@ -74,8 +74,8 @@ class UserAdminNew(UserAdmin):
         'username',
         'email',
         'is_staff',
-        'first_name',
         'last_name',
+        'first_name',
         'surname',
         'phone_number',
         'date_of_birth',
@@ -85,8 +85,8 @@ class UserAdminNew(UserAdmin):
         'username',
         'email',
         'is_staff',
-        'first_name',
         'last_name',
+        'first_name',
         'surname',
         'phone_number',
         'date_of_birth',

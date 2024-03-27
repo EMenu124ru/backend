@@ -270,7 +270,7 @@ async def test_create_order_by_waiter_not_by_websocket(waiter):
         employee=waiter,
         reservation=None,
     )
-    message = await communicator.receive_json_from(timeout=5)
+    message = await communicator.receive_json_from()
     assert message["type"] == "list_orders"
     await communicator.disconnect()
 

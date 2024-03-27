@@ -14,6 +14,6 @@ class EmployeeScheduleSerializer(BaseModelSerializer):
             "time_start",
             "time_finish",
             "employee",
-            "day",
+            "is_approve",
             "type",
         )

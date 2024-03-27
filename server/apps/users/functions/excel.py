@@ -1,4 +1,8 @@
-from datetime import date, time
+from datetime import (
+    datetime,
+    time,
+    timedelta,
+)
 from zipfile import BadZipfile
 
 import openpyxl
@@ -92,18 +96,25 @@ def import_schedule(request) -> list:
                         "file": ScheduleErrors.WRONG_COLOR.value,
                     }
 
+            add_days = 0
+            if time_start > time_finish:
+                add_days = 1
+            start = datetime.combine(date_from_file, time_start)
+            end = datetime.combine(
+                date_from_file + timedelta(days=add_days),
+                time_finish,
+            )
+
             query = Schedule.objects.filter(
-                day=date_from_file,
-                time_start=time_start,
-                time_finish=time_finish,
+                time_start=start,
+                time_finish=end,
                 employee=employee,
                 type=name,
             )
             if not query.exists():
                 to_create_item = {
-                    "day": date(date_from_file.year, date_from_file.month, date_from_file.day),
-                    "time_start": time_start,
-                    "time_finish": time_finish,
+                    "time_start": start,
+                    "time_finish": end,
                     "employee": employee.id,
                     "type": name,
                 }

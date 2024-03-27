@@ -12,6 +12,6 @@ class ScheduleAdmin(admin.ModelAdmin):
         "employee",
         "time_start",
         "time_finish",
-        "day",
+        "is_approve",
         "type",
     )

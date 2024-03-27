@@ -1,11 +1,6 @@
-from datetime import (
-    date,
-    datetime,
-    time,
-    timedelta,
-)
-from random import randint
+from datetime import timedelta
 
+from django.utils import timezone
 from factory import (
     Faker,
     LazyAttribute,
@@ -25,16 +20,14 @@ class ScheduleFactory(DjangoModelFactory):
     employee = SubFactory(
         EmployeeFactory,
     )
-    time_start = Faker(
-        "time",
+    time_start = LazyAttribute(
+        lambda _: timezone.now()
     )
     time_finish = LazyAttribute(
-        lambda obj: datetime.combine(
-            date.today(), time.fromisoformat(obj.time_start)
-        ) + timedelta(hours=8),
+        lambda obj: obj.time_start + timedelta(hours=8),
     )
-    day = LazyAttribute(
-        lambda _: date.today() + timedelta(days=randint(1, 10)),
+    is_approve = Faker(
+        "pybool",
     )
     type = fuzzy.FuzzyChoice(
         [item[0] for item in Schedule.Types.choices],
@@ -42,3 +35,7 @@ class ScheduleFactory(DjangoModelFactory):
 
     class Meta:
         model = Schedule
+        django_get_or_create = (
+            "employee",
+            "time_start",
+        )
