@@ -104,7 +104,8 @@ def test_update_reservation_by_waiter_set_other_place_other_restaurant(
     waiter,
     api_client,
 ) -> None:
-    place = PlaceFactory.create(restaurant=waiter.restaurant)
+    restaurant = waiter.restaurant
+    place = PlaceFactory.create(restaurant=restaurant)
     reservation = ReservationFactory.create(
         restaurant=waiter.restaurant,
         place=place,
@@ -334,14 +335,17 @@ def test_update_reservation_by_hostess_set_other_place(
     hostess,
     api_client,
 ) -> None:
-    place = PlaceFactory.create(restaurant=hostess.restaurant)
+    restaurant = hostess.restaurant
+    place = PlaceFactory.create(restaurant=restaurant)
     reservation = ReservationFactory.create(
         restaurant=hostess.restaurant,
         place=place,
         status=Reservation.Statuses.OPENED,
     )
     api_client.force_authenticate(user=hostess.user)
-    new_place = PlaceFactory.create(restaurant=hostess.restaurant)
+    new_place = PlaceFactory.create(restaurant=restaurant)
+    while new_place.place == place.place:
+        new_place = PlaceFactory.create(restaurant=restaurant)
     new_status = Reservation.Statuses.FINISHED
     response = api_client.patch(
         reverse_lazy(
@@ -488,7 +492,8 @@ def test_update_reservation_by_hostess_set_not_exists_place(
     hostess,
     api_client,
 ) -> None:
-    place = PlaceFactory.create(restaurant=hostess.restaurant)
+    restaurant = hostess.restaurant
+    place = PlaceFactory.create(restaurant=restaurant)
     reservation = ReservationFactory.create(
         restaurant=hostess.restaurant,
         place=place,
@@ -572,16 +577,17 @@ def test_update_reservation_by_hostess_success(
     hostess,
     api_client,
 ) -> None:
-    place = PlaceFactory.create(restaurant=hostess.restaurant)
+    restaurant = hostess.restaurant
+    place = PlaceFactory.create(restaurant=restaurant)
     reservation = ReservationFactory.create(
         restaurant=hostess.restaurant,
         place=place,
         status=Reservation.Statuses.OPENED,
     )
     api_client.force_authenticate(user=hostess.user)
-    new_place = PlaceFactory.create(restaurant=hostess.restaurant)
-    while new_place.place == place.place:
-        new_place = PlaceFactory.create(restaurant=hostess.restaurant)
+    new_place = PlaceFactory.create(restaurant=restaurant)
+    while place.place == new_place.place:
+        new_place = PlaceFactory.create(restaurant=restaurant)
     new_arrival_time = datetime.now(pytz.UTC) + timedelta(days=3)
     response = api_client.patch(
         reverse_lazy(

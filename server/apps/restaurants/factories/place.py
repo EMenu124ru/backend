@@ -22,7 +22,7 @@ class PlaceFactory(DjangoModelFactory):
         RestaurantFactory,
     )
     place = LazyAttribute(
-        lambda _: f"{'A' if random.randrange(1, 2) == 1 else 'B'}{random.randrange(1, 50)}",
+        lambda _: f"{'A' if random.randrange(1, 2) == 1 else 'B'}{random.randrange(1, 100)}",
     )
 
     @post_generation
