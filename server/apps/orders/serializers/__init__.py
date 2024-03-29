@@ -5,7 +5,7 @@ from .dish import (
     IngredientSerializer,
 )
 from .order import OrderSerializer
-from .order_and_dish import DishCommentSerializer, OrderAndDishSerializer
+from .order_and_dish import BaseOrderAndDishSerializer, OrderAndDishSerializer
 from .reservation import ReservationSerializer
 from .stop_list import StopListSerializer
 
@@ -15,7 +15,7 @@ __all__ = (
     DishImageSerializer,
     IngredientSerializer,
     OrderSerializer,
-    DishCommentSerializer,
+    BaseOrderAndDishSerializer,
     OrderAndDishSerializer,
     ReservationSerializer,
     StopListSerializer,

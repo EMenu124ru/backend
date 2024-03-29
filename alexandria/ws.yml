@@ -57,62 +57,68 @@ actions:
                   type: number
               nullable: true
             dishes:
-              type: object
-              properties:
-                id:
-                  type: number
-                status:
-                  type: string
-                order:
-                  type: number
-                dish:
-                  type: object
-                  properties:
-                    id: 
-                      type: number
-                    category:
-                      type: object
-                      properties:
-                        id:
-                          type: number
-                        name:
-                          type: string
-                    name:
-                      type: string
-                    description:
-                      type: string
-                    short_description:
-                      type: string
-                    price:
-                      type: string
-                    compound:
-                      type: string
-                    weight:
-                      type: string
-                    images:
-                      type: array
-                      items:
-                        id:
-                          type: number
-                        image:
-                          type: string
-                comment:
-                  type: string
-                employee:
-                  type: object
-                  properties:
-                    id:
-                      type: number
-                    role:
-                      type: string
-                    first_name:
-                      type: string
-                    last_name:
-                      type: string
-                    surname:
-                      type: string
-                    restaurant:
-                      type: number
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  status:
+                    type: string
+                  order:
+                    type: number
+                  count:
+                    type: number
+                  dish:
+                    type: object
+                    properties:
+                      id: 
+                        type: number
+                      category:
+                        type: object
+                        properties:
+                          id:
+                            type: number
+                          name:
+                            type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      short_description:
+                        type: string
+                      price:
+                        type: string
+                      compound:
+                        type: string
+                      weight:
+                        type: string
+                      images:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: number
+                            image:
+                              type: string
+                  comment:
+                    type: string
+                  employee:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                      role:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      surname:
+                        type: string
+                      restaurant:
+                        type: number
             price:
               type: string
   
@@ -163,62 +169,68 @@ actions:
                 type: number
             nullable: true
           dishes:
-            type: object
-            properties:
-              id:
-                type: number
-              status:
-                type: string
-              order:
-                type: number
-              dish:
-                type: object
-                properties:
-                  id: 
-                    type: number
-                  category:
-                    type: object
-                    properties:
-                      id:
-                        type: number
-                      name:
-                        type: string
-                  name:
-                    type: string
-                  description:
-                    type: string
-                  short_description:
-                    type: string
-                  price:
-                    type: string
-                  compound:
-                    type: string
-                  weight:
-                    type: string
-                  images:
-                    type: array
-                    items:
-                      id:
-                        type: number
-                      image:
-                        type: string
-              comment:
-                type: string
-              employee:
-                type: object
-                properties:
-                  id:
-                    type: number
-                  role:
-                    type: string
-                  first_name:
-                    type: string
-                  last_name:
-                    type: string
-                  surname:
-                    type: string
-                  restaurant:
-                    type: number
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                status:
+                  type: string
+                order:
+                  type: number
+                dish:
+                  type: object
+                  properties:
+                    id: 
+                      type: number
+                    category:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    short_description:
+                      type: string
+                    price:
+                      type: string
+                    compound:
+                      type: string
+                    weight:
+                      type: string
+                    images:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: number
+                          image:
+                            type: string
+                comment:
+                  type: string
+                count:
+                  type: integer
+                employee:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    role:
+                      type: string
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+                    surname:
+                      type: string
+                    restaurant:
+                      type: number
           price:
             type: string
 
@@ -248,6 +260,8 @@ actions:
                 type: integer
               comment:
                 type: string
+              count:
+                type: integer
         reservation:
           type: number
     response_to_group:
@@ -293,47 +307,53 @@ actions:
                   type: number
               nullable: true
             dishes:
-              type: object
-              properties:
-                id:
-                  type: number
-                status:
-                  type: string
-                order:
-                  type: number
-                dish:
-                  type: object
-                  properties:
-                    id: 
-                      type: number
-                    category:
-                      type: object
-                      properties:
-                        id:
-                          type: number
-                        name:
-                          type: string
-                    name:
-                      type: string
-                    description:
-                      type: string
-                    short_description:
-                      type: string
-                    price:
-                      type: string
-                    compound:
-                      type: string
-                    weight:
-                      type: string
-                    images:
-                      type: array
-                      items:
-                        id:
-                          type: number
-                        image:
-                          type: string
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  status:
+                    type: string
+                  order:
+                    type: number
+                  dish:
+                    type: object
+                    properties:
+                      id: 
+                        type: number
+                      category:
+                        type: object
+                        properties:
+                          id:
+                            type: number
+                          name:
+                            type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      short_description:
+                        type: string
+                      price:
+                        type: string
+                      compound:
+                        type: string
+                      weight:
+                        type: string
+                      images:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: number
+                            image:
+                              type: string
                 comment:
                   type: string
+                count:
+                  type: integer
                 employee:
                   type: object
                   properties:
@@ -378,20 +398,25 @@ actions:
           type: array
           nullable: true
           items:
-            id:
-              type: number
-              nullable: true
-            status:
-              type: string
-              nullable: true
-            dish:
-              type: number
-            comment:
-              type: string
-              nullable: true
-            employee:
-              type: number
-              nullable: true
+            type: object
+            properties:
+              id:
+                type: number
+                nullable: true
+              status:
+                type: string
+                nullable: true
+              dish:
+                type: number
+              comment:
+                type: string
+                nullable: true
+              count:
+                type: integer
+                nullable: true
+              employee:
+                type: number
+                nullable: true
     response_to_group:
       event: list_orders
       orders:
@@ -435,46 +460,52 @@ actions:
                   type: number
               nullable: true
             dishes:
-              type: object
-              properties:
-                id:
-                  type: number
-                status:
-                  type: string
-                order:
-                  type: number
-                dish:
-                  type: object
-                  properties:
-                    id: 
-                      type: number
-                    category:
-                      type: object
-                      properties:
-                        id:
-                          type: number
-                        name:
-                          type: string
-                    name:
-                      type: string
-                    description:
-                      type: string
-                    short_description:
-                      type: string
-                    price:
-                      type: string
-                    compound:
-                      type: string
-                    weight:
-                      type: string
-                    images:
-                      type: array
-                      items:
-                        id:
-                          type: number
-                        image:
-                          type: string
+              type: array
+              items:
+                type: array
+                properties:
+                  id:
+                    type: number
+                  status:
+                    type: string
+                  order:
+                    type: number
+                  dish:
+                    type: object
+                    properties:
+                      id: 
+                        type: number
+                      category:
+                        type: object
+                        properties:
+                          id:
+                            type: number
+                          name:
+                            type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      short_description:
+                        type: string
+                      price:
+                        type: string
+                      compound:
+                        type: string
+                      weight:
+                        type: string
+                      images:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: number
+                            image:
+                              type: string
                 comment:
+                  type: string
+                count:
                   type: string
                 employee:
                   type: object

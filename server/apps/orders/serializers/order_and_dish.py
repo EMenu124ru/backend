@@ -1,7 +1,5 @@
 from collections import OrderedDict
 
-from django.shortcuts import get_object_or_404
-
 from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import (
     Dish,
@@ -13,7 +11,7 @@ from apps.users.models import Employee
 from apps.users.serializers import EmployeeSerializer
 
 
-class DishCommentSerializer(BaseModelSerializer):
+class BaseOrderAndDishSerializer(BaseModelSerializer):
 
     dish = serializers.PrimaryKeyRelatedField(
         queryset=Dish.objects.all(),
@@ -24,16 +22,9 @@ class DishCommentSerializer(BaseModelSerializer):
         fields = (
             "id",
             "dish",
+            "count",
+            "comment",
         )
-
-    def to_representation(self, instance: Order) -> OrderedDict:
-        data = super().to_representation(instance)
-        dish = get_object_or_404(Dish, id=data.pop("dish"))
-        new_info = {
-            "dish": DishSerializer(dish).data,
-        }
-        data.update(new_info)
-        return data
 
 
 class OrderAndDishSerializer(BaseModelSerializer):
@@ -68,6 +59,7 @@ class OrderAndDishSerializer(BaseModelSerializer):
             "dish",
             "count",
             "employee",
+            "comment",
         )
 
     def check_fields_by_chef(

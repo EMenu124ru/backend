@@ -381,6 +381,41 @@ def test_create_order_and_dishes_by_waiter(
     assert Order.objects.get(id=order.id).dishes.exists()
 
 
+def test_create_more_one_order_and_dishes_by_waiter(
+    waiter,
+    api_client,
+) -> None:
+    order = OrderFactory.create()
+    dish = DishFactory.create()
+    order_and_dishes = OrderAndDishFactory.build(order=order, dish=dish)
+    api_client.force_authenticate(user=waiter.user)
+    order_body = {
+        "status": order_and_dishes.status,
+        "order": order_and_dishes.order.pk,
+        "dish": order_and_dishes.dish.pk,
+        "count": order_and_dishes.count,
+        "comment": "some comment",
+    }
+    response = api_client.post(
+        reverse_lazy("api:orderAndDishes-list"),
+        data=order_body,
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert OrderAndDish.objects.filter(**order_body).exists()
+    assert Dish.objects.get(id=dish.id).orders.exists()
+    assert Order.objects.get(id=order.id).dishes.count() == 1
+
+    order_body["count"] = 1
+    order_body["comment"] = "some comment 123"
+    response = api_client.post(
+        reverse_lazy("api:orderAndDishes-list"),
+        data=order_body,
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert OrderAndDish.objects.filter(**order_body).exists()
+    assert Order.objects.get(id=order.id).dishes.count() == 2
+
+
 def test_create_order_and_dishes_by_waiter_zero_count(
     waiter,
     api_client,

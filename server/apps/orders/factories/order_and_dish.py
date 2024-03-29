@@ -35,7 +35,3 @@ class OrderAndDishFactory(DjangoModelFactory):
 
     class Meta:
         model = OrderAndDish
-        django_get_or_create = (
-            "dish",
-            "order",
-        )

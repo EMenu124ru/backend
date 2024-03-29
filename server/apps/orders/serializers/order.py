@@ -14,7 +14,7 @@ from apps.restaurants.models import Place, Restaurant
 from apps.users.models import Client, Employee
 from apps.users.serializers import ClientSerializer, EmployeeSerializer
 
-from .order_and_dish import DishCommentSerializer, OrderAndDishSerializer
+from .order_and_dish import BaseOrderAndDishSerializer, OrderAndDishSerializer
 
 
 class OrderSerializer(BaseModelSerializer):
@@ -33,7 +33,7 @@ class OrderSerializer(BaseModelSerializer):
         allow_null=True,
         required=False,
     )
-    dishes = DishCommentSerializer(
+    dishes = BaseOrderAndDishSerializer(
         many=True,
     )
     place = serializers.PrimaryKeyRelatedField(
@@ -142,6 +142,8 @@ class OrderSerializer(BaseModelSerializer):
             order_and_dish = {
                 "order": order.pk,
                 "dish": item["dish"].pk,
+                "count": item.get("count", 1),
+                "comment": item.get("comment", ""),
             }
             serializer = OrderAndDishSerializer(data=order_and_dish)
             serializer.is_valid(raise_exception=True)

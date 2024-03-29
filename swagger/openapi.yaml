@@ -1048,6 +1048,9 @@ components:
               dish:
                 type: number
                 description: "Id блюда"
+              count:
+                type: integer
+                description: "Количество блюд в заказе"
               comment:
                 type: string
                 description: "Комментарий к заказу"
@@ -1083,6 +1086,9 @@ components:
               dish:
                 type: number
                 description: "Id блюда"
+              count:
+                type: integer
+                description: "Количество блюд в заказе"
               comment:
                 type: string
                 description: "Комментарий к заказу"
@@ -1285,6 +1291,9 @@ components:
         count:
           type: number
           description: "Количество блюд"
+        comment:
+          type: string
+          description: "Комментарий к заказу"
 
     OrderAndDishBase:
       type: object
@@ -1311,6 +1320,9 @@ components:
         count:
           type: number
           description: "Количество блюд"
+        comment:
+          type: string
+          description: "Комментарий к заказу"
 
     StopListCreateBase:
       type: object
