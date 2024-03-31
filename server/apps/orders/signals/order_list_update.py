@@ -3,6 +3,7 @@ from channels.layers import get_channel_layer
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from apps.orders.functions import get_orders_by_restaurant
 from apps.orders.models import Order, OrderAndDish
 
 ACCESS_STATUS = [
@@ -14,14 +15,10 @@ ACCESS_STATUS = [
 
 
 def update_order_list(restaurant_id: int) -> None:
-    from apps.restaurants.consumers.room import (
-        Events,
-        OrderQueries,
-        OrderService,
-    )
+    from apps.restaurants.consumers.room import Events, OrderService
 
     group_name = f"restaurant_{restaurant_id}"
-    orders = OrderQueries.get_orders_by_restaurant_sync(restaurant_id)
+    orders = get_orders_by_restaurant(restaurant_id)
     body = {"orders": OrderService.get_orders_list_sync(orders)}
     async_to_sync(get_channel_layer().group_send)(
         group_name,

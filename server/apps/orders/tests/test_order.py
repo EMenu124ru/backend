@@ -23,7 +23,7 @@ def test_create_order_by_waiter(
     api_client,
 ) -> None:
     client = ClientFactory.create()
-    order = OrderFactory.build()
+    order = OrderFactory.build(status=Order.Statuses.WAITING_FOR_COOKING)
     dishes = DishFactory.create_batch(
         size=DISHES_COUNT,
     )
@@ -63,7 +63,7 @@ def test_create_order_by_waiter_without_client(
     waiter,
     api_client,
 ) -> None:
-    order = OrderFactory.build()
+    order = OrderFactory.build(status=Order.Statuses.WAITING_FOR_COOKING)
     dishes = DishFactory.create_batch(
         size=DISHES_COUNT,
     )
@@ -103,7 +103,7 @@ def test_create_order_by_waiter_with_reservation(
     api_client,
 ) -> None:
     client = ClientFactory.create()
-    order = OrderFactory.build()
+    order = OrderFactory.build(status=Order.Statuses.WAITING_FOR_COOKING)
     dishes = DishFactory.create_batch(
         size=DISHES_COUNT,
     )
@@ -149,6 +149,7 @@ def test_update_order_by_cook(
     order = OrderFactory.create(
         employee=waiter,
         price=sum([dish.price for dish in dishes]),
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     api_client.force_authenticate(user=cook.user)
     new_comment = "New some comment"
@@ -176,6 +177,7 @@ def test_update_order_by_waiter_success(
     order = OrderFactory.create(
         employee=waiter,
         price=sum([dish.price for dish in dishes]),
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     api_client.force_authenticate(user=waiter.user)
     new_comment = "New some comment"
@@ -208,6 +210,7 @@ def test_update_order_by_waiter_failed(
     order = OrderFactory.create(
         employee=waiter,
         price=sum([dish.price for dish in dishes]),
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     api_client.force_authenticate(user=waiter.user)
     new_employee = EmployeeFactory.create()
@@ -238,6 +241,7 @@ def test_read_orders_by_waiter(
         employee=waiter,
         price=sum([dish.price for dish in dishes]),
         size=ORDERS_COUNT,
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     api_client.force_authenticate(user=waiter.user)
     response = api_client.get(
@@ -258,6 +262,7 @@ def test_read_orders_by_manager(
     OrderFactory.create_batch(
         employee=waiter,
         size=ORDERS_COUNT,
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     api_client.force_authenticate(user=manager.user)
     response = api_client.get(
@@ -279,6 +284,7 @@ def test_read_order_by_waiter(
     order = OrderFactory.create(
         employee=waiter,
         price=sum_dishes_prices,
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     api_client.force_authenticate(user=waiter.user)
     response = api_client.get(
@@ -300,6 +306,7 @@ def test_read_order_by_waiter_from_other_restaurant(
     sum_dishes_prices = sum([dish.price for dish in dishes])
     order = OrderFactory.create(
         price=sum_dishes_prices,
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     api_client.force_authenticate(user=waiter.user)
     response = api_client.get(
@@ -315,7 +322,7 @@ def test_create_order_by_client(
     client,
     api_client,
 ) -> None:
-    order = OrderFactory.build()
+    order = OrderFactory.build(status=Order.Statuses.WAITING_FOR_COOKING)
     dishes = DishFactory.create_batch(
         size=DISHES_COUNT,
     )
@@ -344,6 +351,7 @@ def test_read_orders_by_client(
     OrderFactory.create_batch(
         price=sum([dish.price for dish in dishes]),
         size=ORDERS_COUNT,
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     api_client.force_authenticate(user=client.user)
     response = api_client.get(
@@ -365,6 +373,7 @@ def test_update_order_by_client(
         client=client,
         employee=employee,
         price=sum_dishes_prices,
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     api_client.force_authenticate(user=client.user)
     new_comment = "Sample comment"
@@ -389,6 +398,7 @@ def test_read_order_by_client_failed(
     )
     order = OrderFactory.create(
         price=sum([dish.price for dish in dishes]),
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     api_client.force_authenticate(user=client.user)
     response = api_client.get(
@@ -410,6 +420,7 @@ def test_read_order_by_client_success(
     order = OrderFactory.create(
         client=client,
         price=sum([dish.price for dish in dishes]),
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     api_client.force_authenticate(user=client.user)
     response = api_client.get(
@@ -426,7 +437,7 @@ def test_create_order_by_not_auth(
 ) -> None:
     client = ClientFactory.create()
     employee = EmployeeFactory.create()
-    order = OrderFactory.build()
+    order = OrderFactory.build(status=Order.Statuses.WAITING_FOR_COOKING)
     dishes = DishFactory.create_batch(
         size=DISHES_COUNT,
     )
@@ -453,6 +464,7 @@ def test_update_order_by_not_auth(
     )
     order = OrderFactory.create(
         price=sum([dish.price for dish in dishes]),
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     new_comment = "Sample comment"
     response = api_client.patch(
@@ -476,6 +488,7 @@ def test_read_orders_by_not_auth(
     OrderFactory.create_batch(
         price=sum([dish.price for dish in dishes]),
         size=ORDERS_COUNT,
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     response = api_client.get(
         reverse_lazy(
@@ -493,6 +506,7 @@ def test_read_order_by_not_auth(
     )
     order = OrderFactory.create(
         price=sum([dish.price for dish in dishes]),
+        status=Order.Statuses.WAITING_FOR_COOKING,
     )
     response = api_client.get(
         reverse_lazy(

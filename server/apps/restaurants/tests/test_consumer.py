@@ -11,6 +11,7 @@ from apps.orders.factories import (
     OrderAndDishFactory,
     OrderFactory,
 )
+from apps.orders.functions import get_orders_by_restaurant
 from apps.orders.models import Order, OrderAndDish
 from apps.orders.serializers import OrderAndDishSerializer, OrderSerializer
 from apps.restaurants.consumers import RestaurantConsumer
@@ -42,6 +43,11 @@ def get_serialized_order(order):
 @database_sync_to_async
 def get_serialized_order_and_dishes(dishes):
     return OrderAndDishSerializer(dishes).data
+
+
+@database_sync_to_async
+def get_order_ids(orders):
+    return sorted([order.id for order in orders])
 
 
 @pytest.mark.asyncio
@@ -190,16 +196,52 @@ async def test_connect_wrong_restaurant_id(waiter):
 async def test_employee_orders_list(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
+
+    waiting_for_cooking_orders = await database_sync_to_async(OrderFactory.create_batch)(
+        size=2,
+        status=Order.Statuses.WAITING_FOR_COOKING,
+        employee=waiter,
+    )
     cooking_orders = await database_sync_to_async(OrderFactory.create_batch)(
         size=2,
         status=Order.Statuses.COOKING,
         employee=waiter,
     )
-    _ = await database_sync_to_async(OrderFactory.create_batch)(
+    waiting_for_delivery_orders = await database_sync_to_async(OrderFactory.create_batch)(
+        size=2,
+        status=Order.Statuses.WAITING_FOR_DELIVERY,
+        employee=waiter,
+    )
+    in_process_delivery_orders = await database_sync_to_async(OrderFactory.create_batch)(
+        size=2,
+        status=Order.Statuses.IN_PROCESS_DELIVERY,
+        employee=waiter,
+    )
+    delivered_orders = await database_sync_to_async(OrderFactory.create_batch)(
+        size=2,
+        status=Order.Statuses.DELIVERED,
+        employee=waiter,
+    )
+    finished_orders = await database_sync_to_async(OrderFactory.create_batch)(
+        size=2,
+        status=Order.Statuses.FINISHED,
+        employee=waiter,
+    )
+    paid_orders = await database_sync_to_async(OrderFactory.create_batch)(
         size=2,
         status=Order.Statuses.PAID,
         employee=waiter,
     )
+    created_orders = [
+        *waiting_for_cooking_orders,
+        *cooking_orders,
+        *waiting_for_delivery_orders,
+        *in_process_delivery_orders,
+        *delivered_orders,
+        *finished_orders,
+        *paid_orders,
+    ]
+    created_order_ids = sorted([order.id for order in created_orders])
     application = JWTQueryParamAuthMiddleware(URLRouter([
         path("ws/restaurant/<restaurant_id>/", RestaurantConsumer.as_asgi()),
     ]))
@@ -207,11 +249,18 @@ async def test_employee_orders_list(waiter):
         application,
         f"ws/restaurant/{restaurant.id}/?token={token}",
     )
+    orders = await database_sync_to_async(get_orders_by_restaurant)(restaurant.id)
+    orders_ids = await get_order_ids(orders)
     connected, _ = await communicator.connect()
     assert connected
-    order_json = [dict(order) for order in (await get_serialized_orders(cooking_orders))]
+    orders_json = [
+        dict(order)
+        for order in (await get_serialized_orders(orders))
+    ]
+    orders_json.sort(key=lambda obj: obj["status"])
     message = await communicator.receive_json_from()
-    assert message == {"type": "list_orders", "body": {"orders": order_json}}
+    assert created_order_ids == orders_ids
+    assert message == {"type": "list_orders", "body": {"orders": orders_json}}
     await communicator.disconnect()
 
 

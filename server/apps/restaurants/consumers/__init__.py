@@ -1,3 +1,13 @@
-from .room import RestaurantConsumer
+from .room import (
+    Events,
+    OrderQueries,
+    OrderService,
+    RestaurantConsumer,
+)
 
-__all__ = (RestaurantConsumer,)
+__all__ = (
+    RestaurantConsumer,
+    Events,
+    OrderQueries,
+    OrderService,
+)

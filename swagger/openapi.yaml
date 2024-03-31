@@ -1223,6 +1223,10 @@ components:
         comment:
           type: string
           description: "Комментарий к бронированию"
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderBase"
 
     RestaurantScheduleBase:
       type: object

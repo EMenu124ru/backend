@@ -1,4 +1,3 @@
-# from datetime import datetime, timezone
 from django.db.models import Q
 from django.utils import timezone
 from rest_framework import serializers
@@ -65,7 +64,7 @@ class EmployeeSerializer(BaseModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         datetime_format = "%d.%m.%Y %H:%M"
-        current_time = timezone.localtime(timezone.now())
+        current_time = timezone.now()
         schedule = Schedule.objects.filter(
             Q(employee=instance) &
             (
@@ -86,8 +85,8 @@ class EmployeeSerializer(BaseModelSerializer):
                     status = mapping_statuses[schedule.type].label
                 else:
                     times = (
-                        timezone.localtime(schedule.time_start).strftime(datetime_format),
-                        timezone.localtime(schedule.time_finish).strftime(datetime_format),
+                        schedule.time_start.strftime(datetime_format),
+                        schedule.time_finish.strftime(datetime_format),
                     )
                     if current_time < schedule.time_start:
                         status = Employee.Statuses.WILL_BE_ON_WORK_SHIFT_FROM_TO.label

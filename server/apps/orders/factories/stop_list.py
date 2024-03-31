@@ -1,6 +1,4 @@
-from datetime import datetime
-
-import pytz
+from django.utils import timezone
 from factory import LazyAttribute, SubFactory
 from factory.django import DjangoModelFactory
 
@@ -20,7 +18,7 @@ class StopListFactory(DjangoModelFactory):
         RestaurantFactory,
     )
     created_at = LazyAttribute(
-        lambda _: datetime.now(pytz.UTC)
+        lambda _: timezone.now()
     )
 
     class Meta:

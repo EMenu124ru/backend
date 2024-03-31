@@ -120,6 +120,8 @@ class ReservationSerializer(BaseModelSerializer):
         return attrs
 
     def to_representation(self, instance):
+        from .order import OrderSerializer
+
         data = super().to_representation(instance)
         restaurant = Restaurant.objects.get(pk=data["restaurant"])
         data["restaurant"] = RestaurantSerializer(restaurant).data
@@ -132,6 +134,7 @@ class ReservationSerializer(BaseModelSerializer):
         if (client_id := data.pop("client", None)) is not None:
             client = Client.objects.get(pk=client_id)
 
+        data["orders"] = OrderSerializer(instance.orders.all(), many=True).data
         data["client"] = ClientSerializer(client).data
         return data
 

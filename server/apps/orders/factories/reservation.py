@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-import pytz
+from django.utils import timezone
 from factory import (
     Faker,
     LazyAttribute,
@@ -21,7 +21,7 @@ class ReservationFactory(DjangoModelFactory):
         [item[0] for item in Reservation.Statuses.choices],
     )
     arrival_time = LazyAttribute(
-        lambda _: datetime.now(pytz.UTC) + timedelta(days=2),
+        lambda _: timezone.now() + timedelta(days=2),
     )
     restaurant = SubFactory(
         RestaurantFactory,

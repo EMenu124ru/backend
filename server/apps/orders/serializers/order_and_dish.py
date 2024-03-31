@@ -44,7 +44,7 @@ class OrderAndDishSerializer(BaseModelSerializer):
         WAITER_CHANGES = "Официант может изменить только количество блюд в заказе и статус"
         COOK_CHANGES = "Повар может изменить только статус заказа"
         CHEF_CHANGES = (
-            "Шеф и су-шеф могут менять только работника, "
+            "Шеф и су-шеф могут изменять только работника, "
             "который будет готовить блюдо, и статус"
         )
         SET_CANCELED_STATUS = "Если блюдо нужно убрать из заказа, то поставьте статус отменен"
@@ -94,6 +94,7 @@ class OrderAndDishSerializer(BaseModelSerializer):
     ) -> bool:
         data = validated_data.copy()
         data.pop("count", None)
+        data.pop("comment", None)
         data.pop("status", None)
         return all([
             instance.__getattribute__(key) == value

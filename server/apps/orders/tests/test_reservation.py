@@ -1,8 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import pytest
-import pytz
 from django.urls import reverse_lazy
+from django.utils import timezone
 from rest_framework import status
 
 from apps.orders.factories import (
@@ -588,7 +588,7 @@ def test_update_reservation_by_hostess_success(
     new_place = PlaceFactory.create(restaurant=restaurant)
     while place.place == new_place.place:
         new_place = PlaceFactory.create(restaurant=restaurant)
-    new_arrival_time = datetime.now(pytz.UTC) + timedelta(days=3)
+    new_arrival_time = timezone.now() + timedelta(days=3)
     response = api_client.patch(
         reverse_lazy(
             "api:reservations-detail",
