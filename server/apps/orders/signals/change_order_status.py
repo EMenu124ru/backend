@@ -1,24 +1,43 @@
-from django.db.models import Q
+from collections import Counter
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from apps.orders.models import Order, OrderAndDish
 
+ORDER_AND_DISH_STATUS_WEIGHTS = {
+    OrderAndDish.Statuses.WAITING_FOR_COOKING: 0,
+    OrderAndDish.Statuses.COOKING: 1,
+    OrderAndDish.Statuses.DONE: 2,
+    OrderAndDish.Statuses.DELIVERED: 3,
+}
+
 
 @receiver(post_save, sender=OrderAndDish)
 def change_order_status_based_on_dishes(instance, **kwargs) -> None:
-    dishes_from_same_order = OrderAndDish.objects.filter(
-        order_id=instance.order.id,
-    )
-    DONE_ALLOW_STATUSES = [
-        OrderAndDish.Statuses.DONE,
-        OrderAndDish.Statuses.CANCELED,
-    ]
-    if dishes_from_same_order.filter(status=OrderAndDish.Statuses.COOKING).exists():
-        instance.order.status = Order.Statuses.COOKING
-    is_all_ready = True
-    if dishes_from_same_order.filter(~Q(status__in=DONE_ALLOW_STATUSES)).exists():
-        is_all_ready = False
-    if is_all_ready:
-        instance.order.status = Order.Statuses.WAITING_FOR_DELIVERY
-    instance.order.save()
+    order = instance.order
+    if instance.status == OrderAndDish.Statuses.CANCELED:
+        instance.delete()
+        return
+    order_status = Order.Statuses.WAITING_FOR_COOKING
+    dishes = order.dishes.all()
+    count_dishes = dishes.count()
+    if not count_dishes:
+        order.status = order_status
+        order.save()
+        return
+    counter = Counter(dishes.values_list("status", flat=True))
+    min_status = min(counter, key=lambda obj: ORDER_AND_DISH_STATUS_WEIGHTS[obj])
+    if min_status == OrderAndDish.Statuses.WAITING_FOR_COOKING:
+        order_status = Order.Statuses.WAITING_FOR_COOKING
+    elif min_status == OrderAndDish.Statuses.COOKING:
+        order_status = Order.Statuses.COOKING
+        if OrderAndDish.Statuses.DONE in counter:
+            order_status = Order.Statuses.WAITING_FOR_DELIVERY
+    elif min_status == OrderAndDish.Statuses.DONE:
+        order_status = Order.Statuses.WAITING_FOR_DELIVERY
+    elif min_status == OrderAndDish.Statuses.DELIVERED:
+        order_status = Order.Statuses.DELIVERED
+    if instance.order.status != order_status:
+        instance.order.status = order_status
+        instance.order.save()

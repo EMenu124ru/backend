@@ -203,8 +203,15 @@ def test_update_order_and_dishes_by_cook_failed_field(
         restaurant=cook.restaurant,
         role=Employee.Roles.WAITER,
     )
-    order = OrderFactory.create(employee=waiter)
-    order_and_dishes = OrderAndDishFactory.create(order=order)
+    order = OrderFactory.create(
+        employee=waiter,
+        status=Order.Statuses.WAITING_FOR_COOKING,
+    )
+    order_and_dishes = OrderAndDishFactory.create(
+        order=order,
+        status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
+        employee=None,
+    )
     api_client.force_authenticate(user=cook.user)
     response = api_client.patch(
         reverse_lazy(
@@ -357,9 +364,16 @@ def test_create_order_and_dishes_by_waiter(
     waiter,
     api_client,
 ) -> None:
-    order = OrderFactory.create()
+    order = OrderFactory.create(
+        status=Order.Statuses.WAITING_FOR_COOKING,
+    )
     dish = DishFactory.create()
-    order_and_dishes = OrderAndDishFactory.build(order=order, dish=dish)
+    order_and_dishes = OrderAndDishFactory.build(
+        order=order,
+        dish=dish,
+        status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
+        employee=None,
+    )
     api_client.force_authenticate(user=waiter.user)
     response = api_client.post(
         reverse_lazy("api:orderAndDishes-list"),
@@ -385,9 +399,17 @@ def test_create_more_one_order_and_dishes_by_waiter(
     waiter,
     api_client,
 ) -> None:
-    order = OrderFactory.create()
+    order = OrderFactory.create(
+        status=Order.Statuses.WAITING_FOR_COOKING,
+        employee=waiter,
+    )
     dish = DishFactory.create()
-    order_and_dishes = OrderAndDishFactory.build(order=order, dish=dish)
+    order_and_dishes = OrderAndDishFactory.build(
+        order=order,
+        dish=dish,
+        employee=None,
+        status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
+    )
     api_client.force_authenticate(user=waiter.user)
     order_body = {
         "status": order_and_dishes.status,

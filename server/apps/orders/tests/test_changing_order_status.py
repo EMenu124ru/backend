@@ -18,7 +18,6 @@ DISHES_NUMBER = 5
 
 def test_change_order_status_by_changing_dish_status_success(
     cook,
-    api_client,
 ) -> None:
     waiter = EmployeeFactory.create(
         restaurant=cook.restaurant,
@@ -37,31 +36,42 @@ def test_change_order_status_by_changing_dish_status_success(
                 order=order,
                 dish=dish,
                 status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
-                employee=cook,
+                employee=None,
             ),
         )
-    api_client.force_authenticate(user=cook.user)
-    response = api_client.patch(
-        reverse_lazy(
-            "api:orderAndDishes-detail",
-            kwargs={"pk": order_and_dishes[0].pk},
-        ),
-        data={
-            "status": OrderAndDish.Statuses.COOKING,
-        },
-    )
-    assert response.status_code == status.HTTP_200_OK
-    assert OrderAndDish.objects.filter(
-        id=order_and_dishes[0].pk,
-        status=OrderAndDish.Statuses.COOKING,
-        order__status=Order.Statuses.COOKING,
-    ).exists()
+
+    assert order.status == Order.Statuses.WAITING_FOR_COOKING
+
+    for dish in order_and_dishes:
+        dish.employee = cook
+        dish.save()
+        assert dish.status == OrderAndDish.Statuses.COOKING
+
+    assert order.status == Order.Statuses.COOKING
+
+    for dish in order_and_dishes:
+        dish.status = OrderAndDish.Statuses.DONE
+        dish.save()
+        assert order.status == Order.Statuses.WAITING_FOR_DELIVERY
+
+    for dish in order_and_dishes:
+        dish.status = OrderAndDish.Statuses.DELIVERED
+        dish.save()
+    assert order.status == Order.Statuses.DELIVERED
+
+    for dish in order_and_dishes:
+        dish.employee = cook
+        dish.save()
+        assert dish.status == OrderAndDish.Statuses.DELIVERED
 
 
 def test_change_order_status_by_adding_new_dish(
     waiter,
-    api_client,
 ) -> None:
+    cook = EmployeeFactory.create(
+        restaurant=waiter.restaurant,
+        role=Employee.Roles.COOK,
+    )
     dishes = DishFactory.create_batch(size=DISHES_NUMBER)
     order = OrderFactory.create(
         price=sum([dish.price for dish in dishes]),
@@ -76,22 +86,32 @@ def test_change_order_status_by_adding_new_dish(
                 status=OrderAndDish.Statuses.DONE,
             ),
         )
-    api_client.force_authenticate(user=waiter.user)
     new_dish = DishFactory.create()
-    response = api_client.post(
-        reverse_lazy("api:orderAndDishes-list"),
-        data={
-            "order": order.pk,
-            "dish": new_dish.pk,
-            "status": OrderAndDish.Statuses.COOKING,
-        },
+    order_and_dish = OrderAndDishFactory.create(
+        order=order,
+        dish=new_dish,
+        status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
+        employee=None,
     )
-    assert response.status_code == status.HTTP_201_CREATED
-    assert OrderAndDish.objects.filter(
-        dish=new_dish.pk,
-        status=OrderAndDish.Statuses.COOKING,
-        order__status=Order.Statuses.COOKING,
-    ).exists()
+    assert order.status == Order.Statuses.WAITING_FOR_COOKING
+
+    order_and_dish.employee = cook
+    order_and_dish.save()
+    assert order_and_dish.status == OrderAndDish.Statuses.COOKING
+    assert order.status == Order.Statuses.WAITING_FOR_DELIVERY
+
+    for dish in order_and_dishes:
+        dish.status = OrderAndDish.Statuses.DELIVERED
+        dish.save()
+    assert order.status == Order.Statuses.COOKING
+
+    order_and_dish.status = OrderAndDish.Statuses.DONE
+    order_and_dish.save()
+    assert order.status == Order.Statuses.WAITING_FOR_DELIVERY
+
+    order_and_dish.status = OrderAndDish.Statuses.DELIVERED
+    order_and_dish.save()
+    assert order.status == Order.Statuses.DELIVERED
 
 
 def test_change_order_status_by_changing_dish_status_failed(

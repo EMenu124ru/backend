@@ -1,7 +1,9 @@
 from django.db import models
 
+from apps.core.models import BaseModel
 
-class OrderAndDish(models.Model):
+
+class OrderAndDish(BaseModel):
     class Statuses(models.TextChoices):
         WAITING_FOR_COOKING = "WAITING_FOR_COOKING", "Ожидает готовки"
         COOKING = "COOKING", "Готовится"
@@ -51,3 +53,17 @@ class OrderAndDish(models.Model):
 
     def __str__(self) -> str:
         return f"OrderAndDish {self.order} {self.dish}"
+
+    def save(self, **kwargs):
+        if self.pk:
+            field_name = "employee"
+            cls = self.__class__
+            old = cls.objects.get(pk=self.pk)
+            if hasattr(old, field_name) and hasattr(self, field_name):
+                old_value = getattr(old, field_name)
+                new_value = getattr(self, field_name)
+                if old_value is None and old_value != new_value:
+                    self.status = OrderAndDish.Statuses.COOKING
+                elif new_value is None and old_value != new_value:
+                    self.status = OrderAndDish.Statuses.WAITING_FOR_COOKING
+        super().save(**kwargs)

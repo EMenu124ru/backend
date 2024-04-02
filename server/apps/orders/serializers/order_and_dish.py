@@ -57,10 +57,16 @@ class OrderAndDishSerializer(BaseModelSerializer):
             "status",
             "order",
             "dish",
-            "count",
             "employee",
+            "count",
             "comment",
+            "created",
+            "modified",
         )
+        extra_kwargs = {
+            'created': {'read_only': True},
+            'modified': {'read_only': True},
+        }
 
     def check_fields_by_chef(
         self,

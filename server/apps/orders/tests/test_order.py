@@ -7,7 +7,7 @@ from apps.orders.factories import (
     OrderFactory,
     ReservationFactory,
 )
-from apps.orders.models import Order
+from apps.orders.models import Order, Reservation
 from apps.restaurants.factories import PlaceFactory
 from apps.users.factories import ClientFactory, EmployeeFactory
 from apps.users.models import Employee
@@ -103,11 +103,16 @@ def test_create_order_by_waiter_with_reservation(
     api_client,
 ) -> None:
     client = ClientFactory.create()
-    order = OrderFactory.build(status=Order.Statuses.WAITING_FOR_COOKING)
-    dishes = DishFactory.create_batch(
-        size=DISHES_COUNT,
+    reservation = ReservationFactory.create(
+        status=Reservation.Statuses.OPENED,
+        restaurant=waiter.restaurant,
     )
-    reservation = ReservationFactory.create(restaurant=waiter.restaurant)
+    order = OrderFactory.build(
+        status=Order.Statuses.WAITING_FOR_COOKING,
+        employee=waiter,
+        reservation=reservation,
+    )
+    dishes = DishFactory.create_batch(size=DISHES_COUNT)
     api_client.force_authenticate(user=waiter.user)
     sum_dishes_prices = sum([dish.price for dish in dishes])
     response = api_client.post(
@@ -120,18 +125,19 @@ def test_create_order_by_waiter_with_reservation(
             "dishes": [
                 {"dish": dish.id} for dish in dishes
             ],
-            "reservation": reservation.pk,
+            "reservation": order.reservation.pk,
         },
         format='json',
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert Order.objects.filter(
+        id=response.data["id"],
         status=order.status,
         price=sum_dishes_prices,
         comment=order.comment,
         client=client.pk,
         employee=waiter.pk,
-        reservation=reservation.pk
+        reservation=order.reservation.pk
     ).exists()
 
 

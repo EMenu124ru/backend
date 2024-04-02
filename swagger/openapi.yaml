@@ -1327,6 +1327,14 @@ components:
         comment:
           type: string
           description: "Комментарий к заказу"
+        created:
+          description: "Time created"
+          type: string
+          format: date-time
+        modified:
+          description: "Time modified"
+          type: string
+          format: date-time
 
     StopListCreateBase:
       type: object

@@ -10,7 +10,7 @@ class Order(BaseModel):
         COOKING = "COOKING", "Готовится"
         WAITING_FOR_DELIVERY = "WAITING_FOR_DELIVERY", "Ожидает доставки/готово к выдаче"
         IN_PROCESS_DELIVERY = "IN_PROCESS_DELIVERY", "В процессе доставки"
-        DELIVERED = "DELIVERED", "Доставлен"
+        DELIVERED = "DELIVERED", "Доставлен/Выдан"
         FINISHED = "FINISHED", "Закрыт"
         CANCELED = "CANCELED", "Отменен"
         PAID = "PAID", "Оплачен"
