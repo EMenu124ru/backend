@@ -114,6 +114,38 @@ def test_change_order_status_by_adding_new_dish(
     assert order.status == Order.Statuses.DELIVERED
 
 
+def test_change_order_status_by_cancel_dish() -> None:
+    dishes = DishFactory.create_batch(size=DISHES_NUMBER)
+    order = OrderFactory.create(
+        price=sum([dish.price for dish in dishes]),
+        status=Order.Statuses.WAITING_FOR_DELIVERY,
+    )
+    order_and_dishes = []
+    for dish in dishes:
+        order_and_dishes.append(
+            OrderAndDishFactory.create(
+                order=order,
+                dish=dish,
+                status=OrderAndDish.Statuses.DONE,
+            ),
+        )
+    new_dish = DishFactory.create()
+    order_and_dish = OrderAndDishFactory.create(
+        order=order,
+        dish=new_dish,
+        status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
+        employee=None,
+    )
+    assert order.status == Order.Statuses.WAITING_FOR_COOKING
+
+    order_and_dish_id = order_and_dish.id
+    order_and_dish.status = OrderAndDish.Statuses.CANCELED
+    order_and_dish.save()
+
+    assert not OrderAndDish.objects.filter(pk=order_and_dish_id).exists()
+    assert order.status == Order.Statuses.WAITING_FOR_DELIVERY
+
+
 def test_change_order_status_by_changing_dish_status_failed(
     client,
     api_client

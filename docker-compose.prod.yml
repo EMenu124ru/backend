@@ -1,39 +1,6 @@
 version: '3.7'
 
 services:
-  nginx:
-    image: ghcr.io/emenu124ru/nginx:latest
-    depends_on:
-      - django
-      - daphne
-      - swagger-ui
-      - certbot
-      - alexandria
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./server/media:/nginx/media/
-      - ./certbot/conf:/etc/letsencrypt
-    env_file:
-      - ./.envs/nginx.env
-    deploy:
-      mode: replicated
-      replicas: 2
-      update_config:
-        parallelism: 1
-        order: start-first
-        failure_action: rollback
-        delay: 10s
-      rollback_config:
-        parallelism: 0
-        order: stop-first
-      restart_policy:
-        condition: any
-        delay: 5s
-        max_attempts: 3
-        window: 60s
-
   daphne:
     image: ghcr.io/emenu124ru/django:latest
     depends_on:
@@ -103,6 +70,39 @@ services:
       timeout: 10s
       retries: 3
     command: ["make", "run-django-prod"]
+
+  nginx:
+    image: ghcr.io/emenu124ru/nginx:latest
+    depends_on:
+      - django
+      - daphne
+      - swagger-ui
+      - certbot
+      - alexandria
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./server/media:/nginx/media/
+      - ./certbot/conf:/etc/letsencrypt
+    env_file:
+      - ./.envs/nginx.env
+    deploy:
+      mode: replicated
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 0
+        order: stop-first
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 60s
 
   redis:
     image: redis:6
