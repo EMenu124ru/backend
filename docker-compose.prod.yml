@@ -133,11 +133,5 @@ services:
     environment:
       - ALEXANDRIA_YAML=/ws.yml
 
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-    command: certonly --webroot --webroot-path=/etc/letsencrypt --expand --agree-tos --no-eff-email -d ${BACKEND_DOMAIN}
-
 volumes:
   postgres_data:
