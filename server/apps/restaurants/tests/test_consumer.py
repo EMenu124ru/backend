@@ -508,7 +508,11 @@ async def test_edit_order_chef_success(chef):
         employee=waiter,
         reservation=None,
     )
-    await database_sync_to_async(OrderAndDishFactory.create_batch)(size=5, order=order)
+    await database_sync_to_async(OrderAndDishFactory.create_batch)(
+        size=5,
+        order=order,
+        status=OrderAndDish.Statuses.COOKING,
+    )
     application = JWTQueryParamAuthMiddleware(URLRouter([
         path("ws/restaurant/<restaurant_id>/", RestaurantConsumer.as_asgi()),
     ]))

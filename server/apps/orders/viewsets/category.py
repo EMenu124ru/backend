@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import decorators, response
 
 from apps.core.viewsets import RetrieveListViewSet
-from apps.orders.functions import get_or_create_cache_dishes
+from apps.orders.functions import CacheActions, get_or_create_cache_dishes
 from apps.orders.models import Category
 from apps.orders.permissions import CategoryPermission
 from apps.orders.serializers import CategorySerializer, DishSerializer
@@ -32,7 +32,7 @@ class CategoryViewSet(RetrieveListViewSet):
                 else self.request.query_params.get("restaurant_id", None)
             )
             if restaurant_id and Restaurant.objects.filter(pk=restaurant_id).exists():
-                return get_or_create_cache_dishes(category, restaurant_id)
+                return get_or_create_cache_dishes(CacheActions.GET, category, restaurant_id)
             return category.dishes.all()
         return queryset
 

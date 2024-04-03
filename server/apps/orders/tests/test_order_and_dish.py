@@ -247,12 +247,11 @@ def test_update_order_and_dishes_by_chef_failed(
 
 def test_update_order_and_dishes_by_chef_failed_current_restaurant(
     chef,
+    waiter,
     api_client,
 ) -> None:
-    waiter = EmployeeFactory.create(
-        restaurant=chef.restaurant,
-        role=Employee.Roles.WAITER,
-    )
+    waiter.restaurant = chef.restaurant
+    waiter.save()
     order = OrderFactory.create(employee=waiter)
     order_and_dishes = OrderAndDishFactory.create(
         status=OrderAndDish.Statuses.COOKING,
@@ -345,8 +344,14 @@ def test_update_order_and_dishes_by_cook_failed_current_restaurant(
         restaurant=cook.restaurant,
         role=Employee.Roles.WAITER,
     )
-    order = OrderFactory.create(employee=waiter)
-    order_and_dishes = OrderAndDishFactory.create(order=order)
+    order = OrderFactory.create(
+        employee=waiter,
+        status=Order.Statuses.WAITING_FOR_COOKING,
+    )
+    order_and_dishes = OrderAndDishFactory.create(
+        order=order,
+        status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
+    )
     api_client.force_authenticate(user=cook.user)
     response = api_client.patch(
         reverse_lazy(
