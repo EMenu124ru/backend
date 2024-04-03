@@ -325,17 +325,18 @@ def test_read_dish_apply_stop_list(
     ingredients = IngredientFactory.create_batch(
         size=DISH_COUNT * 2,
     )
-    count_access_dishes = DISH_COUNT
-    access_to_dish = []
-    broke_ingredients = []
     ingredients = [
         (ingredients[i], ingredients[i+1])
         for i in range(0, len(ingredients), 2)
     ]
     for index, dish in enumerate(dishes):
-        dish_ingredients = ingredients[index]
         dish.ingredients.clear()
         dish.ingredients.set(ingredients[index])
+    count_access_dishes = DISH_COUNT
+    access_to_dish = []
+    broke_ingredients = []
+    for index, dish in enumerate(dishes):
+        dish_ingredients = ingredients[index]
         if (
             dish_ingredients[0].id in broke_ingredients or
             dish_ingredients[1].id in broke_ingredients
