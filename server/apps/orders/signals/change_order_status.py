@@ -11,6 +11,12 @@ ORDER_AND_DISH_STATUS_WEIGHTS = {
     OrderAndDish.Statuses.DONE: 2,
     OrderAndDish.Statuses.DELIVERED: 3,
 }
+CHECKED_STATUSES = [
+    OrderAndDish.Statuses.WAITING_FOR_COOKING,
+    OrderAndDish.Statuses.COOKING,
+    OrderAndDish.Statuses.DELIVERED,
+    OrderAndDish.Statuses.DONE,
+]
 
 
 @receiver(post_save, sender=OrderAndDish)
@@ -19,7 +25,7 @@ def change_order_status_based_on_dishes(instance, **kwargs) -> None:
     if instance.status == OrderAndDish.Statuses.CANCELED:
         instance.delete()
     order_status = Order.Statuses.WAITING_FOR_COOKING
-    dishes = order.dishes.all()
+    dishes = order.dishes.filter(status__in=CHECKED_STATUSES).all()
     count_dishes = dishes.count()
     if not count_dishes:
         order.status = order_status

@@ -6,9 +6,10 @@ from apps.core.models import BaseModel
 
 class Order(BaseModel):
     class Statuses(models.TextChoices):
-        WAITING_FOR_COOKING = "WAITING_FOR_COOKING", "Передано на кухню"
+        DELAYED = "DELAYED", "Отложен"
+        WAITING_FOR_COOKING = "WAITING_FOR_COOKING", "Передан на кухню"
         COOKING = "COOKING", "Готовится"
-        WAITING_FOR_DELIVERY = "WAITING_FOR_DELIVERY", "Ожидает доставки/готово к выдаче"
+        WAITING_FOR_DELIVERY = "WAITING_FOR_DELIVERY", "Ожидает доставки/готов к выдаче"
         IN_PROCESS_DELIVERY = "IN_PROCESS_DELIVERY", "В процессе доставки"
         DELIVERED = "DELIVERED", "Доставлен/Выдан"
         FINISHED = "FINISHED", "Закрыт"

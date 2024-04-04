@@ -169,7 +169,7 @@ class OrderSerializer(BaseModelSerializer):
         if (client_id := data.pop("client")) is not None:
             client = Client.objects.get(pk=client_id)
 
-        order_and_dishes = OrderAndDish.objects.filter(order_id=instance.id)
+        order_and_dishes = OrderAndDish.objects.filter(order_id=instance.id).order_by("created")
         reservation = instance.reservation.pk if instance.reservation else None
         place = instance.reservation.place if instance.reservation else None
         new_info = {

@@ -986,7 +986,7 @@ components:
         status:
           type: string
           description: "Статус заказа"
-          enum: ["WAITING_FOR_COOKING", "COOKING", "WAITING_FOR_DELIVERY", "IN_PROCESS_DELIVERY", "DELIVERED", "FINISHED", "CANCELED", "PAID"]
+          enum: ["DELAYED", "WAITING_FOR_COOKING", "COOKING", "WAITING_FOR_DELIVERY", "IN_PROCESS_DELIVERY", "DELIVERED", "FINISHED", "CANCELED", "PAID"]
         price:
           type: string
           description: "Цена заказа"
@@ -1031,7 +1031,7 @@ components:
         status:
           type: string
           description: "Статус заказа"
-          enum: ["WAITING_FOR_COOKING", "COOKING", "WAITING_FOR_DELIVERY", "IN_PROCESS_DELIVERY", "DELIVERED", "FINISHED", "CANCELED", "PAID"]
+          enum: ["DELAYED", "WAITING_FOR_COOKING", "COOKING", "WAITING_FOR_DELIVERY", "IN_PROCESS_DELIVERY", "DELIVERED", "FINISHED", "CANCELED", "PAID"]
         comment:
           type: string
           description: "Комментарий к заказу"
@@ -1069,7 +1069,7 @@ components:
         status:
           type: string
           description: "Статус заказа"
-          enum: ["WAITING_FOR_COOKING", "COOKING", "WAITING_FOR_DELIVERY", "IN_PROCESS_DELIVERY", "DELIVERED", "FINISHED", "CANCELED", "PAID"]
+          enum: ["DELAYED", "WAITING_FOR_COOKING", "COOKING", "WAITING_FOR_DELIVERY", "IN_PROCESS_DELIVERY", "DELIVERED", "FINISHED", "CANCELED", "PAID"]
         comment:
           type: string
           description: "Комментарий к заказу"

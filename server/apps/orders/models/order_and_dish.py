@@ -7,9 +7,9 @@ class OrderAndDish(BaseModel):
     class Statuses(models.TextChoices):
         WAITING_FOR_COOKING = "WAITING_FOR_COOKING", "Ожидает готовки"
         COOKING = "COOKING", "Готовится"
-        DONE = "DONE", "Готово"
+        DONE = "DONE", "Готов"
         CANCELED = "CANCELED", "Отменен"
-        DELIVERED = "DELIVERED", "Выдано"
+        DELIVERED = "DELIVERED", "Выдан"
 
     status = models.TextField(
         choices=Statuses.choices,

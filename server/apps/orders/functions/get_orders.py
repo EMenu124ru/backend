@@ -16,7 +16,6 @@ def get_orders_by_restaurant(restaurant_id: int) -> QuerySet:
         Order.Statuses.WAITING_FOR_DELIVERY,
         Order.Statuses.IN_PROCESS_DELIVERY,
         Order.Statuses.DELIVERED,
-        Order.Statuses.FINISHED,
         Order.Statuses.PAID,
     ]
     return Order.objects.filter(
@@ -25,4 +24,4 @@ def get_orders_by_restaurant(restaurant_id: int) -> QuerySet:
             Q(created__gte=left_bound) |
             Q(reservation__arrival_time__gte=left_bound)
         )
-    ).order_by("status").all()
+    ).order_by("status")

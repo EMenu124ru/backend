@@ -222,11 +222,6 @@ async def test_employee_orders_list(waiter):
         status=Order.Statuses.DELIVERED,
         employee=waiter,
     )
-    finished_orders = await database_sync_to_async(OrderFactory.create_batch)(
-        size=2,
-        status=Order.Statuses.FINISHED,
-        employee=waiter,
-    )
     paid_orders = await database_sync_to_async(OrderFactory.create_batch)(
         size=2,
         status=Order.Statuses.PAID,
@@ -238,7 +233,6 @@ async def test_employee_orders_list(waiter):
         *waiting_for_delivery_orders,
         *in_process_delivery_orders,
         *delivered_orders,
-        *finished_orders,
         *paid_orders,
     ]
     created_order_ids = sorted([order.id for order in created_orders])
