@@ -1,5 +1,7 @@
-ifeq ($(shell test -e '.env' && echo -n yes),yes)
-	include .env
+ifeq ($(shell test -e '../.envs' && echo -n yes),yes)
+	include ../.envs/django.env
+	include ../.envs/celery.env
+	include ../.envs/postgres.env
 endif
 
 args := $(wordlist 2, 100, $(MAKECMDGOALS))

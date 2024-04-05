@@ -9,11 +9,12 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    "corsheaders",
     "daphne",
+    "django_celery_beat",
     "django.contrib.staticfiles",
     "django_extensions",
     "rest_framework",
-    "corsheaders",
     'rest_framework_simplejwt',
 ]
 

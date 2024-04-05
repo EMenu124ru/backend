@@ -1,7 +1,8 @@
-ifeq ($(shell test -e '.env' && echo -n yes),yes)
-	include .env
+ifeq ($(shell test -e '.envs' && echo -n yes),yes)
+	include .envs/django.env
+	include .envs/celery.env
+	include .envs/postgres.env
 endif
-
 
 args := $(wordlist 2, 100, $(MAKECMDGOALS))
 ifndef args
@@ -92,6 +93,9 @@ docker-stack-update:  ##@Docker Deploy containers in stack in docker swarm
 	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/swagger:latest backend_swagger-ui
 	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/alexandria:latest backend_alexandria
 	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/django:latest backend_daphne
+	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/django:latest backend_celery_worker
+	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/django:latest backend_celery_beat
+	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/django:latest backend_flower
 	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/nginx:latest backend_nginx
 
 docker-stack-deploy-portainer:  ##@Docker Deploy containers in stack in docker swarm

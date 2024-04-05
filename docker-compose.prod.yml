@@ -104,15 +104,43 @@ services:
         max_attempts: 3
         window: 60s
 
+  celery_worker:
+    image: ghcr.io/emenu124ru/django:latest
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/celery.env
+    command: celery --app=config worker --loglevel=DEBUG
+
+  celery_beat:
+    image: ghcr.io/emenu124ru/django:latest
+    depends_on:
+      - postgres
+      - redis
+      - celery_worker
+    env_file:
+      - ./.envs/celery.env
+    command: celery --app=config beat --scheduler=django --loglevel=DEBUG
+
+  flower:
+    image: ghcr.io/emenu124ru/django:latest
+    ports:
+      - "${FLOWER_PORT}:${FLOWER_PORT}"
+    depends_on:
+      - postgres
+      - redis
+      - celery_worker
+      - celery_beat
+    env_file:
+      - ./.envs/celery.env
+    command: celery --app=config flower
+
   redis:
     image: redis:6
-    expose:
-      - ${REDIS_PORT}
 
   postgres:
     image: postgres:14.4
-    expose:
-      - ${POSTGRES_PORT}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./dumps:/dumps
@@ -121,17 +149,13 @@ services:
 
   swagger-ui:
     image: ghcr.io/emenu124ru/swagger:latest
-    expose:
-      - ${SWAGGER_PORT}
     env_file:
       - ./.envs/swagger.env
 
   alexandria:
     image: ghcr.io/emenu124ru/alexandria:latest
-    expose:
-      - ${ALEXANDRIA_PORT}
-    environment:
-      - ALEXANDRIA_YAML=/ws.yml
+    env_file:
+      - ./.envs/alexandria.env
 
 volumes:
   postgres_data:
