@@ -157,8 +157,8 @@ services:
 
   flower:
     image: ghcr.io/emenu124ru/django:latest
-    ports:
-      - "${FLOWER_PORT}:${FLOWER_PORT}"
+    expose:
+      - ${FLOWER_PORT}"
     depends_on:
       - postgres
       - redis

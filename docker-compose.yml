@@ -20,8 +20,10 @@ services:
       - "8000:8000"
     volumes:
       - ./server:/server
-    env_file:
-      - ./.envs/django.env
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - REDIS_URL=${REDIS_URL}
     command: ["make", "run-django-dev"]
 
   postgres:
@@ -30,8 +32,10 @@ services:
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - ./.envs/postgres.env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
   celery_worker:
     container_name: celery_worker
@@ -44,8 +48,12 @@ services:
     depends_on:
       - postgres
       - redis
-    env_file:
-      - ./.envs/celery.env
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - REDIS_URL=${REDIS_URL}
+      - CELERY_BROKER_URL=${REDIS_URL}
+      - CELERY_RESULT_BACKEND=${REDIS_URL}
     command: celery --app=config worker --loglevel=DEBUG
 
   celery_beat:
@@ -60,8 +68,12 @@ services:
       - postgres
       - redis
       - celery_worker
-    env_file:
-      - ./.envs/celery.env
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - REDIS_URL=${REDIS_URL}
+      - CELERY_BROKER_URL=${REDIS_URL}
+      - CELERY_RESULT_BACKEND=${REDIS_URL}
     command: celery --app=config beat --scheduler=django --loglevel=DEBUG
   
   flower:
@@ -73,14 +85,18 @@ services:
       args:
         MODE: "--with dev"
     ports:
-      - 5555:5555
+      - "5555:5555"
     depends_on:
       - postgres
       - redis
       - celery_worker
       - celery_beat
-    env_file:
-      - ./.envs/celery.env
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - REDIS_URL=${REDIS_URL}
+      - CELERY_BROKER_URL=${REDIS_URL}
+      - CELERY_RESULT_BACKEND=${REDIS_URL}
     command: celery --app=config flower
 
   redis:
