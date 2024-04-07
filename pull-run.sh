@@ -1,3 +1,3 @@
-make docker-login
-make docker-stack-update
 make docker-clean
+make docker-login
+make docker-stack-deploy

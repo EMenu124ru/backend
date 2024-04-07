@@ -56,7 +56,7 @@ run-django-dev:  ##@ApplicationDev Run django
 	python manage.py runserver 0.0.0.0:8000
 
 run-django-prod:  ##@ApplicationProd Run django in production
-	gunicorn config.wsgi -c ./config/gunicorn.py
+	gunicorn config.wsgi -c ./config/gunicorn.py 
 
 run-daphne-prod:  ##@ApplicationProd Run daphne in production
 	daphne -b 0.0.0.0 -p $(DAPHNE_PORT) config.asgi:application --access-log ./logs/daphne.log -v 3

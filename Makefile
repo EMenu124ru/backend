@@ -90,20 +90,10 @@ docker-pull-prod:  ##@Docker Pulling containers
 	docker-compose -f docker-compose.prod.yml pull
 
 docker-stack-deploy:  ##@Docker Deploy containers in stack in docker swarm
-	docker stack deploy --with-registry-auth --resolve-image changed --prune --compose-file docker-compose.prod.yml backend
-
-docker-stack-update:  ##@Docker Deploy containers in stack in docker swarm
-	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/django:latest backend_django
-	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/swagger:latest backend_swagger-ui
-	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/alexandria:latest backend_alexandria
-	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/django:latest backend_daphne
-	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/django:latest backend_celery_worker
-	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/django:latest backend_celery_beat
-	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/django:latest backend_flower
-	docker service update --with-registry-auth --force --image ghcr.io/emenu124ru/nginx:latest backend_nginx
+	docker stack deploy --with-registry-auth --resolve-image always --prune --compose-file docker-compose.prod.yml backend
 
 docker-stack-deploy-portainer:  ##@Docker Deploy containers in stack in docker swarm
-	docker stack deploy --with-registry-auth --resolve-image changed --prune --compose-file portainer-agent-stack.yml portainer
+	docker stack deploy --with-registry-auth --resolve-image always --prune --compose-file portainer-agent-stack.yml portainer
 
 docker-stop:  ##@Docker Stop all docker containers
 	@docker rm -f $$(docker ps -aq) || true
