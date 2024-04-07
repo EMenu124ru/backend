@@ -64,6 +64,25 @@ services:
       - ./.envs/celery.env
     command: celery --app=config beat --scheduler=django --loglevel=DEBUG
   
+  flower:
+    container_name: flower
+    restart: always
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+      args:
+        MODE: "--with dev"
+    ports:
+      - 5555:5555
+    depends_on:
+      - postgres
+      - redis
+      - celery_worker
+      - celery_beat
+    env_file:
+      - ./.envs/celery.env
+    command: celery --app=config flower
+
   redis:
     image: redis:6
     container_name: redis

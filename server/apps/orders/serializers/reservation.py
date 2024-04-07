@@ -35,7 +35,6 @@ class ReservationSerializer(BaseModelSerializer):
             "время прибытия и статус"
         )
         WAITER_CHANGES = "Редактируя бронь, официант может менять только стол и статус"
-        HOSTESS_CANT_CREATE_ORDER = "Создавая бронь, хостес не может создать заказ"
 
     class Meta:
         model = Reservation
@@ -112,11 +111,6 @@ class ReservationSerializer(BaseModelSerializer):
             attrs.get("place"),
             attrs.get("restaurant"),
         )
-        if (
-            self._user.employee.role == Employee.Roles.HOSTESS and
-            attrs.get("order", None) is not None
-        ):
-            raise serializers.ValidationError(self.Errors.HOSTESS_CANT_CREATE_ORDER)
         return attrs
 
     def to_representation(self, instance):

@@ -24,6 +24,8 @@ def change_order_status_based_on_dishes(instance, **kwargs) -> None:
     order = instance.order
     if instance.status == OrderAndDish.Statuses.CANCELED:
         instance.delete()
+    if order.status == Order.Statuses.DELAYED:
+        return
     order_status = Order.Statuses.WAITING_FOR_COOKING
     dishes = order.dishes.filter(status__in=CHECKED_STATUSES).all()
     count_dishes = dishes.count()

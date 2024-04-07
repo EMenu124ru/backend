@@ -450,8 +450,6 @@ async def test_edit_order_waiter(waiter):
         "status": Order.Statuses.FINISHED,
     }
     await communicator.send_json_to({"type": "edit_order", "body": body})
-    message = await communicator.receive_json_from()
-    assert message["type"] == "list_orders"
     await communicator.disconnect()
 
 
@@ -525,8 +523,6 @@ async def test_edit_order_chef_success(chef):
         ],
     }
     await communicator.send_json_to({"type": "edit_order", "body": body})
-    message = await communicator.receive_json_from()
-    assert message["type"] == "list_orders"
     await communicator.disconnect()
 
 

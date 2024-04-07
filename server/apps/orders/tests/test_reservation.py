@@ -10,7 +10,8 @@ from apps.orders.factories import (
     OrderFactory,
     ReservationFactory,
 )
-from apps.orders.models import Reservation
+from apps.orders.models import Order, Reservation
+from apps.orders.tasks import check_delayed_orders
 from apps.restaurants.factories import PlaceFactory, RestaurantFactory
 from apps.restaurants.models import Place
 from apps.users.factories import ClientFactory
@@ -682,3 +683,38 @@ def test_update_reservation_by_unauthorized(
         },
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_change_delayed_order_status(
+    client,
+    api_client,
+) -> None:
+    restaurant = RestaurantFactory.create()
+    reservation = ReservationFactory.build(
+        arrival_time=timezone.now() + timedelta(hours=1),
+        restaurant=restaurant,
+    )
+    order = OrderFactory.build(status=Order.Statuses.DELAYED)
+    dish = DishFactory.create()
+    order_dict = {
+        "status": order.status,
+        "comment": order.comment,
+        "dishes": [{"dish": dish.id, "comment": "some comment"}],
+    }
+    api_client.force_authenticate(user=client.user)
+    response = api_client.post(
+        reverse_lazy("api:reservations-list"),
+        data={
+            "restaurant": reservation.restaurant.pk,
+            "arrival_time": reservation.arrival_time,
+            "order": order_dict,
+        },
+        format='json',
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    reservation_id = response.data["id"]
+    query = Reservation.objects.get(pk=reservation_id).orders.filter(status=Order.Statuses.DELAYED)
+    assert query.exists()
+    order = query.first()
+    check_delayed_orders()
+    assert not query.exists()

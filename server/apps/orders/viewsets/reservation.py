@@ -5,7 +5,7 @@ from rest_framework import (
 )
 
 from apps.core.viewsets import CreateReadUpdateViewSet
-from apps.orders.models import Reservation
+from apps.orders.models import Order, Reservation
 from apps.orders.permissions import ReservationPermission
 from apps.orders.serializers import OrderSerializer, ReservationSerializer
 
@@ -26,6 +26,7 @@ class ReservationViewSet(CreateReadUpdateViewSet):
         if order_dict is not None:
             order_dict["reservation"] = reservation_serializer.instance.pk
             order_dict["client"] = request.user.client.id
+            order_dict["status"] = Order.Statuses.DELAYED
             serializer = OrderSerializer(data=order_dict)
             serializer.is_valid(raise_exception=True)
             serializer.save()

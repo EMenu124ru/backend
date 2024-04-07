@@ -322,9 +322,13 @@ def test_read_dish_apply_stop_list(
         category=category,
         size=DISH_COUNT,
     )
-    ingredients = IngredientFactory.create_batch(
-        size=DISH_COUNT * 2,
-    )
+    ingredients = []
+    ingredients_id = set()
+    while len(ingredients) < DISH_COUNT * 2:
+        ingredient = IngredientFactory.create()
+        if ingredient.id not in ingredients_id:
+            ingredients_id.add(ingredient.id)
+            ingredients.append(ingredient)
     ingredients = [
         (ingredients[i], ingredients[i+1])
         for i in range(0, len(ingredients), 2)

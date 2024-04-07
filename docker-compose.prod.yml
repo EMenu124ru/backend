@@ -111,6 +111,22 @@ services:
       - redis
     env_file:
       - ./.envs/celery.env
+    deploy:
+      mode: replicated
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 0
+        order: stop-first
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 60s
     command: celery --app=config worker --loglevel=DEBUG
 
   celery_beat:
@@ -121,6 +137,22 @@ services:
       - celery_worker
     env_file:
       - ./.envs/celery.env
+    deploy:
+      mode: replicated
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 0
+        order: stop-first
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 60s
     command: celery --app=config beat --scheduler=django --loglevel=DEBUG
 
   flower:
@@ -134,6 +166,22 @@ services:
       - celery_beat
     env_file:
       - ./.envs/celery.env
+    deploy:
+      mode: replicated
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 0
+        order: stop-first
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 60s
     command: celery --app=config flower
 
   redis:
