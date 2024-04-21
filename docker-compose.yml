@@ -24,6 +24,7 @@ services:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - REDIS_URL=${REDIS_URL}
+      - FCM_SERVER_KEY=${FCM_SERVER_KEY}
     command: ["make", "run-django-dev"]
 
   postgres:
@@ -54,6 +55,7 @@ services:
       - REDIS_URL=${REDIS_URL}
       - CELERY_BROKER_URL=${REDIS_URL}
       - CELERY_RESULT_BACKEND=${REDIS_URL}
+      - FCM_SERVER_KEY=${FCM_SERVER_KEY}
     command: celery --app=config worker --loglevel=DEBUG
 
   celery_beat:
@@ -74,6 +76,7 @@ services:
       - REDIS_URL=${REDIS_URL}
       - CELERY_BROKER_URL=${REDIS_URL}
       - CELERY_RESULT_BACKEND=${REDIS_URL}
+      - FCM_SERVER_KEY=${FCM_SERVER_KEY}
     command: celery --app=config beat --scheduler=django --loglevel=DEBUG
   
   flower:
@@ -97,6 +100,7 @@ services:
       - REDIS_URL=${REDIS_URL}
       - CELERY_BROKER_URL=${REDIS_URL}
       - CELERY_RESULT_BACKEND=${REDIS_URL}
+      - FCM_SERVER_KEY=${FCM_SERVER_KEY}
     command: celery --app=config flower
 
   redis:

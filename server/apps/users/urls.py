@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.urls import path
+from fcm_django.api.rest_framework import FCMDeviceAuthorizedViewSet
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from apps.users.views import (
@@ -34,6 +35,7 @@ urlpatterns = [
     staff_login,
     client_login,
     token_refresh,
+    path('devices/', FCMDeviceAuthorizedViewSet.as_view({'post': 'create'}), name='create_fcm_device'),
     path("staff/me", EmployeeRetrieveAPIView.as_view(), name="staff-detail"),
     path("staff/<int:pk>/schedule", EmployeeScheduleRetrieveAPIView.as_view(), name="staff-schedule"),
     path("staff/kitchen", EmployeesKitchenRetrieveListAPIView.as_view(), name="staff-kitchen"),
