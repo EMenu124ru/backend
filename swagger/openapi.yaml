@@ -95,6 +95,24 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound404"
 
+  "/api/v1/devices/":
+    post:
+      tags:
+        - employee
+      summary: "Создание устройства сотрудника"
+      security:
+        - cookieAccess: []
+        - cookieCSRF: []
+      requestBody:
+        $ref: "#/components/requestBodies/DeviceCreateBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DeviceCreate201"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "404":
+          $ref: "#/components/responses/NotFound404"
+
   "/api/v1/staff":
     get:
       tags:
@@ -958,6 +976,28 @@ components:
           description: "Статус сотрудника"
           enum: ["На смене с {} до {}", "Будет на смене с {} до {}", "Выходной", "Больничный", "Отпуск", "Не на смене"]
 
+    DeviceBase:
+      type: object
+      properties:
+        id:
+          type: number
+        device_id:
+          type: string
+        registration_id:
+          type: string
+        type:
+          type: string
+        user:
+          type: number
+
+    DeviceCreateBase:
+      type: object
+      properties:
+        registration_id:
+          type: string
+        type:
+          type: string
+
     ClientCreateBase:
       type: object
       properties:
@@ -1468,6 +1508,13 @@ components:
                 description: "Пароль сотрудника"
       required: true
 
+    DeviceCreateBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DeviceCreateBase"
+      required: true
+
     OrderCreateBody:
       content:
         application/json:
@@ -1556,6 +1603,12 @@ components:
               code:
                 type: string
                 example: "token_not_valid"
+    DeviceCreate201:
+      description: "Создание устройства"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DeviceBase"
 
     OrderCreate201:
       description: "Создание заказов"

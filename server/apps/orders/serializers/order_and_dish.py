@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 from apps.core.serializers import BaseModelSerializer, serializers
+from apps.orders.functions import check_fields
 from apps.orders.models import (
     Dish,
     Order,
@@ -68,45 +69,6 @@ class OrderAndDishSerializer(BaseModelSerializer):
             'modified': {'read_only': True},
         }
 
-    def check_fields_by_chef(
-        self,
-        instance: OrderAndDish,
-        validated_data: OrderedDict,
-    ) -> bool:
-        data = validated_data.copy()
-        data.pop("employee", None)
-        data.pop("status", None)
-        return all([
-            instance.__getattribute__(key) == value
-            for key, value in data.items()
-        ])
-
-    def check_fields_by_cook(
-        self,
-        instance: OrderAndDish,
-        validated_data: OrderedDict,
-    ) -> bool:
-        data = validated_data.copy()
-        data.pop("status", None)
-        return all([
-            instance.__getattribute__(key) == value
-            for key, value in data.items()
-        ])
-
-    def check_fields_by_waiter(
-        self,
-        instance: OrderAndDish,
-        validated_data: OrderedDict,
-    ) -> bool:
-        data = validated_data.copy()
-        data.pop("count", None)
-        data.pop("comment", None)
-        data.pop("status", None)
-        return all([
-            instance.__getattribute__(key) == value
-            for key, value in data.items()
-        ])
-
     def validate_count(self, count: int) -> int:
         exception_text = self.Errors.VALID_COUNT_DISHES
         if self.instance:
@@ -119,19 +81,19 @@ class OrderAndDishSerializer(BaseModelSerializer):
         if self.instance:
             if (
                 self._user.employee.role == Employee.Roles.WAITER and
-                not self.check_fields_by_waiter(self.instance, attrs)
+                not check_fields(self.instance, ["count", "comment", "status"], attrs)
             ):
                 raise serializers.ValidationError(self.Errors.WAITER_CHANGES)
             if (
                 self._user.employee.role == Employee.Roles.COOK and
-                not self.check_fields_by_cook(self.instance, attrs)
+                not check_fields(self.instance, ["status"], attrs)
             ):
                 raise serializers.ValidationError(self.Errors.COOK_CHANGES)
             if (
                 self._user.employee.role in (
                     Employee.Roles.CHEF,
                     Employee.Roles.SOUS_CHEF,
-                ) and not self.check_fields_by_chef(self.instance, attrs)
+                ) and not check_fields(self.instance, ["employee", "status"], attrs)
             ):
                 raise serializers.ValidationError(self.Errors.CHEF_CHANGES)
         return attrs

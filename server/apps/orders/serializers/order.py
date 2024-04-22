@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.utils import timezone
 
 from apps.core.serializers import BaseModelSerializer, serializers
+from apps.orders.functions import check_fields
 from apps.orders.models import (
     Order,
     OrderAndDish,
@@ -69,19 +70,6 @@ class OrderSerializer(BaseModelSerializer):
             'modified': {'read_only': True},
         }
 
-    def check_fields_by_waiter(
-        self,
-        instance: Order,
-        validated_data: OrderedDict,
-    ) -> bool:
-        data = validated_data.copy()
-        data.pop("status", None)
-        data.pop("comment", None)
-        return all([
-            instance.__getattribute__(key) == value
-            for key, value in data.items()
-        ])
-
     def get_restaurant_id(self, attrs: OrderedDict) -> int:
         if attrs.get("reservation") is not None:
             return attrs["reservation"].restaurant.pk
@@ -91,7 +79,7 @@ class OrderSerializer(BaseModelSerializer):
         if self.instance:
             if (
                 self._user.employee.role == Employee.Roles.WAITER and
-                not self.check_fields_by_waiter(self.instance, attrs)
+                not check_fields(self.instance, ["comment", "status"], attrs)
             ):
                 raise serializers.ValidationError(self.Errors.EMPLOYEE_CHANGES)
         if not self.instance:
@@ -112,7 +100,7 @@ class OrderSerializer(BaseModelSerializer):
             order_dishes = [item["dish"] for item in attrs["dishes"]]
             restaurant_id = self.get_restaurant_id(attrs)
             for dish in order_dishes:
-                ingredients_id = dish.ingredients.all().values_list('id', flat=True)
+                ingredients_id = dish.ingredients.values_list('id', flat=True)
                 stop_list = StopList.objects.filter(
                     ingredient_id__in=ingredients_id,
                     restaurant_id=restaurant_id,

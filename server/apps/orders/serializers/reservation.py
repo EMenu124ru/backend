@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 from apps.core.serializers import BaseModelSerializer, serializers
+from apps.orders.functions import check_fields
 from apps.orders.models import Reservation
 from apps.restaurants.models import Place, Restaurant
 from apps.restaurants.serializers import PlaceSerializer, RestaurantSerializer
@@ -48,33 +49,6 @@ class ReservationSerializer(BaseModelSerializer):
             "comment",
         )
 
-    def check_fields_by_waiter(
-        self,
-        instance: Reservation,
-        validated_data: OrderedDict,
-    ) -> bool:
-        data = validated_data.copy()
-        data.pop("place", None)
-        data.pop("status", None)
-        return all([
-            instance.__getattribute__(key) == value
-            for key, value in data.items()
-        ])
-
-    def check_fields_by_hostess(
-        self,
-        instance: Reservation,
-        validated_data: OrderedDict,
-    ) -> bool:
-        data = validated_data.copy()
-        data.pop("place", None)
-        data.pop("arrival_time", None)
-        data.pop("status", None)
-        return all([
-            instance.__getattribute__(key) == value
-            for key, value in data.items()
-        ])
-
     def validate_place_instance(self, place, restaurant):
         if not restaurant.places.filter(pk=place.id).exists():
             raise serializers.ValidationError(self.Errors.PLACE_DONT_EXISTS)
@@ -98,12 +72,12 @@ class ReservationSerializer(BaseModelSerializer):
             )
             if (
                 self._user.employee.role == Employee.Roles.HOSTESS and
-                not self.check_fields_by_hostess(self.instance, attrs)
+                not check_fields(self.instance, ["place", "arrival_time", "status"], attrs)
             ):
                 raise serializers.ValidationError(self.Errors.HOSTESS_CHANGES)
             if (
                 self._user.employee.role == Employee.Roles.WAITER and
-                not self.check_fields_by_waiter(self.instance, attrs)
+                not check_fields(self.instance, ["place", "status"], attrs.copy())
             ):
                 raise serializers.ValidationError(self.Errors.WAITER_CHANGES)
             return attrs
