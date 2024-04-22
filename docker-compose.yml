@@ -1,8 +1,5 @@
 version: '3.7'
 
-volumes:
-  postgres_data:
-
 services:
   django:
     container_name: django
@@ -107,6 +104,8 @@ services:
     image: redis:6
     container_name: redis
     restart: always
+    volumes:
+      - redis_data:/data
 
   swagger-editor:
     image: swaggerapi/swagger-editor
@@ -125,3 +124,7 @@ services:
       - ./alexandria/ws.yml:/ws.yml
     environment:
       - ALEXANDRIA_YAML=/ws.yml
+
+volumes:
+  postgres_data:
+  redis_data:

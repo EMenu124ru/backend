@@ -111,6 +111,7 @@ services:
       - redis
     env_file:
       - ./.envs/celery.env
+      - ./.envs/django.env
     deploy:
       mode: replicated
       replicas: 2
@@ -137,6 +138,7 @@ services:
       - celery_worker
     env_file:
       - ./.envs/celery.env
+      - ./.envs/django.env
     deploy:
       mode: replicated
       replicas: 2
@@ -157,8 +159,8 @@ services:
 
   flower:
     image: ghcr.io/emenu124ru/django:latest
-    expose:
-      - ${FLOWER_PORT}"
+    ports:
+      - 5555:5555
     depends_on:
       - postgres
       - redis
@@ -166,6 +168,7 @@ services:
       - celery_beat
     env_file:
       - ./.envs/celery.env
+      - ./.envs/django.env
     deploy:
       mode: replicated
       replicas: 2
@@ -182,10 +185,12 @@ services:
         delay: 5s
         max_attempts: 3
         window: 60s
-    command: celery --app=config flower
+    command: celery --app=config flower --url_prefix=flower
 
   redis:
     image: redis:6
+    volumes:
+      - redis_data:/data
 
   postgres:
     image: postgres:14.4
@@ -207,3 +212,4 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
