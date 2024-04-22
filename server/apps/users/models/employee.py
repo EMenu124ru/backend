@@ -1,6 +1,9 @@
 from django.db import models
+from django.utils import timezone
 
 from apps.core.models import ObjectFile
+
+from .schedule import Schedule
 
 
 class Employee(models.Model):
@@ -80,6 +83,39 @@ class Employee(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Фото сотрудника",
     )
+
+    def get_status(self):
+        datetime_format = "%d.%m.%Y %H:%M"
+        current_time = timezone.now()
+        schedule = Schedule.objects.filter(
+            models.Q(employee=self) &
+            (
+                models.Q(time_start__date=current_time.date()) |
+                models.Q(time_finish__date=current_time.date())
+            )
+        )
+        mapping_statuses = {
+            Schedule.Types.DAY_OFF: Employee.Statuses.DAY_OFF,
+            Schedule.Types.SICK_LEAVE: Employee.Statuses.SICK_LEAVE,
+            Schedule.Types.VACATION: Employee.Statuses.VACATION,
+        }
+        status = Employee.Statuses.NOT_ON_WORK_SHIFT.label
+        if schedule.exists():
+            schedule = schedule.first()
+            if schedule.is_approve:
+                if schedule.type in mapping_statuses:
+                    status = mapping_statuses[schedule.type].label
+                else:
+                    times = (
+                        schedule.time_start.strftime(datetime_format),
+                        schedule.time_finish.strftime(datetime_format),
+                    )
+                    if current_time < schedule.time_start:
+                        status = Employee.Statuses.WILL_BE_ON_WORK_SHIFT_FROM_TO.label
+                    else:
+                        status = Employee.Statuses.ON_WORK_SHIFT_FROM_TO.label
+                    status = status.format(*times)
+        return status
 
     class Meta:
         verbose_name = "Работник"

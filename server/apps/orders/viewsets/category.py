@@ -2,7 +2,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import decorators, response
 
 from apps.core.viewsets import RetrieveListViewSet
-from apps.orders.functions import CacheActions, get_or_create_cache_dishes
+from apps.orders.constants import CacheActions
+from apps.orders.functions import get_or_create_cache_dishes
 from apps.orders.models import Category
 from apps.orders.permissions import CategoryPermission
 from apps.orders.serializers import CategorySerializer, DishSerializer

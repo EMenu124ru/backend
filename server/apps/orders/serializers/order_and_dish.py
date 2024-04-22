@@ -81,19 +81,19 @@ class OrderAndDishSerializer(BaseModelSerializer):
         if self.instance:
             if (
                 self._user.employee.role == Employee.Roles.WAITER and
-                not check_fields(self.instance, ["count", "comment", "status"], attrs)
+                not check_fields(self.instance, ["count", "comment", "status"], attrs.copy())
             ):
                 raise serializers.ValidationError(self.Errors.WAITER_CHANGES)
             if (
                 self._user.employee.role == Employee.Roles.COOK and
-                not check_fields(self.instance, ["status"], attrs)
+                not check_fields(self.instance, ["status"], attrs.copy())
             ):
                 raise serializers.ValidationError(self.Errors.COOK_CHANGES)
             if (
                 self._user.employee.role in (
                     Employee.Roles.CHEF,
                     Employee.Roles.SOUS_CHEF,
-                ) and not check_fields(self.instance, ["employee", "status"], attrs)
+                ) and not check_fields(self.instance, ["employee", "status"], attrs.copy())
             ):
                 raise serializers.ValidationError(self.Errors.CHEF_CHANGES)
         return attrs

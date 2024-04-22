@@ -15,6 +15,6 @@ def send_notification(
             Notification(
                 title=title,
                 body=body,
-            )
-        )
+            ),
+        ),
     )

@@ -22,7 +22,6 @@ class ReservationViewSet(CreateReadUpdateViewSet):
         reservation_serializer = self.get_serializer(data=data)
         reservation_serializer.is_valid(raise_exception=True)
         self.perform_create(reservation_serializer)
-        self.queryset = self.get_queryset()
         if order_dict is not None:
             order_dict["reservation"] = reservation_serializer.instance.pk
             order_dict["client"] = request.user.client.id

@@ -27,7 +27,7 @@ class ClientViewSet(CreateReadUpdateDestroyViewSet):
             return Response(
                 status=status.HTTP_403_FORBIDDEN,
             )
-        serializer = ClientSerializer(request.user.client)
+        serializer = self.get_serializer_class()(request.user.client)
         return Response(
             data=serializer.data,
             status=status.HTTP_200_OK,

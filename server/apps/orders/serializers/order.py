@@ -79,7 +79,7 @@ class OrderSerializer(BaseModelSerializer):
         if self.instance:
             if (
                 self._user.employee.role == Employee.Roles.WAITER and
-                not check_fields(self.instance, ["comment", "status"], attrs)
+                not check_fields(self.instance, ["comment", "status"], attrs.copy())
             ):
                 raise serializers.ValidationError(self.Errors.EMPLOYEE_CHANGES)
         if not self.instance:

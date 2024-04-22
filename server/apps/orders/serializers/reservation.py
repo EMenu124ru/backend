@@ -72,7 +72,7 @@ class ReservationSerializer(BaseModelSerializer):
             )
             if (
                 self._user.employee.role == Employee.Roles.HOSTESS and
-                not check_fields(self.instance, ["place", "arrival_time", "status"], attrs)
+                not check_fields(self.instance, ["place", "arrival_time", "status"], attrs.copy())
             ):
                 raise serializers.ValidationError(self.Errors.HOSTESS_CHANGES)
             if (

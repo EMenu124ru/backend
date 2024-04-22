@@ -1,8 +1,7 @@
-import enum
-
 from django.core.cache import cache
 from django.db.models import QuerySet
 
+from apps.orders.constants import CacheActions
 from apps.orders.models import (
     Category,
     Dish,
@@ -11,11 +10,6 @@ from apps.orders.models import (
 
 CACHE_DISHES_KEY = "dishes_category_{}_restaurant_{}"
 CACHE_TIMEOUT = 60 * 60 * 24
-
-
-class CacheActions(enum.Enum):
-    GET = 0
-    CREATE = 1
 
 
 def get_available_dishes(dishes: QuerySet, restaurant_id: int) -> QuerySet:
