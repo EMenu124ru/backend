@@ -20,7 +20,7 @@ CHECKED_STATUSES = [
 
 
 @receiver(post_save, sender=OrderAndDish)
-def change_order_status_based_on_dishes(instance, **kwargs) -> None:
+def change_order_status_based_on_dishes(instance: OrderAndDish, **kwargs) -> None:
     order = instance.order
     if instance.status == OrderAndDish.Statuses.CANCELED:
         instance.delete()

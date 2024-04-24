@@ -7,7 +7,7 @@ from apps.orders.tasks import send_notification
 from apps.users.models import Employee
 
 
-def iterate_by_ingredients(stop_list):
+def iterate_by_ingredients(stop_list: StopList) -> None:
     filter_params = {
         "user__employee__role": Employee.Roles.WAITER,
     }
@@ -28,5 +28,5 @@ def iterate_by_ingredients(stop_list):
 
 
 @receiver([post_save, post_delete], sender=StopList)
-def update_stop_list_cache(instance, **kwargs) -> None:
+def update_stop_list_cache(instance: StopList, **kwargs) -> None:
     iterate_by_ingredients(instance)

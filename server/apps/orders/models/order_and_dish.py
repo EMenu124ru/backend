@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 
 from apps.core.models import BaseModel
 
@@ -40,6 +41,7 @@ class OrderAndDish(BaseModel):
     count = models.PositiveIntegerField(
         default=1,
         verbose_name="Количество блюд в заказе",
+        validators=[MinValueValidator(1)],
     )
     comment = models.TextField(
         blank=True,
