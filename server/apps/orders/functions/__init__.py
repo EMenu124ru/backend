@@ -1,8 +1,5 @@
 from .check_editing_fields import check_fields
-from .filter_dishes import (
-    get_available_dishes,
-    get_or_create_cache_dishes,
-)
+from .filter_dishes import get_available_dishes, get_or_create_cache_dishes
 from .orders import (
     ACCESS_STATUS,
     get_orders_by_restaurant,

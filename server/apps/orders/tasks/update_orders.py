@@ -8,7 +8,7 @@ from apps.orders.functions import (
     get_restaurant_id,
     update_order_list,
 )
-from apps.orders.models import OrderAndDish
+from apps.orders.models import Order, OrderAndDish
 from config import celery_app
 
 COUNT_SECONDS = 30
@@ -34,7 +34,7 @@ def send_updated_orders():
     ).order_by("order__status").values_list("order", flat=True).distinct()
 
     restaurant_orders = {}
-    for order in orders:
+    for order in Order.objects.filter(id__in=orders):
         restaurant_id = get_restaurant_id(order)
         if restaurant_id not in restaurant_orders:
             restaurant_orders[restaurant_id] = []
