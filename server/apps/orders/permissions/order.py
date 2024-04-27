@@ -16,4 +16,7 @@ class OrderPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj) -> bool:
         if request.user.employee.restaurant != obj.employee.restaurant:
             return False
-        return check_role_employee(request.user, Employee.Roles.WAITER)
+        return any([
+            check_role_employee(request.user, Employee.Roles.WAITER),
+            check_role_employee(request.user, Employee.Roles.MANAGER),
+        ])

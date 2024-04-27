@@ -40,5 +40,8 @@ def send_updated_orders():
             restaurant_orders[restaurant_id] = []
         restaurant_orders[restaurant_id].append(order)
 
+    count_processed_orders = 0
     for restaurant_id, orders in restaurant_orders:
+        count_processed_orders += len(orders)
         update_order_list(restaurant_id, orders)
+    return count_processed_orders

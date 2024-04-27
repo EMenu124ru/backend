@@ -19,6 +19,8 @@ class UserQueries:
             check_role_employee(user, Employee.Roles.CHEF),
             check_role_employee(user, Employee.Roles.SOUS_CHEF),
             check_role_employee(user, Employee.Roles.COOK),
+            check_role_employee(user, Employee.Roles.MANAGER),
+            check_role_employee(user, Employee.Roles.BARTENDER),
         ])
 
     @staticmethod

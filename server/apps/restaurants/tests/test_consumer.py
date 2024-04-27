@@ -90,9 +90,9 @@ async def test_connect_chef(chef):
 
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
-async def test_connect_other_role(manager):
-    token = await get_token(manager.user)
-    restaurant = manager.restaurant
+async def test_connect_other_role(hostess):
+    token = await get_token(hostess.user)
+    restaurant = hostess.restaurant
     application = JWTQueryParamAuthMiddleware(URLRouter([
         path("ws/restaurant/<restaurant_id>/", RestaurantConsumer.as_asgi()),
     ]))
