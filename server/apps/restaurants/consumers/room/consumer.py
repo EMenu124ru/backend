@@ -1,4 +1,5 @@
 from channels.exceptions import DenyConnection
+from django.core.cache import cache
 
 from apps.core.consumer import BaseConsumer
 
@@ -36,9 +37,11 @@ class RestaurantConsumer(
             self.group_name,
             self.channel_name,
         )
+        await cache.aset(str(self.user.employee.id), self.channel_name)
         await RestaurantActionsMixin.employee_orders_list(self)
 
     async def disconnect(self, close_code):
+        await cache.adelete_many([str(self.user.id)])
         await self.channel_layer.group_discard(
             self.group_name,
             self.channel_name,

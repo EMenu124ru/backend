@@ -9,7 +9,6 @@ from .schedule import Schedule
 class Employee(models.Model):
     class Roles(models.TextChoices):
         WAITER = "WAITER", "Официант"
-        BARTENDER = "BARTENDER", "Бармен"
         COOK = "COOK", "Повар"
         CHEF = "CHEF", "Шеф-повар"
         SOUS_CHEF = "SOUS_CHEF", "Су-Шеф"
@@ -40,7 +39,7 @@ class Employee(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name="staff",
+        related_name="employees",
         verbose_name="Ресторан",
     )
     education = models.TextField(

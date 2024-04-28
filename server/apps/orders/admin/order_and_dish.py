@@ -14,4 +14,6 @@ class OrderAndDishAdmin(admin.ModelAdmin):
         "status",
         "employee",
         "count",
+        "created",
+        "modified",
     )

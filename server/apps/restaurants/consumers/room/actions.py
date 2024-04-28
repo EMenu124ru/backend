@@ -9,9 +9,11 @@ from .services import OrderAndDishService, OrderService
 
 
 class RestaurantActionsMixin:
-
     async def employee_orders_list(self) -> None:
-        messages = await OrderQueries.get_orders_by_restaurant(self.restaurant_id)
+        messages = await OrderQueries.get_orders_by_restaurant(
+            self.restaurant_id,
+            self.user.employee.role,
+        )
         body = {"orders": await OrderService.get_orders_list(messages)}
         await self.response_to_user(Events.LIST_ORDERS, body)
 

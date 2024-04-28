@@ -15,6 +15,7 @@ class OrderViewSet(CreateReadUpdateViewSet):
     def get_queryset(self):
         return get_orders_by_restaurant(
             self.request.user.employee.restaurant_id,
+            self.request.user.employee.role,
         )
 
     def perform_create(self, serializer) -> None:

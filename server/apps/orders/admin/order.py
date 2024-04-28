@@ -15,4 +15,6 @@ class OrderAdmin(admin.ModelAdmin):
         "employee",
         "client",
         "reservation",
+        "created",
+        "modified",
     )

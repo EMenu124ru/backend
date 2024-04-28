@@ -12,9 +12,9 @@ class Order(BaseModel):
         WAITING_FOR_DELIVERY = "WAITING_FOR_DELIVERY", "Ожидает доставки/готов к выдаче"
         IN_PROCESS_DELIVERY = "IN_PROCESS_DELIVERY", "В процессе доставки"
         DELIVERED = "DELIVERED", "Доставлен/Выдан"
+        PAID = "PAID", "Оплачен"
         FINISHED = "FINISHED", "Закрыт"
         CANCELED = "CANCELED", "Отменен"
-        PAID = "PAID", "Оплачен"
 
     status = models.TextField(
         choices=Statuses.choices,

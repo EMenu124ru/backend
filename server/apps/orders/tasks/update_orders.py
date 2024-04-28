@@ -1,13 +1,9 @@
 from datetime import timedelta
 
-from django.db.models import F, Q
+from django.db.models import Q
 from django.utils import timezone
 
-from apps.orders.functions import (
-    ACCESS_STATUS,
-    get_restaurant_id,
-    update_order_list,
-)
+from apps.orders.functions import get_restaurant_id, update_order_list_in_group
 from apps.orders.models import Order, OrderAndDish
 from config import celery_app
 
@@ -18,30 +14,15 @@ COUNT_SECONDS = 30
 def send_updated_orders():
     now = timezone.now()
     left_border_first = now - timedelta(seconds=COUNT_SECONDS)
-    left_border_second = now - timedelta(hours=14)
     orders = OrderAndDish.objects.filter(
-        Q(order__status__in=ACCESS_STATUS) &
-        ~Q(modified=F("created")) &
-        ~Q(order__modified=F("order__created")) &
-        (
-            Q(modified__gte=left_border_first) |
-            Q(order__modified__gte=left_border_first)
-        ) &
-        (
-            Q(created__gte=left_border_second) |
-            Q(order__reservation__arrival_time__gte=left_border_second)
-        )
-    ).order_by("order__status").values_list("order", flat=True).distinct()
+        Q(created__gte=left_border_first) |
+        Q(modified__gte=left_border_first)
+    ).values_list("order_id", flat=True).distinct()
 
-    restaurant_orders = {}
-    for order in Order.objects.filter(id__in=orders):
+    restaurant_orders = set()
+    for order in Order.objects.filter(id__in=set(orders)):
         restaurant_id = get_restaurant_id(order)
-        if restaurant_id not in restaurant_orders:
-            restaurant_orders[restaurant_id] = []
-        restaurant_orders[restaurant_id].append(order)
+        restaurant_orders.add(restaurant_id)
 
-    count_processed_orders = 0
-    for restaurant_id, orders in restaurant_orders:
-        count_processed_orders += len(orders)
-        update_order_list(restaurant_id, orders)
-    return count_processed_orders
+    for restaurant_id in restaurant_orders:
+        update_order_list_in_group(restaurant_id)

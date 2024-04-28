@@ -34,7 +34,7 @@ class BaseModel(TimeStampedModel):
         if self.pk:
             cls = self.__class__
             old = cls.objects.get(pk=self.pk)
-            changed_fields = []
+            changed_fields = ["modified"]
             for field in cls._meta.get_fields():
                 if hasattr(old, field.name) and hasattr(self, field.name):
                     if getattr(old, field.name) != getattr(self, field.name):

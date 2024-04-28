@@ -243,7 +243,10 @@ async def test_employee_orders_list(waiter):
         application,
         f"ws/restaurant/{restaurant.id}/?token={token}",
     )
-    orders = await database_sync_to_async(get_orders_by_restaurant)(restaurant.id)
+    orders = await database_sync_to_async(get_orders_by_restaurant)(
+        restaurant.id,
+        waiter.role,
+    )
     orders_ids = await get_order_ids(orders)
     connected, _ = await communicator.connect()
     assert connected

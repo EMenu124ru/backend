@@ -958,7 +958,7 @@ components:
         role:
           type: string
           description: "Роль сотрудника"
-          enum: ["WAITER", "BARTENDER", "COOK", "CHEF", "SOUS_CHEF", "MANAGER", "HOSTESS"]
+          enum: ["WAITER", "COOK", "CHEF", "SOUS_CHEF", "MANAGER", "HOSTESS"]
         restaurant:
           type: number
           description: "Id ресторана, за которым закреплен сотрудник"
@@ -1830,12 +1830,6 @@ components:
               WAITER:
                 type: array
                 description: "Официанты ресторана"
-                items:
-                  $ref: "#/components/schemas/EmployeeBase"
-                nullable: true
-              BARTENDER:
-                type: array
-                description: "Бармены ресторана"
                 items:
                   $ref: "#/components/schemas/EmployeeBase"
                 nullable: true
