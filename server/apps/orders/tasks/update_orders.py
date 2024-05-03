@@ -7,7 +7,7 @@ from apps.orders.functions import get_restaurant_id, update_order_list_in_group
 from apps.orders.models import Order, OrderAndDish
 from config import celery_app
 
-COUNT_SECONDS = 30
+COUNT_SECONDS = 10
 
 
 @celery_app.task

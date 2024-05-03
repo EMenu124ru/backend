@@ -1,4 +1,3 @@
-from .check_editing_fields import check_fields
 from .filter_dishes import get_available_dishes, get_or_create_cache_dishes
 from .orders import (
     STATUSES_BY_ROLE,
@@ -9,7 +8,6 @@ from .orders import (
 )
 
 __all__ = (
-    check_fields,
     get_available_dishes,
     get_or_create_cache_dishes,
     get_orders_by_restaurant,

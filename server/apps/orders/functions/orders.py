@@ -56,7 +56,7 @@ def get_restaurant_id(order: Order):
         return reservation.restaurant_id
 
 
-def get_orders_by_restaurant(restaurant_id: int | None, role: Employee.Roles | None) -> QuerySet:
+def get_orders_by_restaurant(restaurant_id: int, role: Employee.Roles) -> QuerySet:
     delta = timedelta(hours=14)
     now = timezone.now()
     left_bound = now - delta
@@ -70,10 +70,10 @@ def get_orders_by_restaurant(restaurant_id: int | None, role: Employee.Roles | N
     ).order_by("status")
 
 
-def update_order_list_in_layer(employee_id: str, orders: QuerySet | list[Order]) -> None:
+def update_order_list_in_layer(employee: Employee, orders: QuerySet | list[Order]) -> None:
     from apps.restaurants.consumers.room import Events, OrderService
 
-    channel_name = cache.get(employee_id)
+    channel_name = cache.get(f"user__{employee.user.id}")
     if channel_name:
         body = {"orders": OrderService.get_orders_list_sync(orders)}
         async_to_sync(get_channel_layer().send)(
@@ -89,4 +89,4 @@ def update_order_list_in_group(restaurant_id: int) -> None:
     restaurant = Restaurant.objects.get(pk=restaurant_id)
     for employee in restaurant.employees.all():
         orders = get_orders_by_restaurant(restaurant_id, employee.role)
-        update_order_list_in_layer(str(employee.id), orders)
+        update_order_list_in_layer(employee, orders)

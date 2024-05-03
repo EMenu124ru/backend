@@ -1,7 +1,6 @@
 from collections import OrderedDict
 
 from apps.core.serializers import BaseModelSerializer, serializers
-from apps.orders.functions import check_fields
 from apps.orders.models import (
     Dish,
     Order,
@@ -68,6 +67,12 @@ class OrderAndDishSerializer(BaseModelSerializer):
             'created': {'read_only': True},
             'modified': {'read_only': True},
         }
+        editable_fields = {
+            Employee.Roles.COOK: ["status"],
+            Employee.Roles.WAITER: ["count", "comment", "status"],
+            Employee.Roles.SOUS_CHEF: ["employee", "status"],
+            Employee.Roles.CHEF: ["employee", "status"],
+        }
 
     def validate_count(self, count: int) -> int:
         exception_text = self.Errors.VALID_COUNT_DISHES
@@ -79,21 +84,22 @@ class OrderAndDishSerializer(BaseModelSerializer):
 
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self.instance:
+            role = self._user.employee.role
             if (
-                self._user.employee.role == Employee.Roles.WAITER and
-                not check_fields(self.instance, ["count", "comment", "status"], attrs.copy())
+                role == Employee.Roles.WAITER and
+                not self.check_fields(role, attrs.copy())
             ):
                 raise serializers.ValidationError(self.Errors.WAITER_CHANGES)
             if (
-                self._user.employee.role == Employee.Roles.COOK and
-                not check_fields(self.instance, ["status"], attrs.copy())
+                role == Employee.Roles.COOK and
+                not self.check_fields(role, attrs.copy())
             ):
                 raise serializers.ValidationError(self.Errors.COOK_CHANGES)
             if (
-                self._user.employee.role in (
+                role in (
                     Employee.Roles.CHEF,
                     Employee.Roles.SOUS_CHEF,
-                ) and not check_fields(self.instance, ["employee", "status"], attrs.copy())
+                ) and not self.check_fields(role, attrs.copy())
             ):
                 raise serializers.ValidationError(self.Errors.CHEF_CHANGES)
         return attrs

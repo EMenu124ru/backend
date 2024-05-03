@@ -4,7 +4,6 @@ from decimal import Decimal
 from django.utils import timezone
 
 from apps.core.serializers import BaseModelSerializer, serializers
-from apps.orders.functions import check_fields
 from apps.orders.models import (
     Order,
     OrderAndDish,
@@ -69,6 +68,9 @@ class OrderSerializer(BaseModelSerializer):
             'created': {'read_only': True},
             'modified': {'read_only': True},
         }
+        editable_fields = {
+            Employee.Roles.WAITER: ["comment", "status"],
+        }
 
     def get_restaurant_id(self, attrs: OrderedDict) -> int:
         if attrs.get("reservation") is not None:
@@ -77,9 +79,10 @@ class OrderSerializer(BaseModelSerializer):
 
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self.instance:
+            role = self._user.employee.role
             if (
-                self._user.employee.role == Employee.Roles.WAITER and
-                not check_fields(self.instance, ["comment", "status"], attrs.copy())
+                role == Employee.Roles.WAITER and
+                not self.check_fields(role, attrs.copy())
             ):
                 raise serializers.ValidationError(self.Errors.EMPLOYEE_CHANGES)
         if not self.instance:

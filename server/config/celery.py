@@ -17,6 +17,6 @@ app.conf.beat_schedule = {
     },
     'send_updated_orders': {
         'task': 'apps.orders.tasks.update_orders.send_updated_orders',
-        'schedule': timedelta(seconds=30),
+        'schedule': timedelta(seconds=10),
     },
 }

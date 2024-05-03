@@ -1,7 +1,6 @@
 from collections import OrderedDict
 
 from apps.core.serializers import BaseModelSerializer, serializers
-from apps.orders.functions import check_fields
 from apps.orders.models import Reservation
 from apps.restaurants.models import Place, Restaurant
 from apps.restaurants.serializers import PlaceSerializer, RestaurantSerializer
@@ -48,6 +47,10 @@ class ReservationSerializer(BaseModelSerializer):
             "place",
             "comment",
         )
+        editable_fields = {
+            Employee.Roles.WAITER: ["place", "status"],
+            Employee.Roles.HOSTESS: ["place", "arrival_time", "status"],
+        }
 
     def validate_place_instance(self, place, restaurant):
         if not restaurant.places.filter(pk=place.id).exists():
@@ -70,14 +73,15 @@ class ReservationSerializer(BaseModelSerializer):
                 attrs.get("place", self.instance.place),
                 attrs.get("restaurant", self.instance.restaurant),
             )
+            role = self._user.employee.role
             if (
-                self._user.employee.role == Employee.Roles.HOSTESS and
-                not check_fields(self.instance, ["place", "arrival_time", "status"], attrs.copy())
+                role == Employee.Roles.HOSTESS and
+                not self.check_fields(role, attrs.copy())
             ):
                 raise serializers.ValidationError(self.Errors.HOSTESS_CHANGES)
             if (
-                self._user.employee.role == Employee.Roles.WAITER and
-                not check_fields(self.instance, ["place", "status"], attrs.copy())
+                role == Employee.Roles.WAITER and
+                not self.check_fields(role, attrs.copy())
             ):
                 raise serializers.ValidationError(self.Errors.WAITER_CHANGES)
             return attrs

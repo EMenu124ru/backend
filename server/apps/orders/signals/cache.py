@@ -12,15 +12,15 @@ def iterate_by_ingredients(stop_list: StopList) -> None:
     filter_params = {
         "user__employee__role": Employee.Roles.WAITER,
     }
+    restaurant_id = stop_list.restaurant.id
+    ingredient_name = stop_list.ingredient.name
+    notification_type = NotificationText.STOP_LIST_ADD if stop_list.id else NotificationText.STOP_LIST_REMOVE
+    body = notification_type.body.format(ingredient_name)
+
+    filter_params["user__employee__restaurant_id"] = restaurant_id
+
+    send_notification.delay(filter_params, notification_type.title, body)
     for dish in stop_list.ingredient.dishes.all():
-        restaurant_id = stop_list.restaurant.id
-        ingredient_name = stop_list.ingredient.name
-        notification_type = NotificationText.STOP_LIST_ADD if stop_list.id else NotificationText.STOP_LIST_REMOVE
-        body = notification_type.body.format(ingredient_name)
-
-        filter_params["user__employee__restaurant_id"] = restaurant_id
-
-        send_notification.delay(filter_params, notification_type.title, body)
         get_or_create_cache_dishes(
             CacheActions.CREATE,
             dish.category,
