@@ -11,7 +11,7 @@ def send_notification(
     title: str,
     body: str,
 ):
-    if settings.DEBUG:
+    if not settings.DEBUG:
         FCMDevice.objects.filter(**filter_params).send_message(
             Message(
                 Notification(
