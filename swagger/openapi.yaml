@@ -11,6 +11,8 @@ tags:
     description: "Client namespace"
   - name: employees
     description: "Employee namespace"
+  - name: devices
+    description: "Device namespace"
   - name: orders
     description: "Order namespace"
   - name: categories
@@ -98,7 +100,8 @@ paths:
   "/api/v1/devices/":
     post:
       tags:
-        - employee
+        - employees
+        - devices
       summary: "Создание устройства сотрудника"
       security:
         - cookieAccess: []
