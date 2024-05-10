@@ -25,6 +25,8 @@ class ReservationSerializer(BaseModelSerializer):
 
     class Errors:
         CLIENT_CANT_CHOOSE_PLACE = "Клиент не может выбрать или поменять место"
+        CANT_SET_THIS_FIELD = "Нельзя установить это поле во время создания брони"
+        CANT_UPDATE_ORDER = "Нельзя данным методом обновить заказ"
         RESTORE_CLOSED_RESERVATION = (
             "Нельзя менять бронирование, когда оно уже завершено или отменено"
         )
@@ -63,7 +65,12 @@ class ReservationSerializer(BaseModelSerializer):
             if "place" in attrs:
                 raise serializers.ValidationError(self.Errors.CLIENT_CANT_CHOOSE_PLACE)
             return attrs
+        if not self.instance:
+            if "status" in attrs:
+                raise serializers.ValidationError(self.Errors.CANT_SET_THIS_FIELD)
         if self.instance:
+            if "order" in attrs:
+                raise serializers.ValidationError(self.Errors.CANT_UPDATE_ORDER)
             if self.instance.status in (
                 Reservation.Statuses.CANCELED,
                 Reservation.Statuses.FINISHED,

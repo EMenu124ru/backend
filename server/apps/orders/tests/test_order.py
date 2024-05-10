@@ -108,7 +108,6 @@ def test_create_order_by_waiter_with_reservation(
         restaurant=waiter.restaurant,
     )
     order = OrderFactory.build(
-        status=Order.Statuses.WAITING_FOR_COOKING,
         employee=waiter,
         reservation=reservation,
     )
@@ -132,7 +131,7 @@ def test_create_order_by_waiter_with_reservation(
     assert response.status_code == status.HTTP_201_CREATED
     assert Order.objects.filter(
         id=response.data["id"],
-        status=order.status,
+        status=Order.Statuses.DELAYED,
         price=sum_dishes_prices,
         comment=order.comment,
         client=client.pk,
@@ -187,7 +186,6 @@ def test_update_order_by_waiter_success(
     )
     api_client.force_authenticate(user=waiter.user)
     new_comment = "New some comment"
-    new_status = Order.Statuses.COOKING
     response = api_client.patch(
         reverse_lazy(
             "api:orders-detail",
@@ -195,14 +193,12 @@ def test_update_order_by_waiter_success(
         ),
         data={
             "comment": new_comment,
-            "status": new_status,
         },
     )
     assert response.status_code == status.HTTP_200_OK
     assert Order.objects.filter(
         id=order.pk,
         comment=new_comment,
-        status=new_status,
     ).exists()
 
 

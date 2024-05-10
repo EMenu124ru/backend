@@ -29,7 +29,7 @@ def test_create_client_without_surname(
     ).exists()
 
 
-def test_crate_client_with_same_info(
+def test_create_client_with_same_info(
     api_client,
 ) -> None:
     client = ClientFactory.build(user__phone_number="+7999999999")
@@ -98,7 +98,7 @@ def test_get_client_own(
     assert response.data["id"] == client.id
 
 
-def test_get_me_client_(
+def test_get_me_client(
     client,
     api_client
 ) -> None:
@@ -145,6 +145,44 @@ def test_get_me_client_not_auth(
         reverse_lazy("api:clients-me"),
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_update_client_own_password(
+    client,
+    api_client
+) -> None:
+    api_client.force_authenticate(user=client.user)
+    new_password = "new_password"
+    response = api_client.patch(
+        reverse_lazy(
+            "api:clients-detail",
+            kwargs={"pk": client.pk},
+        ),
+        data={
+            "password": new_password,
+        }
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert Client.objects.get(pk=client.pk).user.check_password(new_password)
+
+
+def test_update_client_own(
+    client,
+    api_client
+) -> None:
+    api_client.force_authenticate(user=client.user)
+    new_phone_number = "+78005553535"
+    response = api_client.patch(
+        reverse_lazy(
+            "api:clients-detail",
+            kwargs={"pk": client.pk},
+        ),
+        data={
+            "phone_number": new_phone_number,
+        }
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert Client.objects.get(pk=client.pk).user.phone_number == new_phone_number
 
 
 def test_update_client_other(

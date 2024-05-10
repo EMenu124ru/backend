@@ -715,7 +715,6 @@ def test_change_delayed_order_status(
     order = OrderFactory.build(status=Order.Statuses.DELAYED)
     dish = DishFactory.create()
     order_dict = {
-        "status": order.status,
         "comment": order.comment,
         "dishes": [{"dish": dish.id, "comment": "some comment"}],
     }
@@ -731,7 +730,8 @@ def test_change_delayed_order_status(
     )
     assert response.status_code == status.HTTP_201_CREATED
     reservation_id = response.data["id"]
-    query = Reservation.objects.get(pk=reservation_id).orders.filter(status=Order.Statuses.DELAYED)
+    reservation = Reservation.objects.get(pk=reservation_id)
+    query = reservation.orders.filter(status=Order.Statuses.DELAYED)
     assert query.exists()
     order = query.first()
     check_delayed_orders()

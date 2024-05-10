@@ -101,12 +101,11 @@ class ClientSerializer(BaseModelSerializer):
                 user_fields.get("surname", instance.user.surname)
             )
             instance.user.phone_number = (
-                validated_data.get("phone_number", instance.user.phone_number)
+                user_fields.get("phone_number", instance.user.phone_number)
             )
-            if "password" in validated_data["user"]:
-                instance.user.set_password(user_fields.pop("password"))
+            if "password" in user_fields:
+                instance.user.set_password(user_fields.get("password"))
             instance.user.save()
         if "bonuses" in validated_data:
             raise serializers.ValidationError(self.Errors.CANT_CHANGE_BONUSES)
-        instance.save()
         return instance

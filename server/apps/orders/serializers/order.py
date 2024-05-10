@@ -43,7 +43,7 @@ class OrderSerializer(BaseModelSerializer):
     )
 
     class Errors:
-        EMPLOYEE_CHANGES = "Работник может изменить только статус и комментарий к заказу"
+        EMPLOYEE_CHANGES = "Работник может изменить только комментарий к заказу"
         EMPTY_DISHES = "В заказе отсутствуют блюда"
         INVALID_DISH = "Ингредиент в блюде {} находится в стоп листе"
         INVALID_PLACE = "Не указан стол для создания пустой резервации"
@@ -67,9 +67,10 @@ class OrderSerializer(BaseModelSerializer):
         extra_kwargs = {
             'created': {'read_only': True},
             'modified': {'read_only': True},
+            'status': {'read_only': True},
         }
         editable_fields = {
-            Employee.Roles.WAITER: ["comment", "status"],
+            Employee.Roles.WAITER: ["comment"],
         }
 
     def get_restaurant_id(self, attrs: OrderedDict) -> int:
@@ -124,6 +125,8 @@ class OrderSerializer(BaseModelSerializer):
                 place=place,
             )
             validated_data["reservation"] = reservation
+        else:
+            validated_data["status"] = Order.Statuses.DELAYED
         validated_data.update(
             {"price": sum([Decimal(item["dish"].price) for item in dishes])}
         )
