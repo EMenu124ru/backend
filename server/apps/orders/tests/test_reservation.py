@@ -295,6 +295,24 @@ def test_read_reservation_by_client_success(
     assert response.status_code == status.HTTP_200_OK
 
 
+def test_read_reservations_by_client_success(
+    client,
+    api_client,
+) -> None:
+    restaurant = RestaurantFactory.create()
+    ReservationFactory.create(
+        client=client,
+        restaurant=restaurant,
+    )
+    api_client.force_authenticate(user=client.user)
+    response = api_client.get(
+        reverse_lazy(
+            "api:reservations-list"
+        ),
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
 def test_read_reservation_by_client_failed(
     client,
     api_client,

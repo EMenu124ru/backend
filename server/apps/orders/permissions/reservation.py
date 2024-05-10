@@ -7,11 +7,14 @@ from apps.users.models import Employee
 class ReservationPermission(permissions.BasePermission):
 
     def has_permission(self, request, view) -> bool:
-        return any([
-            request.user.is_client,
+        has_permissions = [
             check_role_employee(request.user, Employee.Roles.HOSTESS),
             check_role_employee(request.user, Employee.Roles.WAITER),
-        ])
+        ]
+        if view.action == "list":
+            return any(has_permissions)
+        has_permissions.append(request.user.is_client)
+        return any(has_permissions)
 
     def has_object_permission(self, request, view, obj) -> bool:
         is_client = request.user.is_client and obj.client and obj.client.id == request.user.client.id
