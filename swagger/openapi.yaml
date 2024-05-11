@@ -1154,6 +1154,15 @@ components:
               comment:
                 type: string
                 description: "Комментарий к заказу"
+        tag_to_place:
+          type: number
+          description: "Id тэга стола"
+          nullable: true
+        count_quests:
+          type: number
+          default: 1
+          description: "Количество гостей"
+          nullable: true
 
     CategoryBase:
       type: object
@@ -1248,6 +1257,15 @@ components:
         comment:
           type: string
           description: "Комментарий к бронированию"
+        tag_to_place:
+          type: number
+          description: "Id тэга стола"
+          nullable: true
+        count_quests:
+          type: number
+          default: 1
+          description: "Количество гостей"
+          nullable: true
 
     ReservationUpdateBase:
       type: object
@@ -1274,6 +1292,15 @@ components:
         comment:
           type: string
           description: "Комментарий к бронированию"
+        tag_to_place:
+          type: number
+          description: "Id тэга стола"
+          nullable: true
+        count_quests:
+          type: number
+          default: 1
+          description: "Количество гостей"
+          nullable: true
 
     ReservationBase:
       type: object
@@ -1310,6 +1337,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/OrderBase"
+        tag_to_place:
+          allOf:
+          - $ref: "#/components/schemas/TagToPlace"
+          nullable: true
+          description: "Id тэга стола"
+        count_quests:
+          type: number
+          default: 1
+          description: "Количество гостей"
+          nullable: true
 
     RestaurantScheduleBase:
       type: object

@@ -1,4 +1,4 @@
-from django.core.exceptions import ValidationError
+from django.core import exceptions, validators
 from django.db import models
 from django.utils import timezone
 
@@ -7,7 +7,7 @@ from apps.orders.constants import OrderErrors
 
 def validate_arrival_time(arrival_time) -> None:
     if timezone.now() >= arrival_time:
-        raise ValidationError(OrderErrors.WRONG_ARRIVAL_TIME)
+        raise exceptions.ValidationError(OrderErrors.WRONG_ARRIVAL_TIME)
 
 
 class Reservation(models.Model):
@@ -41,11 +41,23 @@ class Reservation(models.Model):
     )
     place = models.ForeignKey(
         "restaurants.Place",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name="reservations",
         verbose_name="Номер места",
+    )
+    count_quests = models.PositiveIntegerField(
+        default=1,
+        validators=[validators.MinValueValidator(1)],
+        verbose_name="Количество гостей",
+    )
+    tag_to_place = models.ForeignKey(
+        "restaurants.TagToPlace",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="Тэг к месту",
     )
     comment = models.TextField(
         default="",

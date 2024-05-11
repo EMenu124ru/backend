@@ -2,8 +2,16 @@ from collections import OrderedDict
 
 from apps.core.serializers import BaseModelSerializer, serializers
 from apps.orders.models import Reservation
-from apps.restaurants.models import Place, Restaurant
-from apps.restaurants.serializers import PlaceSerializer, RestaurantSerializer
+from apps.restaurants.models import (
+    Place,
+    Restaurant,
+    TagToPlace,
+)
+from apps.restaurants.serializers import (
+    PlaceSerializer,
+    RestaurantSerializer,
+    TagToPlaceSerializer,
+)
 from apps.users.models import Client, Employee
 from apps.users.serializers import ClientSerializer
 
@@ -19,6 +27,11 @@ class ReservationSerializer(BaseModelSerializer):
     )
     place = serializers.PrimaryKeyRelatedField(
         queryset=Place.objects.all(),
+        allow_null=True,
+        required=False,
+    )
+    tag_to_place = serializers.PrimaryKeyRelatedField(
+        queryset=TagToPlace.objects.all(),
         allow_null=True,
         required=False,
     )
@@ -48,10 +61,12 @@ class ReservationSerializer(BaseModelSerializer):
             "client",
             "place",
             "comment",
+            "count_quests",
+            "tag_to_place",
         )
         editable_fields = {
             Employee.Roles.WAITER: ["place", "status"],
-            Employee.Roles.HOSTESS: ["place", "arrival_time", "status"],
+            Employee.Roles.HOSTESS: ["place", "arrival_time", "status", "tag_to_place", "count_quests"],
         }
 
     def validate_place_instance(self, place, restaurant):
@@ -108,6 +123,11 @@ class ReservationSerializer(BaseModelSerializer):
         if (place_id := data.pop("place", None)) is not None:
             place = Place.objects.get(pk=place_id)
             data["place"] = PlaceSerializer(place).data
+        TagToPlaceSerializer
+
+        if (tag_to_place_id := data.pop("tag_to_place", None)) is not None:
+            tag_to_place = TagToPlace.objects.get(pk=tag_to_place_id)
+            data["tag_to_place"] = TagToPlaceSerializer(tag_to_place).data
 
         client = None
         if (client_id := data.pop("client", None)) is not None:

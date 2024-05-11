@@ -10,7 +10,7 @@ from apps.restaurants.permissions import RestaurantPermission
 from apps.restaurants.serializers import (
     PlaceSerializer,
     RestaurantSerializer,
-    TagToProjectSerializer,
+    TagToPlaceSerializer,
 )
 
 
@@ -57,5 +57,5 @@ class TagToPlaceAPIView(generics.ListAPIView):
             tags = place.tags.all()
             restaurant_tags |= set(tags)
 
-        serializer = TagToProjectSerializer(restaurant_tags, many=True)
+        serializer = TagToPlaceSerializer(restaurant_tags, many=True)
         return response.Response(data=serializer.data, status=status.HTTP_200_OK)
