@@ -23,7 +23,7 @@ def test_create_order_by_waiter(
     api_client,
 ) -> None:
     client = ClientFactory.create()
-    order = OrderFactory.build(status=Order.Statuses.WAITING_FOR_COOKING)
+    order = OrderFactory.build()
     dishes = DishFactory.create_batch(
         size=DISHES_COUNT,
     )
@@ -34,7 +34,6 @@ def test_create_order_by_waiter(
     response = api_client.post(
         reverse_lazy("api:orders-list"),
         data={
-            "status": order.status,
             "price": sum_dishes_prices,
             "comment": order.comment,
             "client": client.pk,
@@ -47,7 +46,7 @@ def test_create_order_by_waiter(
     )
     assert response.status_code == status.HTTP_201_CREATED
     query = Order.objects.filter(
-        status=order.status,
+        status=Order.Statuses.WAITING_FOR_COOKING,
         price=sum_dishes_prices,
         comment=order.comment,
         client=client.pk,
@@ -63,7 +62,7 @@ def test_create_order_by_waiter_without_client(
     waiter,
     api_client,
 ) -> None:
-    order = OrderFactory.build(status=Order.Statuses.WAITING_FOR_COOKING)
+    order = OrderFactory.build()
     dishes = DishFactory.create_batch(
         size=DISHES_COUNT,
     )
@@ -74,7 +73,6 @@ def test_create_order_by_waiter_without_client(
     response = api_client.post(
         reverse_lazy("api:orders-list"),
         data={
-            "status": order.status,
             "price": sum_dishes_prices,
             "comment": order.comment,
             "dishes": [
@@ -86,7 +84,7 @@ def test_create_order_by_waiter_without_client(
     )
     assert response.status_code == status.HTTP_201_CREATED
     query = Order.objects.filter(
-        status=order.status,
+        status=Order.Statuses.WAITING_FOR_COOKING,
         price=sum_dishes_prices,
         comment=order.comment,
         client=None,
@@ -229,6 +227,129 @@ def test_update_order_by_waiter_failed(
     assert Order.objects.filter(
         id=order.pk,
         employee=order.employee,
+    ).exists()
+
+
+def test_update_order_by_waiter_status_failed(
+    waiter,
+    api_client,
+) -> None:
+    dishes = DishFactory.create_batch(
+        size=DISHES_COUNT,
+    )
+    order = OrderFactory.create(
+        employee=waiter,
+        price=sum([dish.price for dish in dishes]),
+        status=Order.Statuses.WAITING_FOR_COOKING,
+    )
+    api_client.force_authenticate(user=waiter.user)
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orders-detail",
+            kwargs={"pk": order.pk},
+        ),
+        data={
+            "status": Order.Statuses.COOKING,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert Order.objects.filter(
+        id=order.pk,
+        status=order.status,
+    ).exists()
+
+
+def test_update_order_by_waiter_status_success(
+    waiter,
+    api_client,
+) -> None:
+    dishes = DishFactory.create_batch(
+        size=DISHES_COUNT,
+    )
+    order = OrderFactory.create(
+        employee=waiter,
+        price=sum([dish.price for dish in dishes]),
+        status=Order.Statuses.WAITING_FOR_COOKING,
+    )
+    api_client.force_authenticate(user=waiter.user)
+
+    new_status = Order.Statuses.PAID
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orders-detail",
+            kwargs={"pk": order.pk},
+        ),
+        data={
+            "status": new_status,
+        },
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert Order.objects.filter(
+        id=order.pk,
+        status=new_status,
+    ).exists()
+
+    new_status = Order.Statuses.FINISHED
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orders-detail",
+            kwargs={"pk": order.pk},
+        ),
+        data={
+            "status": new_status,
+        },
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert Order.objects.filter(
+        id=order.pk,
+        status=new_status,
+    ).exists()
+
+
+def test_update_order_by_waiter_status_cancel(
+    waiter,
+    api_client,
+) -> None:
+    dishes = DishFactory.create_batch(
+        size=DISHES_COUNT,
+    )
+    order = OrderFactory.create(
+        employee=waiter,
+        price=sum([dish.price for dish in dishes]),
+        status=Order.Statuses.WAITING_FOR_COOKING,
+    )
+    api_client.force_authenticate(user=waiter.user)
+
+    new_status = Order.Statuses.CANCELED
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orders-detail",
+            kwargs={"pk": order.pk},
+        ),
+        data={
+            "status": new_status,
+        },
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert Order.objects.filter(
+        id=order.pk,
+        status=new_status,
+    ).exists()
+
+    new_status = Order.Statuses.FINISHED
+    response = api_client.patch(
+        reverse_lazy(
+            "api:orders-detail",
+            kwargs={"pk": order.pk},
+        ),
+        data={
+            "status": new_status,
+        },
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert Order.objects.filter(
+        id=order.pk,
+        status=Order.Statuses.CANCELED,
     ).exists()
 
 

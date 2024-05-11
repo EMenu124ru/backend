@@ -978,6 +978,10 @@ components:
           type: string
           description: "Статус сотрудника"
           enum: ["На смене с {} до {}", "Будет на смене с {} до {}", "Выходной", "Больничный", "Отпуск", "Не на смене"]
+        status_const:
+          type: string
+          description: "Статус сотрудника в виде константы"
+          enum: ["ON_WORK_SHIFT_FROM_TO", "WILL_BE_ON_WORK_SHIFT_FROM_TO", "DAY_OFF", "SICK_LEAVE", "VACATION", "NOT_ON_WORK_SHIFT"]
 
     DeviceBase:
       type: object
@@ -1105,6 +1109,10 @@ components:
     OrderUpdateBase:
       type: object
       properties:
+        status:
+          type: string
+          description: "Статус заказа"
+          enum: ["FINISHED", "PAID", "CANCELED"]
         comment:
           type: string
           description: "Комментарий к заказу"

@@ -43,7 +43,9 @@ class OrderSerializer(BaseModelSerializer):
     )
 
     class Errors:
-        EMPLOYEE_CHANGES = "Работник может изменить только комментарий к заказу"
+        EMPLOYEE_CHANGES = "Работник может изменить только статус и комментарий к заказу"
+        NOT_AVAILABLE_STATUS = "Сотрудник может установить статус 'Оплачен', 'Закрыт' и 'Отменен'"
+        ORDER_IS_CANCELED = "Заказ отменен и обновлению не подлежит"
         EMPTY_DISHES = "В заказе отсутствуют блюда"
         INVALID_DISH = "Ингредиент в блюде {} находится в стоп листе"
         INVALID_PLACE = "Не указан стол для создания пустой резервации"
@@ -67,16 +69,28 @@ class OrderSerializer(BaseModelSerializer):
         extra_kwargs = {
             'created': {'read_only': True},
             'modified': {'read_only': True},
-            'status': {'read_only': True},
         }
         editable_fields = {
-            Employee.Roles.WAITER: ["comment"],
+            Employee.Roles.WAITER: ["comment", "status"],
         }
 
     def get_restaurant_id(self, attrs: OrderedDict) -> int:
         if attrs.get("reservation") is not None:
             return attrs["reservation"].restaurant.pk
         return self._user.employee.restaurant.id
+
+    def validate_status(self, status: Order.Statuses | None) -> Order.Statuses:
+        if self.instance:
+            if self.instance.status == Order.Statuses.CANCELED:
+                raise serializers.ValidationError(self.Errors.ORDER_IS_CANCELED)
+            can_set_statuses = [
+                Order.Statuses.PAID,
+                Order.Statuses.FINISHED,
+                Order.Statuses.CANCELED,
+            ]
+            if status not in can_set_statuses:
+                raise serializers.ValidationError(self.Errors.NOT_AVAILABLE_STATUS)
+        return status
 
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self.instance:
@@ -116,6 +130,7 @@ class OrderSerializer(BaseModelSerializer):
     def create(self, validated_data: OrderedDict) -> Order:
         dishes = validated_data.pop("dishes")
         place = validated_data.pop("place", None)
+        validated_data["status"] = Order.Statuses.WAITING_FOR_COOKING
         if validated_data.get("reservation", None) is None:
             restaurant_id = self.get_restaurant_id(validated_data)
             reservation = Reservation.objects.create(

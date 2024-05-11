@@ -199,7 +199,6 @@ def test_create_reservation_by_client_success_with_order(
     order = OrderFactory.build()
     dish = DishFactory.create()
     order_dict = {
-        "status": order.status,
         "comment": order.comment,
         "client": client.pk,
         "dishes": [{"dish": dish.id, "comment": "some comment"}],
