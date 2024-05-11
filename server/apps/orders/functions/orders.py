@@ -33,14 +33,17 @@ STATUSES_BY_ROLE = {
     Employee.Roles.COOK: [
         Order.Statuses.WAITING_FOR_COOKING,
         Order.Statuses.COOKING,
+        Order.Statuses.WAITING_FOR_DELIVERY,
     ],
     Employee.Roles.CHEF: [
         Order.Statuses.WAITING_FOR_COOKING,
         Order.Statuses.COOKING,
+        Order.Statuses.WAITING_FOR_DELIVERY,
     ],
     Employee.Roles.SOUS_CHEF: [
         Order.Statuses.WAITING_FOR_COOKING,
         Order.Statuses.COOKING,
+        Order.Statuses.WAITING_FOR_DELIVERY,
     ],
     Employee.Roles.HOSTESS: [],
 }
