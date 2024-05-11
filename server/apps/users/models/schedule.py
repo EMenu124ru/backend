@@ -1,18 +1,19 @@
 from django.db import models
 
+from apps.core.models import ScheduleBase
 
-class Schedule(models.Model):
+
+class Schedule(ScheduleBase):
     class Types(models.TextChoices):
         WORK = "WORK", "Рабочая смена"
         SICK_LEAVE = "SICK_LEAVE", "Больничный"
         VACATION = "VACATION", "Отпуск"
         DAY_OFF = "DAY_OFF", "Выходной"
 
-    time_start = models.DateTimeField(
-        verbose_name="Время начала работы",
-    )
-    time_finish = models.DateTimeField(
-        verbose_name="Время окончания работы",
+    day = models.DateField(
+        blank=False,
+        null=False,
+        verbose_name="Дата",
     )
     employee = models.ForeignKey(
         "users.Employee",
@@ -41,6 +42,8 @@ class Schedule(models.Model):
             f"(id={self.pk},"
             f"employee_id={self.employee.pk},"
             f"type={self.type},"
+            f"day={self.day},"
+            f"week_day={self.week_day},"
             f"time_start={self.time_start},"
             f"time_finish={self.time_finish},"
             f"is_approve={self.is_approve})"

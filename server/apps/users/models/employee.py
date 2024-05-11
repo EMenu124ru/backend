@@ -116,8 +116,8 @@ class Employee(models.Model):
                     else:
                         status = Employee.Statuses.ON_WORK_SHIFT_FROM_TO.label
                         status_const = Employee.Statuses.ON_WORK_SHIFT_FROM_TO
-            status_dict["time_start"] = str(schedule.time_start)
-            status_dict["time_finish"] = str(schedule.time_finish)
+            status_dict["time_start"] = schedule.time_start
+            status_dict["time_finish"] = schedule.time_finish
         status_dict["status"] = status
         status_dict["const"] = status_const
         return status_dict

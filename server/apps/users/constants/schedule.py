@@ -4,6 +4,7 @@ from typing import Final
 
 class ScheduleErrors(enum.Enum):
     BAD_FILE: Final[str] = 'Файл является битым'
+    DATES_NOT_FOUND: Final[str] = 'Отсутствуют даты смен'
     EMPLOYEE_NOT_FOUND: Final[str] = 'Сотрудник не найден'
     NULLABLE_VALUES: Final[str] = 'Присутствуют пропущенные значения'
     WRONG_COLOR: Final[str] = 'Цвет обозначения деятельности не найден'

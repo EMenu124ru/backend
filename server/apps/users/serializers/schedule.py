@@ -16,4 +16,6 @@ class EmployeeScheduleSerializer(BaseModelSerializer):
             "employee",
             "is_approve",
             "type",
+            "week_day",
+            "day",
         )

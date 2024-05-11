@@ -1570,6 +1570,14 @@ components:
         employee:
           type: number
           description: "Id сотрудника"
+        day:
+          type: string
+          format: date
+          description: "День смены"
+        week_day:
+          type: number
+          enum: [0, 1, 2, 3, 4, 5, 6],
+          description: "День недели, где 0 - Понедельник, а 6 - Воскресенье"
         type:
           type: string
           description: "Тип времени"

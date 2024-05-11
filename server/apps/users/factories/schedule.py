@@ -1,4 +1,5 @@
-from datetime import timedelta
+from random import randint
+from datetime import date, timedelta
 
 from django.utils import timezone
 from factory import (
@@ -9,6 +10,7 @@ from factory import (
 )
 from factory.django import DjangoModelFactory
 
+from apps.core.models import ScheduleBase
 from apps.users.models import Schedule
 
 from .employee import EmployeeFactory
@@ -29,8 +31,14 @@ class ScheduleFactory(DjangoModelFactory):
     is_approve = Faker(
         "pybool",
     )
+    day = LazyAttribute(
+        lambda _: date.today() + timedelta(days=randint(1, 10)),
+    )
     type = fuzzy.FuzzyChoice(
         [item[0] for item in Schedule.Types.choices],
+    )
+    week_day = fuzzy.FuzzyChoice(
+        [item[0] for item in ScheduleBase.WeekDays.choices],
     )
 
     class Meta:

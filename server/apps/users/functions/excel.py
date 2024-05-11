@@ -43,6 +43,11 @@ def import_schedule(request) -> list:
         else:
             if row[ScheduleFile.FULL_NAME.value].value is not None:
                 rows.append(row)
+    
+    if not dates:
+        return {
+            'file': ScheduleErrors.DATES_NOT_FOUND.value,
+        }
 
     max_column = ScheduleFile.START_TIME.value + len(dates) * 2
     schedule_items = []
@@ -96,27 +101,22 @@ def import_schedule(request) -> list:
                         "file": ScheduleErrors.WRONG_COLOR.value,
                     }
 
-            add_days = 0
-            if time_start > time_finish:
-                add_days = 1
-            start = datetime.combine(date_from_file, time_start)
-            end = datetime.combine(
-                date_from_file + timedelta(days=add_days),
-                time_finish,
-            )
-
             query = Schedule.objects.filter(
-                time_start=start,
-                time_finish=end,
+                day=date_from_file.date(),
+                week_day=date_from_file.weekday(),
+                time_start=time_start,
+                time_finish=time_finish,
                 employee=employee,
                 type=name,
             )
             if not query.exists():
                 to_create_item = {
-                    "time_start": start,
-                    "time_finish": end,
+                    "day": date_from_file.date(),
+                    "time_start": time_start,
+                    "time_finish": time_finish,
                     "employee": employee.id,
                     "type": name,
+                    "week_day": date_from_file.weekday(),
                 }
                 serializer = EmployeeScheduleSerializer(data=to_create_item)
                 serializer.is_valid(raise_exception=True)

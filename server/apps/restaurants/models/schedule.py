@@ -1,27 +1,9 @@
 from django.db import models
 
+from apps.core.models import ScheduleBase
 
-class Schedule(models.Model):
-    class WeekDays(models.IntegerChoices):
-        """Week day choices"""
-        MONDAY = 0
-        TUESDAY = 1
-        WEDNESDAY = 2
-        THURSDAY = 3
-        FRIDAY = 4
-        SATURDAY = 5
-        SUNDAY = 6
 
-    week_day = models.IntegerField(
-        choices=WeekDays.choices,
-        verbose_name="День недели",
-    )
-    time_start = models.TimeField(
-        verbose_name="Время начала работы",
-    )
-    time_finish = models.TimeField(
-        verbose_name="Время окончания работы",
-    )
+class Schedule(ScheduleBase):
     restaurant = models.ForeignKey(
         "restaurants.Restaurant",
         on_delete=models.CASCADE,
