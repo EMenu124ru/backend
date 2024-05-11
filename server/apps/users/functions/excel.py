@@ -1,8 +1,4 @@
-from datetime import (
-    datetime,
-    time,
-    timedelta,
-)
+from datetime import date, time
 from zipfile import BadZipfile
 
 import openpyxl
@@ -43,11 +39,26 @@ def import_schedule(request) -> list:
         else:
             if row[ScheduleFile.FULL_NAME.value].value is not None:
                 rows.append(row)
-    
+
     if not dates:
         return {
             'file': ScheduleErrors.DATES_NOT_FOUND.value,
         }
+
+    month = dates[0].month
+    next_month = (month + 1) % 12
+    year = dates[0].year
+    count_dates = (date(year, next_month, 1) - date(year, month, 1)).days
+    if len(dates) != count_dates:
+        return {
+            'file': ScheduleErrors.DATES_NOT_FOUND.value,
+        }
+
+    for day, item in zip(range(1, count_dates + 1), dates):
+        if day != item.day:
+            return {
+                'file': ScheduleErrors.DATES_NOT_FOUND.value,
+            }
 
     max_column = ScheduleFile.START_TIME.value + len(dates) * 2
     schedule_items = []
@@ -100,6 +111,10 @@ def import_schedule(request) -> list:
                     return {
                         "file": ScheduleErrors.WRONG_COLOR.value,
                     }
+            else:
+                return {
+                    "file": ScheduleErrors.WRONG_COLOR.value,
+                }
 
             query = Schedule.objects.filter(
                 day=date_from_file.date(),

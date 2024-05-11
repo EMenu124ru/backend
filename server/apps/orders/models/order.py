@@ -22,6 +22,7 @@ class Order(BaseModel):
         verbose_name="Статус заказа",
     )
     price = models.DecimalField(
+        default=0,
         max_digits=11,
         decimal_places=2,
         validators=[MinValueValidator(0)],

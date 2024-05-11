@@ -41,3 +41,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     @admin.display(empty_value='???')
     def phone_number(self, obj):
         return obj.user.phone_number
+
+    @admin.display(empty_value='???')
+    def email(self, obj):
+        return obj.user.email

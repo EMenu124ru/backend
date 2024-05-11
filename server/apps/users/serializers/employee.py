@@ -30,6 +30,7 @@ class EmployeeSerializer(BaseModelSerializer):
     phone_number = serializers.CharField(source="user.phone_number")
     date_of_birth = serializers.DateField(source="user.date_of_birth")
     address = serializers.CharField(source="user.address")
+    email = serializers.CharField(source="user.email")
     restaurant = serializers.PrimaryKeyRelatedField(
         queryset=Restaurant.objects.all(),
         source="restaurant.id",
@@ -44,9 +45,11 @@ class EmployeeSerializer(BaseModelSerializer):
             'first_name',
             'last_name',
             'surname',
+            'role',
             'phone_number',
             'date_of_birth',
             'address',
+            'restaurant',
             'education',
             'place_of_birth',
             'citizenship',
@@ -54,9 +57,8 @@ class EmployeeSerializer(BaseModelSerializer):
             'medical_checkup',
             'employment_contract',
             'work_experience',
-            'role',
-            'restaurant',
             'image',
+            'email',
         )
 
     def to_representation(self, instance):

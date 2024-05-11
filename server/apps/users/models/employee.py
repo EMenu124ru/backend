@@ -89,11 +89,7 @@ class Employee(models.Model):
     def get_status(self):
         current_time = timezone.now()
         schedule = Schedule.objects.filter(
-            models.Q(employee=self) &
-            (
-                models.Q(time_start__date=current_time.date()) |
-                models.Q(time_finish__date=current_time.date())
-            )
+            models.Q(employee=self) & models.Q(day=current_time.date())
         )
         mapping_statuses = {
             Schedule.Types.DAY_OFF: Employee.Statuses.DAY_OFF,
