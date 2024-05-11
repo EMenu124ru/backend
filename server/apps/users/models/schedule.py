@@ -36,4 +36,11 @@ class Schedule(models.Model):
         verbose_name_plural = "Расписания работы сотрудника"
 
     def __str__(self) -> str:
-        return f"Schedule {self.employee} {self.type} {self.time_start} {self.time_finish}"
+        return (
+            "Schedule"
+            f"(employee_id={self.employee.pk},"
+            f"type={self.type},"
+            f"time_start={self.time_start},"
+            f"time_finish={self.time_finish},"
+            f"is_approve={self.is_approve})"
+        )

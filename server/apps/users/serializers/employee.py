@@ -61,5 +61,5 @@ class EmployeeSerializer(BaseModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data["status"], data["status_const"] = instance.get_status()
+        data["status"] = instance.get_status()
         return data

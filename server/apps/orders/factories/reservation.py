@@ -10,7 +10,11 @@ from factory import (
 from factory.django import DjangoModelFactory
 
 from apps.orders.models import Reservation
-from apps.restaurants.factories import PlaceFactory, RestaurantFactory
+from apps.restaurants.factories import (
+    PlaceFactory,
+    RestaurantFactory,
+    TagToPlaceFactory,
+)
 from apps.users.factories import ClientFactory
 
 
@@ -31,6 +35,14 @@ class ReservationFactory(DjangoModelFactory):
     )
     place = SubFactory(
         PlaceFactory,
+    )
+    tag_to_place = SubFactory(
+        TagToPlaceFactory,
+    )
+    count_quests = Faker(
+        "pyint",
+        min_value=1,
+        max_value=20,
     )
     comment = Faker(
         "text",

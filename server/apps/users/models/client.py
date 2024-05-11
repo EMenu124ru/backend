@@ -17,4 +17,12 @@ class Client(models.Model):
         verbose_name_plural = "Клиенты"
 
     def __str__(self) -> str:
-        return f"Client {self.user.first_name} {self.user.last_name} {self.user.phone_number}"
+        return (
+            "Client"
+            f"(user.username={self.user.username},"
+            f"user.first_name={self.user.first_name},"
+            f"user.last_name={self.user.last_name},"
+            f"user.surname={self.user.surname},"
+            f"user.phone_number={self.user.phone_number},"
+            f"bonuses={self.bonuses})"
+        )

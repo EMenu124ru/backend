@@ -16,9 +16,12 @@ class Employee(models.Model):
         HOSTESS = "HOSTESS", "Хостес"
 
     class Statuses(models.TextChoices):
-        ON_WORK_SHIFT_FROM_TO = "ON_WORK_SHIFT_FROM_TO", "На смене с {} до {}"
+        ON_WORK_SHIFT_FROM_TO = "ON_WORK_SHIFT_FROM_TO", "На смене с {time_start} до {time_finish}"
         DAY_OFF = "DAY_OFF", "Выходной"
-        WILL_BE_ON_WORK_SHIFT_FROM_TO = "WILL_BE_ON_WORK_SHIFT_FROM_TO", "Будет на смене с {} до {}"
+        WILL_BE_ON_WORK_SHIFT_FROM_TO = (
+            "WILL_BE_ON_WORK_SHIFT_FROM_TO",
+            "Будет на смене с {time_start} до {time_finish}"
+        )
         SICK_LEAVE = "SICK_LEAVE", "Больничный"
         VACATION = "VACATION", "Отпуск"
         NOT_ON_WORK_SHIFT = "NOT_ON_WORK_SHIFT", "Не на смене"
@@ -84,7 +87,6 @@ class Employee(models.Model):
     )
 
     def get_status(self):
-        datetime_format = "%d.%m.%Y %H:%M"
         current_time = timezone.now()
         schedule = Schedule.objects.filter(
             models.Q(employee=self) &
@@ -98,6 +100,7 @@ class Employee(models.Model):
             Schedule.Types.SICK_LEAVE: Employee.Statuses.SICK_LEAVE,
             Schedule.Types.VACATION: Employee.Statuses.VACATION,
         }
+        status_dict = {}
         status = Employee.Statuses.NOT_ON_WORK_SHIFT.label
         status_const = Employee.Statuses.NOT_ON_WORK_SHIFT
         if schedule.exists():
@@ -107,22 +110,30 @@ class Employee(models.Model):
                     status = mapping_statuses[schedule.type].label
                     status_const = mapping_statuses[schedule.type]
                 else:
-                    times = (
-                        schedule.time_start.strftime(datetime_format),
-                        schedule.time_finish.strftime(datetime_format),
-                    )
                     if current_time < schedule.time_start:
                         status = Employee.Statuses.WILL_BE_ON_WORK_SHIFT_FROM_TO.label
                         status_const = Employee.Statuses.WILL_BE_ON_WORK_SHIFT_FROM_TO
                     else:
                         status = Employee.Statuses.ON_WORK_SHIFT_FROM_TO.label
                         status_const = Employee.Statuses.ON_WORK_SHIFT_FROM_TO
-                    status = status.format(*times)
-        return status, status_const
+            status_dict["time_start"] = str(schedule.time_start)
+            status_dict["time_finish"] = str(schedule.time_finish)
+        status_dict["status"] = status
+        status_dict["const"] = status_const
+        return status_dict
 
     class Meta:
         verbose_name = "Работник"
         verbose_name_plural = "Работники"
 
     def __str__(self) -> str:
-        return f"Employee {self.user.first_name} {self.user.last_name} {self.role}"
+        return (
+            "Employee"
+            f"(user.username={self.user.username},"
+            f"user.first_name={self.user.first_name},"
+            f"user.last_name={self.user.last_name},"
+            f"user.surname={self.user.surname},"
+            f"user.phone_number={self.user.phone_number},"
+            f"role={self.role},"
+            f"restaurant_id={self.restaurant.pk})"
+        )
