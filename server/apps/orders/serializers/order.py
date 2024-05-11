@@ -92,6 +92,11 @@ class OrderSerializer(BaseModelSerializer):
                 raise serializers.ValidationError(self.Errors.NOT_AVAILABLE_STATUS)
         return status
 
+    def validate_dishes(self, dishes):
+        if not self.instance and (not dishes or dishes in (None, [])):
+            raise serializers.ValidationError(self.Errors.EMPTY_DISHES)
+        return dishes
+
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self.instance:
             role = self._user.employee.role
@@ -101,8 +106,6 @@ class OrderSerializer(BaseModelSerializer):
             ):
                 raise serializers.ValidationError(self.Errors.EMPLOYEE_CHANGES)
         if not self.instance:
-            if attrs.get("dishes") in (None, []):
-                raise serializers.ValidationError(self.Errors.EMPTY_DISHES)
             if not attrs.get("reservation") and not attrs.get("place"):
                 raise serializers.ValidationError(self.Errors.INVALID_PLACE)
             if not attrs.get("reservation") and attrs.get("place"):

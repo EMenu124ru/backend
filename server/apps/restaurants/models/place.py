@@ -24,4 +24,10 @@ class Place(models.Model):
         unique_together = ('place', 'restaurant')
 
     def __str__(self) -> str:
-        return f"Place {self.place} of {self.restaurant}"
+        return (
+            "Place"
+            f"(id={self.pk},"
+            f"place={self.place},"
+            f"restaurant_id={self.restaurant.pk},"
+            f"tags={';'.join([tag.name for tag in self.tags.all()])})"
+        )

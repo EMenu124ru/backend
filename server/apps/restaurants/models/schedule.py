@@ -35,4 +35,11 @@ class Schedule(models.Model):
         unique_together = ("week_day", "restaurant")
 
     def __str__(self) -> str:
-        return f"Schedule {self.restaurant} {self.time_start} {self.time_finish} {self.week_day}"
+        return (
+            "Schedule"
+            f"(id={self.pk},"
+            f"restaurant_id={self.restaurant.pk},"
+            f"week_day={self.week_day},"
+            f"time_start={self.time_start},"
+            f"time_finish={self.time_finish})"
+        )

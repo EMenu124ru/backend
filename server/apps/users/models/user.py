@@ -49,7 +49,9 @@ class User(AbstractUser):
     def str(self) -> str:
         return (
             "User"
-            f"(username={self.username},"
+            f"(id={self.pk},"
+            f"user_id={self.user.pk},"
+            f"username={self.username},"
             f"first_name={self.first_name},"
             f"last_name={self.last_name},"
             f"surname={self.surname},"

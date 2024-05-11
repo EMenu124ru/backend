@@ -28,8 +28,8 @@ class Order(BaseModel):
         verbose_name="Цена",
     )
     comment = models.TextField(
+        default="",
         blank=True,
-        null=True,
         verbose_name="Комментарий",
     )
     employee = models.ForeignKey(
@@ -62,4 +62,15 @@ class Order(BaseModel):
         verbose_name_plural = "Заказы"
 
     def __str__(self) -> str:
-        return f"Order {self.price} {self.comment} {self.employee}"
+        return (
+            "Order"
+            f"(id={self.pk},"
+            f"status={self.status},"
+            f"price={self.price},"
+            f"comment={self.comment},"
+            f"employee={self.employee},"
+            f"client={self.client},"
+            f"modified={self.modified},"
+            f"created={self.created},"
+            f"reservation={self.reservation})"
+        )

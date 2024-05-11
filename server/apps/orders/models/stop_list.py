@@ -26,7 +26,9 @@ class StopList(models.Model):
 
     def __str__(self) -> str:
         return (
-            f"StopList ingredient={self.ingredient}, "
-            f"restaurant={self.restaurant}, "
-            f"created_at={self.created_at}"
+            "StopList"
+            f"(id={self.pk},"
+            f"ingredient_id={self.ingredient.pk},"
+            f"restaurant_id={self.restaurant.pk}, "
+            f"created_at={self.created_at})"
         )

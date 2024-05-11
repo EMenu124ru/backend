@@ -16,7 +16,11 @@ class Ingredient(TagBase):
         verbose_name_plural = "Ингредиенты"
 
     def __str__(self) -> str:
-        return f"Ingredient {self.name}"
+        return (
+            "Ingredient"
+            f"(id={self.pk},"
+            f"name={self.name})"
+        )
 
 
 class Dish(models.Model):
@@ -57,7 +61,17 @@ class Dish(models.Model):
         verbose_name_plural = "Блюда"
 
     def __str__(self) -> str:
-        return f"Dish {self.name} {self.category} {self.price} {self.description}"
+        return (
+            "Dish"
+            f"(id={self.pk},"
+            f"name={self.name},"
+            f"category_id={self.category.pk},"
+            f"price={self.price},"
+            f"description={self.description},"
+            f"short_description={self.short_description},"
+            f"compound={self.compound},"
+            f"weight={self.weight})"
+        )
 
 
 class DishImage(models.Model):
@@ -78,4 +92,8 @@ class DishImage(models.Model):
         verbose_name_plural = "Картинки блюд"
 
     def __str__(self) -> str:
-        return f"DishImage {self.dish}"
+        return (
+            "DishImage"
+            f"(id={self.id},"
+            f"dish_id={self.dish.pk})"
+        )

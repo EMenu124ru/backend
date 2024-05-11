@@ -129,11 +129,13 @@ class Employee(models.Model):
     def __str__(self) -> str:
         return (
             "Employee"
-            f"(user.username={self.user.username},"
+            f"(id={self.pk},"
+            f"user_id={self.user.pk},"
+            f"user.username={self.user.username},"
             f"user.first_name={self.user.first_name},"
             f"user.last_name={self.user.last_name},"
             f"user.surname={self.user.surname},"
             f"user.phone_number={self.user.phone_number},"
             f"role={self.role},"
-            f"restaurant_id={self.restaurant.pk})"
+            f"restaurant={self.restaurant})"
         )

@@ -19,7 +19,9 @@ class Client(models.Model):
     def __str__(self) -> str:
         return (
             "Client"
-            f"(user.username={self.user.username},"
+            f"(id={self.pk},"
+            f"user_id={self.user.pk},"
+            f"user.username={self.user.username},"
             f"user.first_name={self.user.first_name},"
             f"user.last_name={self.user.last_name},"
             f"user.surname={self.user.surname},"

@@ -38,7 +38,8 @@ class Schedule(models.Model):
     def __str__(self) -> str:
         return (
             "Schedule"
-            f"(employee_id={self.employee.pk},"
+            f"(id={self.pk},"
+            f"employee_id={self.employee.pk},"
             f"type={self.type},"
             f"time_start={self.time_start},"
             f"time_finish={self.time_finish},"

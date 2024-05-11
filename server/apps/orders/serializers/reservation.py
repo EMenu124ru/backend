@@ -75,22 +75,30 @@ class ReservationSerializer(BaseModelSerializer):
         if Reservation.objects.filter(place=place, status=Reservation.Statuses.OPENED).exists():
             raise serializers.ValidationError(self.Errors.PLACE_ALREADY_BUSY)
 
+    def validate_status(self, status: Reservation.Statuses) -> Reservation.Statuses:
+        if not self.instance and status:
+            raise serializers.ValidationError(self.Errors.CANT_SET_THIS_FIELD)
+        if self.instance and self.instance.status in (
+            Reservation.Statuses.CANCELED,
+            Reservation.Statuses.FINISHED,
+        ):
+            raise serializers.ValidationError(self.Errors.RESTORE_CLOSED_RESERVATION)
+        return status
+
+    def validate_order(self, order):
+        if self.instance and order:
+            raise serializers.ValidationError(self.Errors.CANT_UPDATE_ORDER)
+        return order
+
+    def validate_place(self, place: Place) -> Place:
+        if self._user.is_client and place:
+            raise serializers.ValidationError(self.Errors.CLIENT_CANT_CHOOSE_PLACE)
+        return place
+
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self._user.is_client:
-            if "place" in attrs:
-                raise serializers.ValidationError(self.Errors.CLIENT_CANT_CHOOSE_PLACE)
             return attrs
-        if not self.instance:
-            if "status" in attrs:
-                raise serializers.ValidationError(self.Errors.CANT_SET_THIS_FIELD)
         if self.instance:
-            if "order" in attrs:
-                raise serializers.ValidationError(self.Errors.CANT_UPDATE_ORDER)
-            if self.instance.status in (
-                Reservation.Statuses.CANCELED,
-                Reservation.Statuses.FINISHED,
-            ):
-                raise serializers.ValidationError(self.Errors.RESTORE_CLOSED_RESERVATION)
             self.validate_place_instance(
                 attrs.get("place", self.instance.place),
                 attrs.get("restaurant", self.instance.restaurant),
@@ -123,7 +131,6 @@ class ReservationSerializer(BaseModelSerializer):
         if (place_id := data.pop("place", None)) is not None:
             place = Place.objects.get(pk=place_id)
             data["place"] = PlaceSerializer(place).data
-        TagToPlaceSerializer
 
         if (tag_to_place_id := data.pop("tag_to_place", None)) is not None:
             tag_to_place = TagToPlace.objects.get(pk=tag_to_place_id)

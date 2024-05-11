@@ -61,6 +61,7 @@ class Reservation(models.Model):
     )
     comment = models.TextField(
         default="",
+        blank=True,
         verbose_name="Комментарий",
     )
 
@@ -70,6 +71,14 @@ class Reservation(models.Model):
 
     def __str__(self) -> str:
         return (
-            f"Reservation {self.arrival_time} {self.status} "
-            f"{self.restaurant} {self.place} {self.client}"
+            "Reservation"
+            f"(id={self.pk},"
+            f"arrival_time={self.arrival_time},"
+            f"status={self.status},"
+            f"comment={self.comment},"
+            f"count_quests={self.count_quests},"
+            f"restaurant_id={self.restaurant.pk},"
+            f"place={self.place},"
+            f"tag_to_place={self.tag_to_place},"
+            f"client={self.client})"
         )

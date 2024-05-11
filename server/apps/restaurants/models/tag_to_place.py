@@ -8,4 +8,8 @@ class TagToPlace(TagBase):
         verbose_name_plural = "Тэги для места"
 
     def __str__(self) -> str:
-        return f"TagToPlace {self.name}"
+        return (
+            "TagToPlace"
+            f"(id={self.pk},"
+            f"name={self.name})"
+        )

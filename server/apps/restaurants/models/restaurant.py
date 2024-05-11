@@ -39,4 +39,8 @@ class Restaurant(models.Model):
         verbose_name_plural = "Рестораны"
 
     def __str__(self) -> str:
-        return f"Restaurant {self.address}"
+        return (
+            "Restaurant"
+            f"(id={self.pk},"
+            f"address={self.address})"
+        )

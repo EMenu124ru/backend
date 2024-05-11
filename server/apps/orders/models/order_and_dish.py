@@ -40,12 +40,12 @@ class OrderAndDish(BaseModel):
     )
     count = models.PositiveIntegerField(
         default=1,
-        verbose_name="Количество блюд в заказе",
         validators=[MinValueValidator(1)],
+        verbose_name="Количество блюд в заказе",
     )
     comment = models.TextField(
+        default="",
         blank=True,
-        null=True,
         verbose_name="Комментарий",
     )
 
@@ -54,7 +54,18 @@ class OrderAndDish(BaseModel):
         verbose_name_plural = "Заказы и блюда"
 
     def __str__(self) -> str:
-        return f"OrderAndDish {self.order} {self.dish}"
+        return (
+            "OrderAndDish"
+            f"(id={self.pk},"
+            f"status={self.status},"
+            f"order_id={self.order.pk},"
+            f"dish_id={self.dish.pk},"
+            f"employee={self.employee},"
+            f"count={self.count},"
+            f"created={self.created},"
+            f"modified={self.modified},"
+            f"comment={self.comment})"
+        )
 
     def save(self, **kwargs):
         if self.pk:
