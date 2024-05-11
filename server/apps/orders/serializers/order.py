@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from decimal import Decimal
 
 from django.utils import timezone
 
@@ -145,9 +144,6 @@ class OrderSerializer(BaseModelSerializer):
             validated_data["reservation"] = reservation
         else:
             validated_data["status"] = Order.Statuses.DELAYED
-        validated_data.update(
-            {"price": sum([Decimal(item["dish"].price) for item in dishes])}
-        )
         order = Order.objects.create(**validated_data)
         order_and_dishes = []
         for item in dishes:

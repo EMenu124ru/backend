@@ -25,7 +25,6 @@ def test_change_order_status_by_changing_dish_status_success(
     )
     dishes = DishFactory.create_batch(size=DISHES_NUMBER)
     order = OrderFactory.create(
-        price=sum([dish.price for dish in dishes]),
         status=Order.Statuses.WAITING_FOR_COOKING,
         employee=waiter,
     )
@@ -74,7 +73,6 @@ def test_change_order_status_by_adding_new_dish(
     )
     dishes = DishFactory.create_batch(size=DISHES_NUMBER)
     order = OrderFactory.create(
-        price=sum([dish.price for dish in dishes]),
         status=Order.Statuses.WAITING_FOR_DELIVERY,
     )
     order_and_dishes = []
@@ -117,7 +115,6 @@ def test_change_order_status_by_adding_new_dish(
 def test_change_order_status_by_cancel_dish() -> None:
     dishes = DishFactory.create_batch(size=DISHES_NUMBER)
     order = OrderFactory.create(
-        price=sum([dish.price for dish in dishes]),
         status=Order.Statuses.WAITING_FOR_DELIVERY,
     )
     order_and_dishes = []
@@ -152,7 +149,6 @@ def test_change_order_status_by_changing_dish_status_failed(
 ) -> None:
     dishes = DishFactory.create_batch(size=DISHES_NUMBER)
     order = OrderFactory.create(
-        price=sum([dish.price for dish in dishes]),
         status=Order.Statuses.WAITING_FOR_COOKING,
     )
     order_and_dishes = []
