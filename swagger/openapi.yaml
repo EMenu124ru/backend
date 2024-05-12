@@ -178,7 +178,7 @@ paths:
         - cookieCSRF: []
       responses:
         "200":
-          $ref: "#/components/responses/EmployeeSchedule200"
+          $ref: "#/components/responses/Employee200"
         "401":
           $ref: "#/components/responses/Unauthorized401"
         "403":
