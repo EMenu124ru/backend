@@ -159,7 +159,34 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound404"
   
-  "/api/v1/employee-schedule":
+  "/api/v1/staff/{employee_id}":
+    patch:
+      tags:
+        - employees
+      summary: "Редактирование сотрудника менеджером"
+      parameters:
+        - name: employee_id
+          in: path
+          schema:
+            type: number
+          description: "Id сотрудника"
+          required: true
+      requestBody:
+        $ref: "#/components/requestBodies/EmployeeUpdateBody"
+      security:
+        - cookieAccess: []
+        - cookieCSRF: []
+      responses:
+        "200":
+          $ref: "#/components/responses/EmployeeSchedule200"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "403":
+          $ref: "#/components/responses/Forbidden403"
+        "404":
+          $ref: "#/components/responses/NotFound404"
+
+  "/api/v1/employee-schedule/file":
     post:
       tags:
         - employees
@@ -172,6 +199,26 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/EmployeeSchedule200"
+        "400":
+          $ref: "#/components/responses/BadRequest400"
+        "401":
+          $ref: "#/components/responses/Unauthorized401"
+        "403":
+          $ref: "#/components/responses/Forbidden403"
+
+  "/api/v1/employee-schedule":
+    post:
+      tags:
+        - employees
+      summary: "Добавление расписания сотруднику"
+      requestBody:
+        $ref: "#/components/requestBodies/EmployeeScheduleCreateBody"
+      security:
+        - cookieAccess: []
+        - cookieCSRF: []
+      responses:
+        "201":
+          $ref: "#/components/responses/EmployeeSchedule201"
         "400":
           $ref: "#/components/responses/BadRequest400"
         "401":
@@ -910,7 +957,56 @@ components:
         phone_number:
           type: string
           description: "Телефон клиента"
-    
+
+    EmployeeUpdateBase:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: "Имя"
+        last_name:
+          type: string
+          description: "Фамилия"
+        surname:
+          type: string
+          description: "Отчество"
+        phone_number:
+          type: string
+          description: "Телефон"
+        date_of_birth:
+          type: string
+          format: date
+          description: "Дата рождения"
+        address:
+          type: string
+          description: "Адрес"
+        education:
+          type: string
+          description: "Образование"
+        place_of_birth:
+          type: string
+          description: "Место рождения"
+        citizenship:
+          type: string
+          description: "Гражданство"
+        personnel_number:
+          type: integer
+          description: "Табельный номер"
+        medical_checkup:
+          type: string
+          format: date
+          description: "Дата медицинского осмотра"
+        employment_contract:
+          type: string
+          description: "Трудовой договор"
+        work_experience:
+          type: string
+          description: "Стаж работы"
+        role:
+          type: string
+          description: "Роль сотрудника"
+          enum: ["WAITER", "COOK", "CHEF", "SOUS_CHEF", "MANAGER", "HOSTESS"]
+
     EmployeeBase:
       type: object
       properties:
@@ -995,6 +1091,10 @@ components:
               description: "Время окончания смены"
               format: date-time
               nullable: true
+        email:
+          type: string
+          format: email
+          description: "Почта пользователя"
 
     DeviceBase:
       type: object
@@ -1537,6 +1637,10 @@ components:
     EmployeeScheduleCreateBase:
       type: object
       properties:
+        day:
+          type: string
+          format: date
+          description: "День смены"
         time_start:
           type: string
           format: time
@@ -1702,6 +1806,21 @@ components:
           schema:
             $ref: "#/components/schemas/EmployeeScheduleCreateBase"
       required: true
+
+    EmployeeScheduleCreateBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EmployeeScheduleCreateBase"
+      required: true
+    
+    EmployeeUpdateBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EmployeeUpdateBase"
+      required: true
+    
     
     XLSXFileCreateBody:
       description: "Файлик формата .xlsx"
@@ -2015,6 +2134,15 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/TagToPlace"
+    
+    EmployeeSchedule201:
+      description: "Создание расписания сотрудника"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/EmployeeScheduleBase"
     
     EmployeeSchedule200:
       description: "Получение расписания сотрудника"

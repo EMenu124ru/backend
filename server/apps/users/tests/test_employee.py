@@ -2,7 +2,9 @@ import pytest
 from django.urls import reverse_lazy
 from rest_framework import status
 
+from apps.restaurants.factories import RestaurantFactory
 from apps.users.factories import EmployeeFactory
+from apps.users.models import Employee
 
 pytestmark = pytest.mark.django_db
 
@@ -69,6 +71,56 @@ def test_get_employees_by_roles_client(client, api_client):
 def test_get_employees_by_roles_not_auth(api_client):
     response = api_client.get(reverse_lazy("api:staff-list"))
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_update_employee_by_manager_success(
+    api_client,
+    manager,
+):
+    waiter = EmployeeFactory.create(
+        restaurant=manager.restaurant,
+        role=Employee.Roles.WAITER,
+    )
+    api_client.force_authenticate(user=manager.user)
+    new_education = "СФУ ИКИТ"
+    response = api_client.patch(
+        reverse_lazy("api:staff-update", kwargs={"pk": waiter.pk}),
+        data={
+            "education": new_education,
+        },
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert Employee.objects.filter(pk=waiter.pk, education=new_education).exists()
+
+
+def test_update_employee_by_manager_failed(
+    api_client,
+    manager,
+):
+    restaurant = RestaurantFactory.create()
+    waiter = EmployeeFactory.create(
+        restaurant=manager.restaurant,
+        role=Employee.Roles.WAITER,
+    )
+    api_client.force_authenticate(user=manager.user)
+    response = api_client.patch(
+        reverse_lazy("api:staff-update", kwargs={"pk": waiter.pk}),
+        data={
+            "restaurant": restaurant.pk,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert not Employee.objects.filter(pk=waiter.pk, restaurant=restaurant.pk).exists()
+
+    new_email = "newemail@mail.ru"
+    response = api_client.patch(
+        reverse_lazy("api:staff-update", kwargs={"pk": waiter.pk}),
+        data={
+            "email": new_email,
+        },
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert Employee.objects.filter(pk=waiter.pk, user__email=new_email).exists()
 
 
 def test_get_schedule_employee(

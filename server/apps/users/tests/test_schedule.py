@@ -8,6 +8,30 @@ from apps.users.models import Employee, Schedule
 pytestmark = pytest.mark.django_db
 
 
+def test_create_schedule_manager(
+    api_client,
+    manager,
+):
+    waiter = EmployeeFactory.create(
+        restaurant=manager.restaurant,
+        role=Employee.Roles.WAITER,
+    )
+    schedule = ScheduleFactory.build(employee=waiter)
+    api_client.force_authenticate(user=manager.user)
+    response = api_client.post(
+        reverse_lazy("api:employeeSchedule-list"),
+        data={
+            "time_start": schedule.time_start.time(),
+            "time_finish": schedule.time_finish.time(),
+            "employee": schedule.employee.pk,
+            "is_approve": schedule.is_approve,
+            "type": schedule.type,
+            "day": str(schedule.day),
+        },
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+
 def test_update_schedule_manager(
     api_client,
     manager,

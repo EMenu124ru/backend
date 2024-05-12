@@ -16,6 +16,10 @@ class EmployeeScheduleSerializer(BaseModelSerializer):
             "employee",
             "is_approve",
             "type",
-            "week_day",
             "day",
         )
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["week_day"] = instance.day.weekday()
+        return data

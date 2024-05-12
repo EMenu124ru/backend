@@ -118,7 +118,6 @@ def import_schedule(request) -> list:
 
             query = Schedule.objects.filter(
                 day=date_from_file.date(),
-                week_day=date_from_file.weekday(),
                 time_start=time_start,
                 time_finish=time_finish,
                 employee=employee,
@@ -131,7 +130,6 @@ def import_schedule(request) -> list:
                     "time_finish": time_finish,
                     "employee": employee.id,
                     "type": name,
-                    "week_day": date_from_file.weekday(),
                 }
                 serializer = EmployeeScheduleSerializer(data=to_create_item)
                 serializer.is_valid(raise_exception=True)

@@ -65,10 +65,10 @@ class OrderSerializer(BaseModelSerializer):
             "created",
             "modified",
         )
-        extra_kwargs = {
-            'created': {'read_only': True},
-            'modified': {'read_only': True},
-        }
+        read_only_fields = (
+            "created",
+            "modified",
+        )
         editable_fields = {
             Employee.Roles.WAITER: ["comment", "status"],
         }

@@ -63,10 +63,10 @@ class OrderAndDishSerializer(BaseModelSerializer):
             "created",
             "modified",
         )
-        extra_kwargs = {
-            'created': {'read_only': True},
-            'modified': {'read_only': True},
-        }
+        read_only_fields = (
+            "created",
+            "modified",
+        )
         editable_fields = {
             Employee.Roles.COOK: ["status"],
             Employee.Roles.WAITER: ["count", "comment", "status"],

@@ -43,7 +43,6 @@ class Schedule(ScheduleBase):
             f"employee_id={self.employee.pk},"
             f"type={self.type},"
             f"day={self.day},"
-            f"week_day={self.week_day},"
             f"time_start={self.time_start},"
             f"time_finish={self.time_finish},"
             f"is_approve={self.is_approve})"

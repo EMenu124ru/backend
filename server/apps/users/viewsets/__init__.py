@@ -1,4 +1,4 @@
 from .client import ClientViewSet
 from .schedule import EmployeeScheduleAPIView
 
-__all__ = (ClientViewSet, EmployeeScheduleAPIView,)
+__all__ = (ClientViewSet, EmployeeScheduleAPIView)

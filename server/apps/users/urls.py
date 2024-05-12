@@ -9,9 +9,11 @@ from apps.users.views import (
     EmployeeCookieAuthAPIView,
     EmployeeHeaderAuthAPIView,
     EmployeeRetrieveAPIView,
+    EmployeeScheduleFileCreateAPIView,
     EmployeeScheduleRetrieveAPIView,
     EmployeesKitchenRetrieveListAPIView,
     EmployeesRetrieveListAPIView,
+    EmployeesUpdateListAPIView,
     TokenRefreshCookieAPIView,
 )
 
@@ -38,6 +40,8 @@ urlpatterns = [
     path('devices', FCMDeviceAuthorizedViewSet.as_view({'post': 'create'}), name='create_fcm_device'),
     path("staff/me", EmployeeRetrieveAPIView.as_view(), name="staff-detail"),
     path("staff/<int:pk>/schedule", EmployeeScheduleRetrieveAPIView.as_view(), name="staff-schedule"),
+    path("staff/<int:pk>", EmployeesUpdateListAPIView.as_view(), name="staff-update"),
+    path("employee-schedule/file", EmployeeScheduleFileCreateAPIView.as_view(), name="staff-schedule-file"),
     path("staff/kitchen", EmployeesKitchenRetrieveListAPIView.as_view(), name="staff-kitchen"),
-    path("staff", EmployeesRetrieveListAPIView.as_view(), name="staff-list")
+    path("staff", EmployeesRetrieveListAPIView.as_view(), name="staff-list"),
 ]

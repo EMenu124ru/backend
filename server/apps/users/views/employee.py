@@ -1,15 +1,23 @@
 from django.conf import settings
 from django.middleware import csrf
+from django.utils import timezone
 from rest_framework import status
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from apps.users.functions import import_schedule
 from apps.users.models import Employee
 from apps.users.permissions import (
     FromSameRestaurantEmployee,
+    FromSameRestaurantSchedule,
     IsChef,
     IsCurrentUser,
     IsManager,
@@ -103,14 +111,40 @@ class EmployeesRetrieveListAPIView(ListAPIView):
         return Response(employees_by_roles, status=status.HTTP_200_OK)
 
 
+class EmployeesUpdateListAPIView(UpdateAPIView):
+    permission_classes = (IsAuthenticated & IsManager & FromSameRestaurantEmployee,)
+    serializer_class = EmployeeSerializer
+
+    def get_queryset(self):
+        return Employee.objects.filter(restaurant_id=self.request.user.employee.restaurant.pk)
+
+
 class EmployeeScheduleRetrieveAPIView(RetrieveAPIView):
     queryset = Employee.objects.all()
     permission_classes = (IsAuthenticated & FromSameRestaurantEmployee,)
 
     def retrieve(self, request, *args, **kwargs):
+        date = timezone.localdate(timezone.now())
         instance = self.get_object()
         serializer = EmployeeScheduleSerializer(
-            instance.schedule.all(),
+            instance.schedule.filter(day__month=date.month),
             many=True,
         )
         return Response(serializer.data)
+
+
+class EmployeeScheduleFileCreateAPIView(CreateAPIView):
+    permission_classes = (IsAuthenticated & IsManager & FromSameRestaurantSchedule,)
+
+    def create(self, request, *args, **kwargs):
+        data = import_schedule(request)
+        if 'file' not in data:
+            return Response(
+                data=data,
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(
+            data=data,
+            status=status.HTTP_400_BAD_REQUEST,
+            exception=True,
+        )

@@ -3,9 +3,11 @@ from .employee import (
     EmployeeCookieAuthAPIView,
     EmployeeHeaderAuthAPIView,
     EmployeeRetrieveAPIView,
+    EmployeeScheduleFileCreateAPIView,
     EmployeeScheduleRetrieveAPIView,
     EmployeesKitchenRetrieveListAPIView,
     EmployeesRetrieveListAPIView,
+    EmployeesUpdateListAPIView,
 )
 from .token import TokenRefreshCookieAPIView
 
@@ -19,4 +21,6 @@ __all__ = (
     EmployeesKitchenRetrieveListAPIView,
     EmployeesRetrieveListAPIView,
     TokenRefreshCookieAPIView,
+    EmployeeScheduleFileCreateAPIView,
+    EmployeesUpdateListAPIView,
 )
