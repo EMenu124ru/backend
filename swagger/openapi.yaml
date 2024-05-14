@@ -1237,10 +1237,6 @@ components:
           type: number
           description: "Id резервации"
           nullable: true
-        place:
-          type: number
-          description: "Id стола. Нужен для создания пустой резервации"
-          nullable: true
 
     OrderCreateReservationBase:
       type: object
