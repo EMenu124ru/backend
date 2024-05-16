@@ -1103,12 +1103,16 @@ components:
           type: number
         device_id:
           type: string
+          description: "Id устройства"
         registration_id:
           type: string
         type:
           type: string
+          enum: ["android", "web", "ios"]
+          description: "Тип устройства"
         user:
           type: number
+          description: "Id пользователя"
 
     DeviceCreateBase:
       type: object
@@ -1117,6 +1121,8 @@ components:
           type: string
         type:
           type: string
+          enum: ["android", "web", "ios"]
+          description: "Тип устройства"
 
     ClientCreateBase:
       type: object
