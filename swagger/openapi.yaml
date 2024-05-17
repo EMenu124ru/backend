@@ -1,5 +1,9 @@
 openapi: 3.0.2
 
+servers:
+  - url: "https://api.emenu24.ru"
+    description: "Основной сервер"
+
 info:
   title: EMenu
   version: 0.1.0
@@ -1839,6 +1843,11 @@ components:
   responses:
     TokenObtain200:
       description: "Получение токена. В запросе вернутся cookie с токенами и csrf токен"
+      headers:
+        Set-Cookie:
+          schema:
+            type: string
+            example: "access=access; refresh=refresh; csrftoken=csrftoken"
 
     TokenObtain400:
       description: "Ошибка получения токена"
@@ -1853,6 +1862,11 @@ components:
 
     TokenRefresh200:
       description: "Получение обновленного токена. В запросе вернутся cookie с токенами и csrf токен"
+      headers:
+        Set-Cookie:
+          schema:
+            type: string
+            example: "access=access; refresh=refresh; csrftoken=csrftoken"
 
     TokenRefresh400:
       description: "Ошибка при обновлении токена"
@@ -1867,6 +1881,7 @@ components:
               code:
                 type: string
                 example: "token_not_valid"
+
     DeviceCreate201:
       description: "Создание устройства"
       content:

@@ -1,19 +1,20 @@
 info:
   title: EMenu
+  description: WebSocket документация
   version: 0.1.0
 
 server:
-  url: ws://0.0.0.0:8000/ws/restaurant/<restaurant_id>/?token=<user_access_token>
-  description: <restaurant_id> - Exist restaurant.
+  url: ws://0.0.0.0:8000/ws/restaurant/<restaurant_id>/
+  description: <restaurant_id> - Идентификатор ресторана. Так же в запросе в заголовке `cookie`, передается token, который является access токеном
 
 actions:
   connect:
-    description: Successful connection to chat.
+    description: Подключение к комнате
     actor:
       type: object
       properties:
         is_system: true
-        description: Connect will be triggered only on connection request and handled by backend.
+        description: Connect будет запускаться только по запросу на соединение и обрабатываться серверной частью
     response_to_user:
       event: list_orders
       orders:
@@ -123,11 +124,12 @@ actions:
               type: string
   
   employee_orders_list:
-    description: Get list orders.
+    description: Получение списка заказов
     actor:
       type: object
       properties:
-        is_system: false
+        is_system: true
+        description: employee_orders_list будет запускаться при подключении сотрудника к комнате, при наличии новых или обновленных заказов. Так же, его можно вызывать при необходимости самому
     response_to_user:
       event: list_orders
       orders:
@@ -235,7 +237,7 @@ actions:
             type: string
 
   create_order:
-    description: Create new order.
+    description: Создание нового заказа
     actor:
       type: object
       properties:
@@ -373,7 +375,7 @@ actions:
               type: string
 
   edit_order:
-    description: Change order fields.
+    description: Изменение заказа
     actor:
       type: object
       properties:
