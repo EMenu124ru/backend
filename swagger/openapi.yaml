@@ -1011,6 +1011,19 @@ components:
           description: "Роль сотрудника"
           enum: ["WAITER", "COOK", "CHEF", "SOUS_CHEF", "MANAGER", "HOSTESS"]
 
+    EmployeeOrderBase:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: "Имя"
+        last_name:
+          type: string
+          description: "Фамилия"
+        surname:
+          type: string
+          description: "Отчество"
+  
     EmployeeBase:
       type: object
       properties:
@@ -1166,12 +1179,7 @@ components:
         employee:
           description: "Обслуживающий сотрудник-официант"
           allOf:
-            - $ref: "#/components/schemas/EmployeeBase"
-          nullable: true
-        client:
-          description: "Клиент"
-          allOf:
-            - $ref: "#/components/schemas/ClientBase"
+            - $ref: "#/components/schemas/EmployeeOrderBase"
           nullable: true
         dishes:
           type: array
@@ -1248,7 +1256,7 @@ components:
           description: "Id резервации"
           nullable: true
 
-    OrderCreateReservationBase:
+    OrderReservationCreateBase:
       type: object
       properties:
         comment:
@@ -1365,7 +1373,7 @@ components:
         order:
           description: "Заказ к ресторану"
           allOf:
-            - $ref: "#/components/schemas/OrderCreateReservationBase"
+            - $ref: "#/components/schemas/OrderReservationCreateBase"
           nullable: true
         place:
           type: number
@@ -1577,7 +1585,7 @@ components:
           - $ref: "#/components/schemas/DishBase"
         employee:
           allOf:
-          - $ref: "#/components/schemas/EmployeeBase"
+          - $ref: "#/components/schemas/EmployeeOrderBase"
           description: "Исполняющий работник-повар"
           nullable: true
         count:

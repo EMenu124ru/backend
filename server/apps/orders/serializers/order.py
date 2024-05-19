@@ -11,7 +11,7 @@ from apps.orders.models import (
 )
 from apps.restaurants.models import Place, Restaurant
 from apps.users.models import Client, Employee
-from apps.users.serializers import ClientSerializer, EmployeeSerializer
+from apps.users.serializers import EmployeeOrderSerializer
 
 from .order_and_dish import BaseOrderAndDishSerializer, OrderAndDishSerializer
 
@@ -170,12 +170,9 @@ class OrderSerializer(BaseModelSerializer):
 
     def to_representation(self, instance: Order) -> OrderedDict:
         data = super().to_representation(instance)
-        employee, client = None, None
+        employee = None
         if (employee_id := data.pop("employee")) is not None:
             employee = Employee.objects.get(pk=employee_id)
-
-        if (client_id := data.pop("client")) is not None:
-            client = Client.objects.get(pk=client_id)
 
         order_and_dishes = OrderAndDish.objects.filter(order_id=instance.id).order_by("created")
         reservation = instance.reservation.pk if instance.reservation else None
@@ -183,8 +180,7 @@ class OrderSerializer(BaseModelSerializer):
         new_info = {
             "dishes": OrderAndDishSerializer(order_and_dishes, many=True).data,
             "price": instance.price,
-            "employee":  None if not employee else EmployeeSerializer(employee).data,
-            "client": None if not client else ClientSerializer(client).data,
+            "employee":  None if not employee else EmployeeOrderSerializer(employee).data,
             "reservation": reservation,
             "place": place.place if place else None,
         }

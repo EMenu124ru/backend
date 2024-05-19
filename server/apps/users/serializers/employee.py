@@ -25,6 +25,12 @@ class EmployeeAuthSerializer(TokenObtainPairSerializer):
         }
 
 
+class EmployeeOrderSerializer(serializers.Serializer):
+    first_name = serializers.CharField(source="user.first_name")
+    last_name = serializers.CharField(source="user.last_name")
+    surname = serializers.CharField(source="user.surname")
+
+
 class EmployeeSerializer(BaseModelSerializer):
     first_name = serializers.CharField(source="user.first_name")
     last_name = serializers.CharField(source="user.last_name")

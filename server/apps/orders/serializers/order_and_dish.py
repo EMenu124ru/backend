@@ -8,7 +8,7 @@ from apps.orders.models import (
 )
 from apps.orders.serializers import DishSerializer
 from apps.users.models import Employee
-from apps.users.serializers import EmployeeSerializer
+from apps.users.serializers import EmployeeOrderSerializer
 
 
 class BaseOrderAndDishSerializer(BaseModelSerializer):
@@ -114,7 +114,7 @@ class OrderAndDishSerializer(BaseModelSerializer):
 
         new_info = {
             "dish": DishSerializer(dish).data,
-            "employee":  None if not employee else EmployeeSerializer(employee).data,
+            "employee":  None if not employee else EmployeeOrderSerializer(employee).data,
         }
         data.update(new_info)
         return data

@@ -323,7 +323,7 @@ async def test_create_order_by_waiter_not_by_websocket(waiter):
 
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
-async def test_create_order_by_waiter_without_dishes_without_reservation(waiter):
+async def test_create_order_by_waiter_without_reservation(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
     application = JWTQueryParamAuthMiddleware(URLRouter([
@@ -358,7 +358,7 @@ async def test_create_order_by_waiter_without_dishes_without_reservation(waiter)
 
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
-async def test_create_order_by_waiter_without_dishes(waiter):
+async def test_create_order_by_waiter(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
     application = JWTQueryParamAuthMiddleware(URLRouter([
