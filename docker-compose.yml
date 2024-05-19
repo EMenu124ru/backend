@@ -74,7 +74,7 @@ services:
       - CELERY_BROKER_URL=${REDIS_URL}
       - CELERY_RESULT_BACKEND=${REDIS_URL}
       - FCM_SERVER_KEY=${FCM_SERVER_KEY}
-    command: celery --app=config beat --scheduler=django --loglevel=DEBUG
+    command: celery --app=config beat --scheduler=django_celery_beat.schedulers:DatabaseScheduler --loglevel=DEBUG
   
   flower:
     container_name: flower
@@ -98,7 +98,7 @@ services:
       - CELERY_BROKER_URL=${REDIS_URL}
       - CELERY_RESULT_BACKEND=${REDIS_URL}
       - FCM_SERVER_KEY=${FCM_SERVER_KEY}
-    command: celery --app=config flower
+    command: celery --app=config flower --url_prefix=flower
 
   redis:
     image: redis:6

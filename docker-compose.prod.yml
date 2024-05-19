@@ -155,7 +155,7 @@ services:
         delay: 20s
         max_attempts: 5
         window: 60s
-    command: celery --app=config beat --scheduler=django --loglevel=DEBUG
+    command: celery --app=config beat --scheduler=django_celery_beat.schedulers:DatabaseScheduler --loglevel=DEBUG
 
   flower:
     image: ghcr.io/emenu124ru/django:latest
@@ -171,7 +171,7 @@ services:
       - ./.envs/django.env
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
       update_config:
         parallelism: 1
         order: start-first

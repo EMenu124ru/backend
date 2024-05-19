@@ -7,7 +7,7 @@ from apps.users.models import Employee
 class OrderPermission(permissions.BasePermission):
 
     def has_permission(self, request, view) -> bool:
-        if request.user.is_client:
+        if request.user.is_client or check_role_employee(request.user, Employee.Roles.COOK):
             return False
         if request.method == "POST":
             return check_role_employee(request.user, Employee.Roles.WAITER)

@@ -30,11 +30,6 @@ STATUSES_BY_ROLE = {
         Order.Statuses.FINISHED,
         Order.Statuses.CANCELED,
     ],
-    Employee.Roles.COOK: [
-        Order.Statuses.WAITING_FOR_COOKING,
-        Order.Statuses.COOKING,
-        Order.Statuses.WAITING_FOR_DELIVERY,
-    ],
     Employee.Roles.CHEF: [
         Order.Statuses.WAITING_FOR_COOKING,
         Order.Statuses.COOKING,
@@ -45,7 +40,6 @@ STATUSES_BY_ROLE = {
         Order.Statuses.COOKING,
         Order.Statuses.WAITING_FOR_DELIVERY,
     ],
-    Employee.Roles.HOSTESS: [],
 }
 
 
@@ -63,9 +57,10 @@ def get_orders_by_restaurant(restaurant_id: int, role: Employee.Roles) -> QueryS
     delta = timedelta(hours=14)
     now = timezone.now()
     left_bound = now - delta
+    statuses = STATUSES_BY_ROLE.get(role, [])
     return Order.objects.filter(
         Q(employee__restaurant_id=restaurant_id) &
-        Q(status__in=STATUSES_BY_ROLE[role]) &
+        Q(status__in=statuses) &
         (
             Q(created__gte=left_bound) |
             Q(reservation__arrival_time__gte=left_bound)
@@ -76,7 +71,8 @@ def get_orders_by_restaurant(restaurant_id: int, role: Employee.Roles) -> QueryS
 def update_order_list_in_layer(employee: Employee, orders: QuerySet | list[Order]) -> None:
     from apps.restaurants.consumers.room import Events, OrderService
 
-    channel_name = cache.get(f"user__{employee.user.id}")
+    employee_key = f"user__{employee.user.id}"
+    channel_name = cache.get(employee_key)
     if channel_name:
         body = {"orders": OrderService.get_orders_list_sync(orders)}
         async_to_sync(get_channel_layer().send)(
@@ -90,6 +86,7 @@ def update_order_list_in_layer(employee: Employee, orders: QuerySet | list[Order
 
 def update_order_list_in_group(restaurant_id: int) -> None:
     restaurant = Restaurant.objects.get(pk=restaurant_id)
-    for employee in restaurant.employees.all():
+    employees = restaurant.employees.filter(role__in=STATUSES_BY_ROLE.keys()).order_by("role")
+    for employee in employees:
         orders = get_orders_by_restaurant(restaurant_id, employee.role)
         update_order_list_in_layer(employee, orders)

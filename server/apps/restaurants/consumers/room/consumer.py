@@ -37,7 +37,8 @@ class RestaurantConsumer(
             self.group_name,
             self.channel_name,
         )
-        await cache.aset(f"user__{self.user.id}", self.channel_name)
+
+        await cache.aset(f"user__{self.user.id}", self.channel_name, timeout=24*60*60)
         await RestaurantActionsMixin.employee_orders_list(self)
 
     async def disconnect(self, close_code):
