@@ -106,7 +106,7 @@ class Employee(models.Model):
                     status = mapping_statuses[schedule.type].label
                     status_const = mapping_statuses[schedule.type]
                 else:
-                    if current_time < schedule.time_start:
+                    if current_time.time() < schedule.time_start:
                         status = Employee.Statuses.WILL_BE_ON_WORK_SHIFT_FROM_TO.label
                         status_const = Employee.Statuses.WILL_BE_ON_WORK_SHIFT_FROM_TO
                     else:
