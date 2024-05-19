@@ -87,7 +87,7 @@ class Employee(models.Model):
     )
 
     def get_status(self):
-        current_time = timezone.now()
+        current_time = timezone.localtime(timezone.now())
         schedule = Schedule.objects.filter(
             models.Q(employee=self) & models.Q(day=current_time.date())
         )
