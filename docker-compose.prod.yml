@@ -191,22 +191,6 @@ services:
     image: redis:6
     volumes:
       - redis_data:/data
-    deploy:
-      mode: replicated
-      replicas: 2
-      update_config:
-        parallelism: 1
-        order: start-first
-        failure_action: rollback
-        delay: 10s
-      rollback_config:
-        parallelism: 0
-        order: stop-first
-      restart_policy:
-        condition: any
-        delay: 20s
-        max_attempts: 5
-        window: 60s
 
   postgres:
     image: postgres:14.4
@@ -215,22 +199,6 @@ services:
       - ./dumps:/dumps
     env_file:
       - ./.envs/postgres.env
-    deploy:
-      mode: replicated
-      replicas: 2
-      update_config:
-        parallelism: 1
-        order: start-first
-        failure_action: rollback
-        delay: 10s
-      rollback_config:
-        parallelism: 0
-        order: stop-first
-      restart_policy:
-        condition: any
-        delay: 20s
-        max_attempts: 5
-        window: 60s
 
   swagger-ui:
     image: ghcr.io/emenu124ru/swagger:latest
