@@ -26,3 +26,4 @@ def send_updated_orders():
 
     for restaurant_id in restaurant_orders:
         update_order_list_in_group(restaurant_id)
+    return len(restaurant_orders)

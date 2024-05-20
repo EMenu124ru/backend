@@ -128,7 +128,7 @@ services:
         delay: 20s
         max_attempts: 5
         window: 60s
-    command: ["celery", "--app=config", "worker", "--loglevel=DEBUG"]
+    command: ["celery", "-A", "config", "worker", "--loglevel=DEBUG"]
 
   celery_beat:
     image: ghcr.io/emenu124ru/django:latest
@@ -155,7 +155,7 @@ services:
         delay: 20s
         max_attempts: 5
         window: 60s
-    command: ["celery", "--app=config", "beat", "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler", "--loglevel=DEBUG"]
+    command: ["celery", "-A", "config", "beat", "-s", "/var/run/celerybeat-schedule"]
 
   flower:
     image: ghcr.io/emenu124ru/django:latest
@@ -185,7 +185,7 @@ services:
         delay: 20s
         max_attempts: 5
         window: 60s
-    command: ["celery", "--app=config", "flower", "--url_prefix=flower"]
+    command: ["celery", "-A", "config", "flower", "--url_prefix=flower"]
 
   redis:
     image: redis:6

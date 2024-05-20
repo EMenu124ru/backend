@@ -51,7 +51,7 @@ services:
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - REDIS_URL=${REDIS_URL}
       - FCM_SERVER_KEY=${FCM_SERVER_KEY}
-    command: ["celery", "--app=config", "worker", "--loglevel=DEBUG"]
+    command: ["celery", "-A", "config", "worker", "--loglevel=DEBUG"]
 
   celery_beat:
     container_name: celery_beat
@@ -70,7 +70,7 @@ services:
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - REDIS_URL=${REDIS_URL}
       - FCM_SERVER_KEY=${FCM_SERVER_KEY}
-    command: ["celery", "--app=config", "beat", "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler", "--loglevel=DEBUG"]
+    command: ["celery", "-A", "config", "beat", "-s", "/var/run/celerybeat-schedule"]
   
   flower:
     container_name: flower
@@ -92,7 +92,7 @@ services:
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - REDIS_URL=${REDIS_URL}
       - FCM_SERVER_KEY=${FCM_SERVER_KEY}
-    command: ["celery", "--app=config", "flower", "--url_prefix=flower"]
+    command: ["celery", "-A", "config", "flower", "--url_prefix=flower"]
 
   redis:
     image: redis:6
