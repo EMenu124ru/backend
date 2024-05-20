@@ -15,10 +15,7 @@ def order_update_order_list(instance: Order, created: bool, update_fields: froze
         "user__employee__restaurant_id": restaurant_id,
     }
 
-    print(update_fields)
-    if update_fields and "price" not in update_fields and "status" not in update_fields:
-        update_order_list_in_group(restaurant_id)
-
+    update_order_list_in_group(restaurant_id)
     if created:
         filter_params["user__employee__role__in"] = [Employee.Roles.CHEF, Employee.Roles.SOUS_CHEF]
         filter_params["user__employee__restaurant_id"] = restaurant_id

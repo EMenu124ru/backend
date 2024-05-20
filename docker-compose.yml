@@ -22,6 +22,7 @@ services:
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - REDIS_URL=${REDIS_URL}
       - FCM_SERVER_KEY=${FCM_SERVER_KEY}
+      - FCM_PROJECT_ID=${FCM_PROJECT_ID}
     command: ["make", "run-django-dev"]
 
   postgres:
@@ -51,6 +52,7 @@ services:
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - REDIS_URL=${REDIS_URL}
       - FCM_SERVER_KEY=${FCM_SERVER_KEY}
+      - FCM_PROJECT_ID=${FCM_PROJECT_ID}
     command: ["celery", "-A", "config", "worker", "--loglevel=DEBUG"]
 
   celery_beat:
@@ -70,6 +72,7 @@ services:
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - REDIS_URL=${REDIS_URL}
       - FCM_SERVER_KEY=${FCM_SERVER_KEY}
+      - FCM_PROJECT_ID=${FCM_PROJECT_ID}
     command: ["celery", "-A", "config", "beat", "-s", "/var/run/celerybeat-schedule"]
   
   flower:
@@ -92,6 +95,7 @@ services:
       - DJANGO_DEBUG=${DJANGO_DEBUG}
       - REDIS_URL=${REDIS_URL}
       - FCM_SERVER_KEY=${FCM_SERVER_KEY}
+      - FCM_PROJECT_ID=${FCM_PROJECT_ID}
     command: ["celery", "-A", "config", "flower", "--url_prefix=flower"]
 
   redis:
