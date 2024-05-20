@@ -12,7 +12,7 @@ def send_notification(
     body: str,
 ):
     if not settings.DEBUG:
-        FCMDevice.objects.filter(**filter_params).send_message(
+        result = FCMDevice.objects.filter(**filter_params).send_message(
             Message(
                 Notification(
                     title=title,
@@ -20,3 +20,4 @@ def send_notification(
                 ),
             ),
         )
+        print(result)
