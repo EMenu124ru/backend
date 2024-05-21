@@ -239,6 +239,9 @@ Temporary Items
 # SFTP configuration file
 sftp-config.json
 
+# Firebase Cloud Messaging
+credentials.json
+
 # Package control specific files
 Package Control.last-run
 Package Control.ca-list

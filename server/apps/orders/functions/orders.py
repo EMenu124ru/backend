@@ -1,3 +1,4 @@
+from collections import Counter
 from datetime import timedelta
 
 from asgiref.sync import async_to_sync
@@ -6,7 +7,7 @@ from django.core.cache import cache
 from django.db.models import Q, QuerySet
 from django.utils import timezone
 
-from apps.orders.models import Order
+from apps.orders.models import Order, OrderAndDish
 from apps.restaurants.models import Restaurant
 from apps.users.models import Employee
 
@@ -41,6 +42,18 @@ STATUSES_BY_ROLE = {
         Order.Statuses.WAITING_FOR_DELIVERY,
     ],
 }
+ORDER_AND_DISH_STATUS_WEIGHTS = {
+    OrderAndDish.Statuses.WAITING_FOR_COOKING: 0,
+    OrderAndDish.Statuses.COOKING: 1,
+    OrderAndDish.Statuses.DONE: 2,
+    OrderAndDish.Statuses.DELIVERED: 3,
+}
+CHECKED_STATUSES = [
+    OrderAndDish.Statuses.WAITING_FOR_COOKING,
+    OrderAndDish.Statuses.COOKING,
+    OrderAndDish.Statuses.DELIVERED,
+    OrderAndDish.Statuses.DONE,
+]
 
 
 def get_restaurant_id(order: Order):
@@ -90,3 +103,32 @@ def update_order_list_in_group(restaurant_id: int) -> None:
     for employee in employees:
         orders = get_orders_by_restaurant(restaurant_id, employee.role)
         update_order_list_in_layer(employee, orders)
+
+
+def order_change_status(order: Order):
+    order_status = Order.Statuses.WAITING_FOR_COOKING
+    dishes = order.dishes.filter(status__in=CHECKED_STATUSES).all()
+    count_dishes = dishes.count()
+    if not count_dishes:
+        return order_status
+    counter = Counter(dishes.values_list("status", flat=True))
+    min_status = min(counter, key=lambda obj: ORDER_AND_DISH_STATUS_WEIGHTS[obj])
+    if min_status == OrderAndDish.Statuses.WAITING_FOR_COOKING:
+        order_status = Order.Statuses.WAITING_FOR_COOKING
+    elif min_status == OrderAndDish.Statuses.COOKING:
+        order_status = Order.Statuses.COOKING
+        if OrderAndDish.Statuses.DONE in counter:
+            order_status = Order.Statuses.WAITING_FOR_DELIVERY
+    elif min_status == OrderAndDish.Statuses.DONE:
+        order_status = Order.Statuses.WAITING_FOR_DELIVERY
+    elif min_status == OrderAndDish.Statuses.DELIVERED:
+        order_status = Order.Statuses.DELIVERED
+    return order_status
+
+
+def order_change_price(order: Order):
+    new_price = 0
+    dishes = order.dishes.filter(~Q(status=OrderAndDish.Statuses.CANCELED))
+    for dish in dishes:
+        new_price += dish.dish.price
+    return new_price

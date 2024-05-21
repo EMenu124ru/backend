@@ -34,6 +34,8 @@ class OrderSerializer(BaseModelSerializer):
     )
     dishes = BaseOrderAndDishSerializer(
         many=True,
+        allow_null=True,
+        required=False,
     )
     place = serializers.PrimaryKeyRelatedField(
         queryset=Place.objects.all(),
@@ -166,7 +168,7 @@ class OrderSerializer(BaseModelSerializer):
         validated_data: OrderedDict,
     ) -> Order:
         validated_data.pop("dishes", None)
-        return super().update(instance, validated_data)
+        return super().update(Order.objects.get(pk=instance.pk), validated_data)
 
     def to_representation(self, instance: Order) -> OrderedDict:
         data = super().to_representation(instance)

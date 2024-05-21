@@ -12,11 +12,13 @@ def send_notification(
     body: str,
 ):
     if not settings.DEBUG:
-        return FCMDevice.objects.filter(**filter_params).send_message(
+        response = FCMDevice.objects.filter(**filter_params).send_message(
             Message(
-                Notification(
+                notification=Notification(
                     title=title,
                     body=body,
                 ),
             ),
         )
+        print(response)
+        return response.response.success_count, response.response.failure_count

@@ -41,7 +41,7 @@ class OrderAndDishSerializer(BaseModelSerializer):
     )
 
     class Errors:
-        WAITER_CHANGES = "Официант может изменить только количество блюд в заказе и статус"
+        WAITER_CHANGES = "Официант может изменить только количество блюд в заказе, статус и комментарий"
         COOK_CHANGES = "Повар может изменить только статус заказа"
         CHEF_CHANGES = (
             "Шеф и су-шеф могут изменять только работника, "

@@ -52,7 +52,6 @@ def get_order_ids(orders):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_connect_waiter(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -71,7 +70,6 @@ async def test_connect_waiter(waiter):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_connect_chef(chef):
     token = await get_token(chef.user)
     restaurant = chef.restaurant
@@ -90,7 +88,6 @@ async def test_connect_chef(chef):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_connect_other_role(hostess):
     token = await get_token(hostess.user)
     restaurant = hostess.restaurant
@@ -110,7 +107,7 @@ async def test_connect_other_role(hostess):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
+@pytest.mark.django_db()
 async def test_connect_not_auth():
     restaurant = await database_sync_to_async(RestaurantFactory.create)()
     application = JWTQueryParamAuthMiddleware(URLRouter([
@@ -128,7 +125,6 @@ async def test_connect_not_auth():
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_connect_not_consists_employee(waiter):
     token = await get_token(waiter.user)
     restaurant = await database_sync_to_async(RestaurantFactory.create)()
@@ -147,7 +143,6 @@ async def test_connect_not_consists_employee(waiter):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_connect_client(client):
     token = await get_token(client.user)
     restaurant = await database_sync_to_async(RestaurantFactory.create)()
@@ -166,7 +161,6 @@ async def test_connect_client(client):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_connect_wrong_restaurant_id(waiter):
     token = await get_token(waiter.user)
     application = JWTQueryParamAuthMiddleware(URLRouter([
@@ -193,7 +187,6 @@ async def test_connect_wrong_restaurant_id(waiter):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_employee_orders_list(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -263,7 +256,6 @@ async def test_employee_orders_list(waiter):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_create_order_by_waiter_without_dishes_failed(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -297,7 +289,6 @@ async def test_create_order_by_waiter_without_dishes_failed(waiter):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_create_order_by_waiter_not_by_websocket(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -323,7 +314,6 @@ async def test_create_order_by_waiter_not_by_websocket(waiter):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_create_order_by_waiter_without_reservation(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -357,7 +347,6 @@ async def test_create_order_by_waiter_without_reservation(waiter):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_create_order_by_waiter(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -394,7 +383,6 @@ async def test_create_order_by_waiter(waiter):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_create_order_by_chef(chef):
     token = await get_token(chef.user)
     restaurant = chef.restaurant
@@ -428,7 +416,6 @@ async def test_create_order_by_chef(chef):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_edit_order_waiter(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -456,7 +443,6 @@ async def test_edit_order_waiter(waiter):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_edit_order_chef_failed(chef):
     token = await get_token(chef.user)
     restaurant = chef.restaurant
@@ -489,7 +475,6 @@ async def test_edit_order_chef_failed(chef):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_edit_order_chef_success(chef):
     token = await get_token(chef.user)
     restaurant = chef.restaurant
@@ -529,7 +514,6 @@ async def test_edit_order_chef_success(chef):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
 async def test_edit_order_waiter_add_dish(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -561,7 +545,50 @@ async def test_edit_order_waiter_add_dish(waiter):
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db(transaction=True)
+async def test_edit_order_waiter_edit_dish(waiter):
+    token = await get_token(waiter.user)
+    restaurant = waiter.restaurant
+    order = await database_sync_to_async(OrderFactory.create)(
+        status=Order.Statuses.WAITING_FOR_COOKING,
+        employee=waiter,
+        reservation=None,
+    )
+    order_and_dish = await database_sync_to_async(OrderAndDishFactory.create)(
+        status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
+        employee=None,
+        order=order,
+    )
+    application = JWTQueryParamAuthMiddleware(URLRouter([
+        path("ws/restaurant/<restaurant_id>/", RestaurantConsumer.as_asgi()),
+    ]))
+    communicator = WebsocketCommunicator(
+        application,
+        f"ws/restaurant/{restaurant.id}/?token={token}",
+    )
+    connected, _ = await communicator.connect()
+    assert connected
+    await communicator.receive_json_from(timeout=15)
+    body = {
+        "id": order.id,
+        "dishes": [{"id": order_and_dish.id, "status": OrderAndDish.Statuses.COOKING}],
+    }
+    await communicator.send_json_to({"type": "edit_order", "body": body})
+    await sync_to_async(update_order_list_in_group)(waiter.restaurant.id)
+
+    for _ in range(2):
+        await communicator.receive_json_from(timeout=15)
+
+    message = await communicator.receive_json_from(timeout=15)
+    assert message["type"] == "list_orders"
+    assert len(message["body"]["orders"]) == 1
+    test_order = list(filter(lambda x: x["id"] == order.id, message["body"]["orders"]))[0]
+    assert test_order["status"] == str(Order.Statuses.COOKING)
+    assert len(test_order["dishes"]) == 1
+    assert test_order["dishes"][0]["status"] == str(OrderAndDish.Statuses.COOKING)
+    await communicator.disconnect()
+
+
+@pytest.mark.asyncio
 async def test_edit_order_chef_add_dish(chef):
     token = await get_token(chef.user)
     restaurant = chef.restaurant
@@ -583,12 +610,13 @@ async def test_edit_order_chef_add_dish(chef):
     )
     connected, _ = await communicator.connect()
     assert connected
-    await communicator.receive_json_from(timeout=15)
+    await communicator.receive_json_from()
     body = {
         "id": order.id,
         "dishes": [{"dish": dish.id}],
     }
     await communicator.send_json_to({"type": "edit_order", "body": body})
+    await sync_to_async(update_order_list_in_group)(waiter.restaurant.id)
     message = await communicator.receive_json_from(timeout=15)
     assert message["type"] == "error"
     await communicator.disconnect()

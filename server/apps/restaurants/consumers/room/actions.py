@@ -38,10 +38,10 @@ class RestaurantActionsMixin:
                 return
             order = await OrderQueries.get_order(body["id"])
             dishes = body.pop("dishes", [])
-            if dishes:
-                await OrderAndDishService.edit_dishes(dishes, order.id, self.user)
             if body:
                 await OrderService.edit_order(body, order, self.user)
+            if dishes:
+                await OrderAndDishService.edit_dishes(dishes, order.id, self.user)
         except (ValidationError, ValidationErrorDjango) as ex:
             error_message = get_errors(ex.detail)
             error_message_str = (
