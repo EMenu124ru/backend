@@ -1,11 +1,26 @@
+import zoneinfo
+
+from django.conf import settings
 from django.db import models
 
 from apps.orders.models import Reservation
+
+AVAILABLE_TIMEZONES = sorted([
+    (zone, zone)
+    for zone in zoneinfo.available_timezones()
+    if "Asia" in zone or "Europe" in zone
+])
 
 
 class Restaurant(models.Model):
     address = models.TextField(
         verbose_name="Адрес",
+    )
+    timezone = models.CharField(
+        choices=AVAILABLE_TIMEZONES,
+        default=settings.TIME_ZONE,
+        max_length=20,
+        verbose_name="Временная зона"
     )
 
     def get_places(self, tags: str) -> tuple[list, list, list]:
@@ -42,5 +57,6 @@ class Restaurant(models.Model):
         return (
             "Restaurant"
             f"(id={self.pk},"
+            f"timezone={self.timezone},"
             f"address={self.address})"
         )

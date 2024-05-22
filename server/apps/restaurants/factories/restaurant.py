@@ -1,7 +1,7 @@
-from factory import Faker, post_generation
+from factory import fuzzy, Faker, post_generation
 from factory.django import DjangoModelFactory
 
-from apps.restaurants.models import Restaurant
+from apps.restaurants.models import Restaurant, AVAILABLE_TIMEZONES
 
 PLACE_COUNT = 10
 
@@ -11,6 +11,9 @@ class RestaurantFactory(DjangoModelFactory):
 
     address = Faker(
         "address",
+    )
+    timezone = fuzzy.FuzzyChoice(
+        [item[0] for item in AVAILABLE_TIMEZONES],
     )
 
     @post_generation

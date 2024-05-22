@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+
 from django.db import models
 from django.utils import timezone
 
@@ -87,7 +89,13 @@ class Employee(models.Model):
     )
 
     def get_status(self):
-        current_time = timezone.localtime(timezone.now())
+        status = Employee.Statuses.NOT_ON_WORK_SHIFT.label
+        status_const = Employee.Statuses.NOT_ON_WORK_SHIFT
+
+        if not self.restaurant:
+            return dict(status=status, status_const=status_const)
+
+        current_time = timezone.localtime(timezone.now(), timezone=ZoneInfo(self.restaurant.timezone))
         schedule = Schedule.objects.filter(
             models.Q(employee=self) & models.Q(day=current_time.date())
         )
@@ -97,8 +105,6 @@ class Employee(models.Model):
             Schedule.Types.VACATION: Employee.Statuses.VACATION,
         }
         status_dict = {}
-        status = Employee.Statuses.NOT_ON_WORK_SHIFT.label
-        status_const = Employee.Statuses.NOT_ON_WORK_SHIFT
         if schedule.exists():
             schedule = schedule.first()
             if schedule.is_approve:
