@@ -1,4 +1,5 @@
 from .room import (
+    ConnectValidation,
     Events,
     OrderQueries,
     OrderService,
@@ -10,4 +11,5 @@ __all__ = (
     Events,
     OrderQueries,
     OrderService,
+    ConnectValidation,
 )

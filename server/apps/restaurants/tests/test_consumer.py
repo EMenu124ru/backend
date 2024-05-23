@@ -15,7 +15,7 @@ from apps.orders.factories import (
 from apps.orders.functions import get_orders_by_restaurant, update_order_list_in_group
 from apps.orders.models import Order, OrderAndDish
 from apps.orders.serializers import OrderAndDishSerializer, OrderSerializer
-from apps.restaurants.consumers import RestaurantConsumer
+from apps.restaurants.consumers import ConnectValidation, RestaurantConsumer
 from apps.restaurants.factories import PlaceFactory, RestaurantFactory
 from apps.users.factories import EmployeeFactory
 from apps.users.models import Employee
@@ -52,6 +52,7 @@ def get_order_ids(orders):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_connect_waiter(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -70,6 +71,7 @@ async def test_connect_waiter(waiter):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_connect_chef(chef):
     token = await get_token(chef.user)
     restaurant = chef.restaurant
@@ -88,6 +90,7 @@ async def test_connect_chef(chef):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_connect_other_role(hostess):
     token = await get_token(hostess.user)
     restaurant = hostess.restaurant
@@ -102,12 +105,12 @@ async def test_connect_other_role(hostess):
     connected, _ = await communicator.connect()
     assert connected
     message = await communicator.receive_json_from(timeout=15)
-    assert message == {"type": "error", 'detail': 'Employee has wrong role'}
+    assert message == {"type": "error", 'detail': ConnectValidation.ConnectError.WRONG_ROLE}
     await communicator.disconnect()
 
 
 @pytest.mark.asyncio
-@pytest.mark.django_db()
+@pytest.mark.django_db(transaction=True)
 async def test_connect_not_auth():
     restaurant = await database_sync_to_async(RestaurantFactory.create)()
     application = JWTQueryParamAuthMiddleware(URLRouter([
@@ -120,11 +123,12 @@ async def test_connect_not_auth():
     connected, _ = await communicator.connect()
     assert connected
     message = await communicator.receive_json_from(timeout=15)
-    assert message == {"type": "error", 'detail': "User isn't authenticated"}
+    assert message == {"type": "error", 'detail': ConnectValidation.ConnectError.ISNT_AUTHENTICATED}
     await communicator.disconnect()
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_connect_not_consists_employee(waiter):
     token = await get_token(waiter.user)
     restaurant = await database_sync_to_async(RestaurantFactory.create)()
@@ -138,11 +142,12 @@ async def test_connect_not_consists_employee(waiter):
     connected, _ = await communicator.connect()
     assert connected
     message = await communicator.receive_json_from(timeout=15)
-    assert message == {"type": "error", 'detail': "Employee isn't member of restaurant"}
+    assert message == {"type": "error", 'detail': ConnectValidation.ConnectError.EMPLOYEE_ISNT_MEMBER}
     await communicator.disconnect()
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_connect_client(client):
     token = await get_token(client.user)
     restaurant = await database_sync_to_async(RestaurantFactory.create)()
@@ -156,11 +161,12 @@ async def test_connect_client(client):
     connected, _ = await communicator.connect()
     assert connected
     message = await communicator.receive_json_from(timeout=15)
-    assert message == {"type": "error", 'detail': "User isn't employee"}
+    assert message == {"type": "error", 'detail': ConnectValidation.ConnectError.ISNT_EMPLOYEE}
     await communicator.disconnect()
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_connect_wrong_restaurant_id(waiter):
     token = await get_token(waiter.user)
     application = JWTQueryParamAuthMiddleware(URLRouter([
@@ -173,7 +179,7 @@ async def test_connect_wrong_restaurant_id(waiter):
     connected, _ = await communicator.connect()
     assert connected
     message = await communicator.receive_json_from(timeout=15)
-    assert message == {"type": "error", 'detail': "Enter right primary key of restaurant"}
+    assert message == {"type": "error", 'detail': ConnectValidation.ConnectError.WRONG_RESTAURANT_PK}
 
     communicator = WebsocketCommunicator(
         application,
@@ -182,11 +188,12 @@ async def test_connect_wrong_restaurant_id(waiter):
     connected, _ = await communicator.connect()
     assert connected
     message = await communicator.receive_json_from(timeout=15)
-    assert message == {"type": "error", 'detail': "Restaurant doesn't exists"}
+    assert message == {"type": "error", 'detail': ConnectValidation.ConnectError.RESTAURANT_NOT_EXISTS}
     await communicator.disconnect()
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_employee_orders_list(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -256,6 +263,7 @@ async def test_employee_orders_list(waiter):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_create_order_by_waiter_without_dishes_failed(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -289,6 +297,7 @@ async def test_create_order_by_waiter_without_dishes_failed(waiter):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_create_order_by_waiter_not_by_websocket(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -314,6 +323,7 @@ async def test_create_order_by_waiter_not_by_websocket(waiter):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_create_order_by_waiter_without_reservation(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -347,6 +357,7 @@ async def test_create_order_by_waiter_without_reservation(waiter):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_create_order_by_waiter(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -383,6 +394,7 @@ async def test_create_order_by_waiter(waiter):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_create_order_by_chef(chef):
     token = await get_token(chef.user)
     restaurant = chef.restaurant
@@ -416,6 +428,7 @@ async def test_create_order_by_chef(chef):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_edit_order_waiter(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -443,6 +456,7 @@ async def test_edit_order_waiter(waiter):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_edit_order_chef_failed(chef):
     token = await get_token(chef.user)
     restaurant = chef.restaurant
@@ -475,6 +489,7 @@ async def test_edit_order_chef_failed(chef):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_edit_order_chef_success(chef):
     token = await get_token(chef.user)
     restaurant = chef.restaurant
@@ -514,6 +529,7 @@ async def test_edit_order_chef_success(chef):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_edit_order_waiter_add_dish(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -545,6 +561,7 @@ async def test_edit_order_waiter_add_dish(waiter):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_edit_order_waiter_edit_dish(waiter):
     token = await get_token(waiter.user)
     restaurant = waiter.restaurant
@@ -589,6 +606,7 @@ async def test_edit_order_waiter_edit_dish(waiter):
 
 
 @pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_edit_order_chef_add_dish(chef):
     token = await get_token(chef.user)
     restaurant = chef.restaurant
@@ -619,4 +637,54 @@ async def test_edit_order_chef_add_dish(chef):
     await sync_to_async(update_order_list_in_group)(waiter.restaurant.id)
     message = await communicator.receive_json_from(timeout=15)
     assert message["type"] == "error"
+    await communicator.disconnect()
+
+
+@pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
+async def test_edit_order_chef_edit_dish(chef):
+    token = await get_token(chef.user)
+    restaurant = chef.restaurant
+    waiter = await database_sync_to_async(EmployeeFactory.create)(
+        role=Employee.Roles.WAITER,
+        restaurant=restaurant,
+    )
+    order = await database_sync_to_async(OrderFactory.create)(
+        status=Order.Statuses.WAITING_FOR_COOKING,
+        employee=waiter,
+        reservation=None,
+    )
+    order_and_dish = await database_sync_to_async(OrderAndDishFactory.create)(
+        status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
+        employee=None,
+        order=order,
+    )
+    application = JWTQueryParamAuthMiddleware(URLRouter([
+        path("ws/restaurant/<restaurant_id>/", RestaurantConsumer.as_asgi()),
+    ]))
+    communicator = WebsocketCommunicator(
+        application,
+        f"ws/restaurant/{restaurant.id}/?token={token}",
+    )
+    connected, _ = await communicator.connect()
+    assert connected
+    await communicator.receive_json_from()
+    body = {
+        "id": order.id,
+        "dishes": [{"id": order_and_dish.id, "status": OrderAndDish.Statuses.COOKING}],
+    }
+    await communicator.send_json_to({"type": "edit_order", "body": body})
+    await sync_to_async(update_order_list_in_group)(waiter.restaurant.id)
+
+    for _ in range(2):
+        await communicator.receive_json_from(timeout=15)
+
+    message = await communicator.receive_json_from(timeout=15)
+
+    assert message["type"] == "list_orders"
+    assert len(message["body"]["orders"]) == 1
+    test_order = list(filter(lambda x: x["id"] == order.id, message["body"]["orders"]))[0]
+    assert test_order["status"] == str(Order.Statuses.COOKING)
+    assert len(test_order["dishes"]) == 1
+    assert test_order["dishes"][0]["status"] == str(OrderAndDish.Statuses.COOKING)
     await communicator.disconnect()

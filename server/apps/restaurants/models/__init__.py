@@ -1,5 +1,5 @@
 from .place import Place
-from .restaurant import Restaurant, AVAILABLE_TIMEZONES
+from .restaurant import AVAILABLE_TIMEZONES, Restaurant
 from .schedule import Schedule
 from .tag_to_place import TagToPlace
 

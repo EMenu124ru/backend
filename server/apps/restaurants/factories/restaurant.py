@@ -1,7 +1,11 @@
-from factory import fuzzy, Faker, post_generation
+from factory import (
+    Faker,
+    fuzzy,
+    post_generation,
+)
 from factory.django import DjangoModelFactory
 
-from apps.restaurants.models import Restaurant, AVAILABLE_TIMEZONES
+from apps.restaurants.models import AVAILABLE_TIMEZONES, Restaurant
 
 PLACE_COUNT = 10
 

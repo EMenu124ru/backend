@@ -25,24 +25,27 @@ class RestaurantConsumer(
         self.restaurant_id = self.scope["url_route"]["kwargs"]["restaurant_id"]
         self.group_name = f"restaurant_{self.restaurant_id}"
         self.user = self.scope["user"]
+        self.cache_key = f"user__{self.user.id}"
         await self.accept()
         if error := await ConnectValidation.validate(
             self.user,
             self.restaurant_id,
+            self.cache_key,
         ):
             await self.send_error(error)
             raise DenyConnection()
+
         self.restaurant_id = int(self.restaurant_id)
         await self.channel_layer.group_add(
             self.group_name,
             self.channel_name,
         )
 
-        await cache.aset(f"user__{self.user.id}", self.channel_name, timeout=24*60*60)
+        await cache.aset(self.cache_key, self.channel_name, timeout=24*60*60)
         await RestaurantActionsMixin.employee_orders_list(self)
 
     async def disconnect(self, close_code):
-        await cache.adelete_many([f"user__{self.user.id}"])
+        await cache.adelete_many([self.cache_key])
         await self.channel_layer.group_discard(
             self.group_name,
             self.channel_name,

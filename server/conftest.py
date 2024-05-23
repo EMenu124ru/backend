@@ -25,6 +25,8 @@ def waiter(django_db_setup, django_db_blocker):
     """Module-level fixture for employee."""
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.WAITER)
+        if created_employee.user.is_client:
+            created_employee.user.client.delete()
         yield created_employee
         created_employee.user.delete()
         created_employee.delete()
@@ -35,6 +37,8 @@ def cook(django_db_setup, django_db_blocker):
     """Module-level fixture for employee."""
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.COOK)
+        if created_employee.user.is_client:
+            created_employee.user.client.delete()
         yield created_employee
         created_employee.user.delete()
         created_employee.delete()
@@ -45,6 +49,8 @@ def chef(django_db_setup, django_db_blocker):
     """Module-level fixture for employee."""
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.CHEF)
+        if created_employee.user.is_client:
+            created_employee.user.client.delete()
         yield created_employee
         created_employee.user.delete()
         created_employee.delete()
@@ -55,6 +61,8 @@ def sous_chef(django_db_setup, django_db_blocker):
     """Module-level fixture for employee."""
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.SOUS_CHEF)
+        if created_employee.user.is_client:
+            created_employee.user.client.delete()
         yield created_employee
         created_employee.user.delete()
         created_employee.delete()
@@ -65,6 +73,8 @@ def manager(django_db_setup, django_db_blocker):
     """Module-level fixture for employee."""
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.MANAGER)
+        if created_employee.user.is_client:
+            created_employee.user.client.delete()
         yield created_employee
         created_employee.user.delete()
         created_employee.delete()
@@ -75,6 +85,8 @@ def hostess(django_db_setup, django_db_blocker):
     """Module-level fixture for employee."""
     with django_db_blocker.unblock():
         created_employee = EmployeeFactory(role=Employee.Roles.HOSTESS)
+        if created_employee.user.is_client:
+            created_employee.user.client.delete()
         yield created_employee
         created_employee.user.delete()
         created_employee.delete()

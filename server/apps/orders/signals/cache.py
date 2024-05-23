@@ -1,10 +1,10 @@
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
+from apps.core.tasks import send_notification
 from apps.orders.constants import CacheActions, NotificationText
 from apps.orders.functions import get_or_create_cache_dishes
 from apps.orders.models import StopList
-from apps.orders.tasks import send_notification
 from apps.users.models import Employee
 
 
