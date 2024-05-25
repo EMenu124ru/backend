@@ -84,7 +84,7 @@ def get_orders_by_restaurant(restaurant_id: int, role: Employee.Roles) -> QueryS
 def update_order_list_in_layer(employee: Employee, orders: QuerySet | list[Order]) -> None:
     from apps.restaurants.consumers.room import Events, OrderService
 
-    employee_key = f"user__{employee.user.id}"
+    employee_key = f"user__{employee.user.id}__{employee.restaurant.id}"
     channel_name = cache.get(employee_key)
     if channel_name:
         body = {"orders": OrderService.get_orders_list_sync(orders)}

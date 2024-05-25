@@ -25,7 +25,7 @@ class RestaurantConsumer(
         self.restaurant_id = self.scope["url_route"]["kwargs"]["restaurant_id"]
         self.group_name = f"restaurant_{self.restaurant_id}"
         self.user = self.scope["user"]
-        self.cache_key = f"user__{self.user.id}"
+        self.cache_key = f"user__{self.user.id}__{self.restaurant_id}"
         await self.accept()
         if error := await ConnectValidation.validate(
             self.user,
