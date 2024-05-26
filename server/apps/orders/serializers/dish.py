@@ -67,8 +67,9 @@ class DishSerializer(BaseModelSerializer):
 
     def to_representation(self, instance: Dish) -> OrderedDict:
         data = super().to_representation(instance)
+        images = instance.images.order_by("id")
         new_info = {
-            "images": DishImageSerializer(instance.images.all(), many=True).data,
+            "images": DishImageSerializer(images, many=True).data,
             "category": CategorySerializer(instance=instance.category).data,
         }
         data.update(new_info)

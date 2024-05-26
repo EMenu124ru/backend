@@ -87,10 +87,16 @@ class EmployeesKitchenRetrieveListAPIView(ListAPIView):
             Employee.Roles.COOK,
             Employee.Roles.SOUS_CHEF,
         ]
-        return Employee.objects.filter(
+        employees = Employee.objects.filter(
             restaurant=self.request.user.employee.restaurant.id,
             role__in=available_role,
-        ).order_by("role")
+        )
+        ids = []
+        for employee in employees:
+            status = employee.get_status()
+            if status["const"] == Employee.Statuses.ON_WORK_SHIFT_FROM_TO:
+                ids.append(employee.id)
+        return Employee.objects.filter(id__in=ids).order_by("role")
 
 
 class EmployeesRetrieveListAPIView(ListAPIView):
@@ -99,7 +105,7 @@ class EmployeesRetrieveListAPIView(ListAPIView):
     def get_queryset(self):
         return Employee.objects.filter(
             restaurant=self.request.user.employee.restaurant.id,
-        )
+        ).order_by("user__first_name")
 
     def get(self, request, *args, **kwargs):
         employees_by_roles = {}
@@ -116,7 +122,9 @@ class EmployeesUpdateListAPIView(UpdateAPIView):
     serializer_class = EmployeeSerializer
 
     def get_queryset(self):
-        return Employee.objects.filter(restaurant_id=self.request.user.employee.restaurant.pk)
+        return Employee.objects.filter(
+            restaurant_id=self.request.user.employee.restaurant.pk,
+        )
 
 
 class EmployeeScheduleRetrieveAPIView(RetrieveAPIView):

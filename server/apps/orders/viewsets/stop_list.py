@@ -9,7 +9,7 @@ class StopListViewSet(CreateReadDestroyViewSet):
     permission_classes = (StopListPermission,)
 
     def get_queryset(self):
-        queryset = StopList.objects.all()
+        queryset = StopList.objects.order_by("ingredient__name")
         if self.action == "list":
             return queryset.filter(
                 restaurant=self.request.user.employee.restaurant,

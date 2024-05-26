@@ -23,7 +23,7 @@ def get_available_dishes(dishes: QuerySet, restaurant_id: int) -> QuerySet:
         ).exists()
         if is_available:
             available_dishes.append(dish.id)
-    return Dish.objects.filter(id__in=available_dishes)
+    return Dish.objects.filter(id__in=available_dishes).order_by("price")
 
 
 def get_or_create_cache_dishes(

@@ -5,12 +5,12 @@ from apps.orders.serializers import DishSerializer, IngredientSerializer
 
 
 class IngredientViewSet(ListViewSet):
-    queryset = Ingredient.objects.all()
+    queryset = Ingredient.objects.order_by("name")
     serializer_class = IngredientSerializer
     permission_classes = (IngredientPermission,)
 
 
 class DishViewSet(RetrieveViewSet):
-    queryset = Dish.objects.all()
+    queryset = Dish.objects.order_by("price")
     serializer_class = DishSerializer
     permission_classes = (DishPermission,)

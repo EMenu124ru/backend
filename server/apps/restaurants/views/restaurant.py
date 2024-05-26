@@ -18,7 +18,7 @@ class RestaurantListAPIView(generics.ListAPIView):
     serializer_class = RestaurantSerializer
 
     def get_queryset(self):
-        return Restaurant.objects.prefetch_related("schedule").all()
+        return Restaurant.objects.order_by("id").prefetch_related("schedule").all()
 
 
 class RestaurantPlacesAPIView(generics.RetrieveAPIView):

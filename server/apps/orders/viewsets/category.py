@@ -24,7 +24,7 @@ class CategoryViewSet(RetrieveListViewSet):
         return CategorySerializer
 
     def get_queryset(self):
-        queryset = Category.objects.all().prefetch_related("dishes")
+        queryset = Category.objects.order_by("name").prefetch_related("dishes")
         if self.action == "dishes":
             category = get_object_or_404(queryset, pk=self.kwargs["pk"])
             restaurant_id = (
@@ -34,7 +34,7 @@ class CategoryViewSet(RetrieveListViewSet):
             )
             if restaurant_id and Restaurant.objects.filter(pk=restaurant_id).exists():
                 return get_or_create_cache_dishes(CacheActions.GET, category, restaurant_id)
-            return category.dishes.all()
+            return category.dishes.order_by("price")
         return queryset
 
     @decorators.action(methods=("GET",), detail=True)
