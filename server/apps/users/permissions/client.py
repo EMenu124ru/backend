@@ -16,3 +16,9 @@ class IsCurrentUser(permissions.BasePermission):
         if request.user.is_authenticated:
             return request.user == obj.user
         return False
+
+
+class IsClient(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        return request.user.is_client

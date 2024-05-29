@@ -1,4 +1,4 @@
-from .client import IsCurrentUser
+from .client import IsClient, IsCurrentUser
 from .employee import (
     FromSameRestaurantEmployee,
     FromSameRestaurantSchedule,
@@ -7,6 +7,7 @@ from .employee import (
 )
 
 __all__ = (
+    IsClient,
     IsCurrentUser,
     FromSameRestaurantEmployee,
     IsManager,

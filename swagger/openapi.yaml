@@ -883,6 +883,12 @@ paths:
               type: integer
           required: false
           description: "Id тегов"
+        - name: restaurant_id
+          in: query
+          schema:
+            type: number
+          required: false
+          description: "Id ресторана для получения столов клиентом"
       responses:
         "200":
           $ref: "#/components/responses/PlaceState200"
@@ -1077,6 +1083,7 @@ components:
           enum: ["WAITER", "COOK", "CHEF", "SOUS_CHEF", "MANAGER", "HOSTESS"]
         restaurant:
           type: number
+          nullable: true
           description: "Id ресторана, за которым закреплен сотрудник"
         image:
           type: object
@@ -1380,6 +1387,7 @@ components:
           description: "Id стола"
         client:
           type: number
+          nullable: true
           description: "Id клиента"
         comment:
           type: string
@@ -1415,6 +1423,7 @@ components:
           description: "Id стола"
         client:
           type: number
+          nullable: true
           description: "Id клиента"
         comment:
           type: string

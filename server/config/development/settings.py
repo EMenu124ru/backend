@@ -3,8 +3,8 @@ from datetime import datetime
 from math import ceil
 from pathlib import Path
 
-from pytz import timezone
 import dj_database_url
+from pytz import timezone
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 
