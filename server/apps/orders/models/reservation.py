@@ -47,7 +47,7 @@ class Reservation(models.Model):
         related_name="reservations",
         verbose_name="Номер места",
     )
-    count_quests = models.PositiveIntegerField(
+    count_guests = models.PositiveIntegerField(
         default=1,
         validators=[validators.MinValueValidator(1)],
         verbose_name="Количество гостей",
@@ -76,7 +76,7 @@ class Reservation(models.Model):
             f"arrival_time={self.arrival_time},"
             f"status={self.status},"
             f"comment={self.comment},"
-            f"count_quests={self.count_quests},"
+            f"count_guests={self.count_guests},"
             f"restaurant_id={self.restaurant.pk},"
             f"place={self.place},"
             f"tag_to_place={self.tag_to_place},"

@@ -61,12 +61,12 @@ class ReservationSerializer(BaseModelSerializer):
             "client",
             "place",
             "comment",
-            "count_quests",
+            "count_guests",
             "tag_to_place",
         )
         editable_fields = {
             Employee.Roles.WAITER: ["place", "status"],
-            Employee.Roles.HOSTESS: ["place", "arrival_time", "status", "tag_to_place", "count_quests"],
+            Employee.Roles.HOSTESS: ["place", "arrival_time", "status", "tag_to_place", "count_guests"],
         }
 
     def validate_place_instance(self, place, restaurant):

@@ -39,7 +39,7 @@ class ReservationFactory(DjangoModelFactory):
     tag_to_place = SubFactory(
         TagToPlaceFactory,
     )
-    count_quests = Faker(
+    count_guests = Faker(
         "pyint",
         min_value=1,
         max_value=20,

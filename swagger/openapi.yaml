@@ -1285,7 +1285,7 @@ components:
           type: number
           description: "Id тэга стола"
           nullable: true
-        count_quests:
+        count_guests:
           type: number
           default: 1
           description: "Количество гостей"
@@ -1388,7 +1388,7 @@ components:
           type: number
           description: "Id тэга стола"
           nullable: true
-        count_quests:
+        count_guests:
           type: number
           default: 1
           description: "Количество гостей"
@@ -1423,7 +1423,7 @@ components:
           type: number
           description: "Id тэга стола"
           nullable: true
-        count_quests:
+        count_guests:
           type: number
           default: 1
           description: "Количество гостей"
@@ -1469,7 +1469,7 @@ components:
           - $ref: "#/components/schemas/TagToPlace"
           nullable: true
           description: "Id тэга стола"
-        count_quests:
+        count_guests:
           type: number
           default: 1
           description: "Количество гостей"
