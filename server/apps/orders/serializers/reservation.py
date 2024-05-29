@@ -121,6 +121,13 @@ class ReservationSerializer(BaseModelSerializer):
         )
         return attrs
 
+    def create(self, validated_data: OrderedDict) -> Reservation:
+        client = None
+        if self._user.is_client:
+            client = self._user.client
+        validated_data["client"] = client
+        return super().create(validated_data)
+
     def to_representation(self, instance):
         from .order import OrderSerializer
 
@@ -143,10 +150,3 @@ class ReservationSerializer(BaseModelSerializer):
         data["orders"] = OrderSerializer(instance.orders.all(), many=True).data
         data["client"] = ClientSerializer(client).data
         return data
-
-    def create(self, validated_data: OrderedDict) -> Reservation:
-        client = None
-        if self._user.is_client:
-            client = self._user.client
-        validated_data["client"] = client
-        return super().create(validated_data)

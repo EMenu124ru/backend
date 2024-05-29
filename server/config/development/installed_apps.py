@@ -17,6 +17,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     'rest_framework_simplejwt',
     'fcm_django',
+    'drf_api_logger',
 ]
 
 LOCAL_APPS = [

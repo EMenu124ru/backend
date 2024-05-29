@@ -49,6 +49,8 @@ CHANNEL_LAYERS = {
     },
 }
 
+DRF_API_LOGGER_DATABASE = True
+
 # AUTHENTICATION
 # ------------------------------------------------------------------------------
 AUTH_USER_MODEL = 'users.User'
@@ -79,6 +81,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware",
 ]
 
 # STATIC
