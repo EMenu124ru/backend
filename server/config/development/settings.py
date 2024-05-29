@@ -1,6 +1,9 @@
 import os
+from datetime import datetime
+from math import ceil
 from pathlib import Path
 
+from pytz import timezone
 import dj_database_url
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
@@ -13,15 +16,21 @@ SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
     "qaEhm3Sc0WuO93idsME1e7vmiwWpuLqTJX6PRRyBpgUUDPQPqhBObwZ6UgqT6OuG",
 )
+USE_TZ = True
 TIME_ZONE = "Asia/Krasnoyarsk"
 LANGUAGE_CODE = "ru"
 SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
-USE_TZ = True
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.routing.application"
+
+if USE_TZ:
+    utc = timezone("UTC")
+    current = timezone(TIME_ZONE)
+    now = datetime.now()
+    DRF_API_LOGGER_TIMEDELTA = ceil((utc.localize(now) - current.localize(now).astimezone(utc)).seconds / 60)
 
 ALLOWED_HOSTS = ["*"]
 
