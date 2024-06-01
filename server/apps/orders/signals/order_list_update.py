@@ -31,7 +31,7 @@ def order_update_order_list(instance: Order, created: bool, update_fields: froze
             filter_params["user__employee__role"] = Employee.Roles.WAITER
             filter_params["user__employee__id"] = instance.employee.id
             body = NotificationText.ORDER_UPDATED.body
-            body = body.format(instance.id, instance.status)
+            body = body.format(instance.id, Order.Statuses(instance.status).label)
             send_notification.delay(filter_params, NotificationText.ORDER_UPDATED.title, body)
 
             if instance.status in changed_reservation_statuses:
