@@ -93,7 +93,7 @@ jobs:
         min-versions-to-keep: 5
 
   publish-django:
-    name: publish django image
+    name: Publish Django image
     needs: [tests, linters]
     runs-on: ubuntu-latest
     permissions:
@@ -116,7 +116,7 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ env.DJANGO_IMAGE_NAME }}
   
   publish-swagger:
-    name: publish swagger image
+    name: Publish Swagger image
     needs: [tests, linters]
     runs-on: ubuntu-latest
     permissions:
@@ -139,7 +139,7 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ env.SWAGGER_IMAGE_NAME }}
 
   publish-alexandria:
-    name: publish alexandria image
+    name: Publish Alexandria image
     needs: [tests, linters]
     runs-on: ubuntu-latest
     permissions:
@@ -162,7 +162,7 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ env.ALEXANDRIA_IMAGE_NAME }}
 
   publish-nginx:
-    name: publish nginx image
+    name: Publish nginx image
     needs: [publish-django, publish-swagger, publish-alexandria]
     runs-on: ubuntu-latest
     permissions:
@@ -185,6 +185,7 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ env.NGINX_IMAGE_NAME }}
 
   deploy:
+    name: Deploy app
     runs-on: ubuntu-latest
     needs: [publish-nginx]
     steps:

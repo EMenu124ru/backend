@@ -1077,17 +1077,17 @@ python-dateutil = ">=2.4"
 
 [[package]]
 name = "fcm-django"
-version = "2.1.0"
+version = "2.0.1"
 description = "Send push notifications to mobile devices & browsers through FCM in Django."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "fcm_django-2.1.0.tar.gz", hash = "sha256:b59716b669af8399b1c6b489efa07eea8672dc84a3b8a7470117fe4d4393d80a"},
+    {file = "fcm-django-2.0.1.tar.gz", hash = "sha256:ebaca8b8091fdf9dd7d3b7360eb7811efb4dbaf32144f6efe3fc93e4ff8a7dd9"},
 ]
 
 [package.dependencies]
 Django = "*"
-firebase-admin = ">=6.2,<7"
+firebase-admin = ">=5,<7"
 
 [[package]]
 name = "firebase-admin"
@@ -2799,13 +2799,13 @@ twisted = ["twisted (>=20.3.0)", "zope.interface (>=5.2.0)"]
 
 [[package]]
 name = "typing-extensions"
-version = "4.12.0"
+version = "4.12.1"
 description = "Backported and Experimental Type Hints for Python 3.8+"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "typing_extensions-4.12.0-py3-none-any.whl", hash = "sha256:b349c66bea9016ac22978d800cfff206d5f9816951f12a7d0ec5578b0a819594"},
-    {file = "typing_extensions-4.12.0.tar.gz", hash = "sha256:8cbcdc8606ebcb0d95453ad7dc5065e6237b6aa230a31e81d0f440c30fed5fd8"},
+    {file = "typing_extensions-4.12.1-py3-none-any.whl", hash = "sha256:6024b58b69089e5a89c347397254e35f1bf02a907728ec7fee9bf0fe837d203a"},
+    {file = "typing_extensions-4.12.1.tar.gz", hash = "sha256:915f5e35ff76f56588223f15fdd5938f9a1cf9195c0de25130c627e4d597f6d1"},
 ]
 
 [[package]]
@@ -2983,4 +2983,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10.5"
-content-hash = "71441a1364e4965ce69d9f6314981ef4c2dd5e2bc420a2668e07c0765400dc75"
+content-hash = "62c405f70790f6c7699052cb25cb35286eeb5a60747be36990a4a4ead504c9ae"

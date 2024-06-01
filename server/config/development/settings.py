@@ -78,6 +78,7 @@ MIDDLEWARE = [
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "corsheaders.middleware.CorsPostCsrfMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -98,8 +99,6 @@ STATICFILES_FINDERS = [
 # ------------------------------------------------------------------------------
 MEDIA_ROOT = str(ROOT_DIR / "media")
 MEDIA_URL = "/media/"
-USE_X_FORWARDED_HOST = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
@@ -171,7 +170,7 @@ if DEBUG:
 
 # drf-api-logger
 # ------------------------------------------------------------------------------
-DRF_API_LOGGER_EXCLUDE_KEYS = ["AUTHORIZATION"]
+DRF_API_LOGGER_EXCLUDE_KEYS = ["COOKIE"]
 DRF_LOGGER_INTERVAL = 1
 DRF_API_LOGGER_DATABASE = True
 

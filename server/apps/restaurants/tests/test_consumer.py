@@ -65,7 +65,7 @@ async def test_connect_waiter(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message["type"] == "list_orders"
     await communicator.disconnect()
 
@@ -84,7 +84,7 @@ async def test_connect_chef(chef):
     )
     connected, _ = await communicator.connect()
     assert connected
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message["type"] == "list_orders"
     await communicator.disconnect()
 
@@ -104,7 +104,7 @@ async def test_connect_other_role(hostess):
 
     connected, _ = await communicator.connect()
     assert connected
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message == {"type": "error", 'detail': ConnectValidation.ConnectError.WRONG_ROLE}
     await communicator.disconnect()
 
@@ -122,7 +122,7 @@ async def test_connect_not_auth():
     )
     connected, _ = await communicator.connect()
     assert connected
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message == {"type": "error", 'detail': ConnectValidation.ConnectError.ISNT_AUTHENTICATED}
     await communicator.disconnect()
 
@@ -141,7 +141,7 @@ async def test_connect_not_consists_employee(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message == {"type": "error", 'detail': ConnectValidation.ConnectError.EMPLOYEE_ISNT_MEMBER}
     await communicator.disconnect()
 
@@ -160,7 +160,7 @@ async def test_connect_client(client):
     )
     connected, _ = await communicator.connect()
     assert connected
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message == {"type": "error", 'detail': ConnectValidation.ConnectError.ISNT_EMPLOYEE}
     await communicator.disconnect()
 
@@ -178,7 +178,7 @@ async def test_connect_wrong_restaurant_id(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message == {"type": "error", 'detail': ConnectValidation.ConnectError.WRONG_RESTAURANT_PK}
 
     communicator = WebsocketCommunicator(
@@ -187,7 +187,7 @@ async def test_connect_wrong_restaurant_id(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message == {"type": "error", 'detail': ConnectValidation.ConnectError.RESTAURANT_NOT_EXISTS}
     await communicator.disconnect()
 
@@ -256,7 +256,7 @@ async def test_employee_orders_list(waiter):
         for order in (await get_serialized_orders(orders))
     ]
     orders_json.sort(key=lambda obj: obj["status"])
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert created_order_ids == orders_ids
     assert message == {"type": "list_orders", "body": {"orders": orders_json}}
     await communicator.disconnect()
@@ -276,7 +276,7 @@ async def test_create_order_by_waiter_without_dishes_failed(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
-    await communicator.receive_json_from(timeout=15)
+    await communicator.receive_json_from()
     order = await database_sync_to_async(OrderFactory.build)(
         status=Order.Statuses.WAITING_FOR_COOKING,
         employee=None,
@@ -291,7 +291,7 @@ async def test_create_order_by_waiter_without_dishes_failed(waiter):
         "dishes": [],
     }
     await communicator.send_json_to({"type": "create_order", "body": order_json})
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message["type"] == "error"
     await communicator.disconnect()
 
@@ -310,14 +310,14 @@ async def test_create_order_by_waiter_not_by_websocket(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
-    await communicator.receive_json_from(timeout=15)
+    await communicator.receive_json_from()
     await database_sync_to_async(OrderFactory.create)(
         status=Order.Statuses.WAITING_FOR_COOKING,
         employee=waiter,
         reservation=None,
     )
     await sync_to_async(update_order_list_in_group)(waiter.restaurant.id)
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message["type"] == "list_orders"
     await communicator.disconnect()
 
@@ -336,7 +336,7 @@ async def test_create_order_by_waiter_without_reservation(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
-    await communicator.receive_json_from(timeout=15)
+    await communicator.receive_json_from()
     order = await database_sync_to_async(OrderFactory.build)(
         status=Order.Statuses.WAITING_FOR_COOKING,
         employee=None,
@@ -351,7 +351,7 @@ async def test_create_order_by_waiter_without_reservation(waiter):
         "dishes": [{"dish": dish.pk} for dish in dishes],
     }
     await communicator.send_json_to({"type": "create_order", "body": order_json})
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message["type"] == "error"
     await communicator.disconnect()
 
@@ -370,7 +370,7 @@ async def test_create_order_by_waiter(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
-    await communicator.receive_json_from(timeout=15)
+    await communicator.receive_json_from()
     order = await database_sync_to_async(OrderFactory.build)(
         status=Order.Statuses.WAITING_FOR_COOKING,
         employee=None,
@@ -388,7 +388,7 @@ async def test_create_order_by_waiter(waiter):
     }
     await communicator.send_json_to({"type": "create_order", "body": order_json})
     await sync_to_async(update_order_list_in_group)(waiter.restaurant.id)
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message["type"] == "list_orders"
     await communicator.disconnect()
 
@@ -407,7 +407,7 @@ async def test_create_order_by_chef(chef):
     )
     connected, _ = await communicator.connect()
     assert connected
-    await communicator.receive_json_from(timeout=15)
+    await communicator.receive_json_from()
     order = await database_sync_to_async(OrderFactory.build)(
         status=Order.Statuses.WAITING_FOR_COOKING,
         employee=None,
@@ -422,7 +422,7 @@ async def test_create_order_by_chef(chef):
         "dishes": [],
     }
     await communicator.send_json_to({"type": "create_order", "body": order_json})
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message["type"] == "error"
     await communicator.disconnect()
 
@@ -446,7 +446,7 @@ async def test_edit_order_waiter(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
-    await communicator.receive_json_from(timeout=15)
+    await communicator.receive_json_from()
     body = {
         "id": order.id,
         "status": Order.Statuses.FINISHED,
@@ -477,13 +477,13 @@ async def test_edit_order_chef_failed(chef):
     )
     connected, _ = await communicator.connect()
     assert connected
-    await communicator.receive_json_from(timeout=15)
+    await communicator.receive_json_from()
     body = {
         "id": order.id,
         "status": Order.Statuses.FINISHED,
     }
     await communicator.send_json_to({"type": "edit_order", "body": body})
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message["type"] == "error"
     await communicator.disconnect()
 
@@ -517,7 +517,7 @@ async def test_edit_order_chef_success(chef):
     connected, _ = await communicator.connect()
     assert connected
     dish = await database_sync_to_async(order.dishes.first)()
-    await communicator.receive_json_from(timeout=15)
+    await communicator.receive_json_from()
     body = {
         "id": order.id,
         "dishes": [
@@ -548,14 +548,14 @@ async def test_edit_order_waiter_add_dish(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
-    await communicator.receive_json_from(timeout=15)
+    await communicator.receive_json_from()
     body = {
         "id": order.id,
         "dishes": [{"dish": dish.id}],
     }
     await communicator.send_json_to({"type": "edit_order", "body": body})
     await sync_to_async(update_order_list_in_group)(waiter.restaurant.id)
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message["type"] == "list_orders"
     await communicator.disconnect()
 
@@ -584,7 +584,7 @@ async def test_edit_order_waiter_edit_dish(waiter):
     )
     connected, _ = await communicator.connect()
     assert connected
-    await communicator.receive_json_from(timeout=15)
+    await communicator.receive_json_from()
     body = {
         "id": order.id,
         "dishes": [{"id": order_and_dish.id, "status": OrderAndDish.Statuses.COOKING}],
@@ -593,9 +593,9 @@ async def test_edit_order_waiter_edit_dish(waiter):
     await sync_to_async(update_order_list_in_group)(waiter.restaurant.id)
 
     for _ in range(2):
-        await communicator.receive_json_from(timeout=15)
+        await communicator.receive_json_from()
 
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message["type"] == "list_orders"
     assert len(message["body"]["orders"]) == 1
     test_order = list(filter(lambda x: x["id"] == order.id, message["body"]["orders"]))[0]
@@ -635,7 +635,7 @@ async def test_edit_order_chef_add_dish(chef):
     }
     await communicator.send_json_to({"type": "edit_order", "body": body})
     await sync_to_async(update_order_list_in_group)(waiter.restaurant.id)
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
     assert message["type"] == "error"
     await communicator.disconnect()
 
@@ -677,9 +677,9 @@ async def test_edit_order_chef_edit_dish(chef):
     await sync_to_async(update_order_list_in_group)(waiter.restaurant.id)
 
     for _ in range(2):
-        await communicator.receive_json_from(timeout=15)
+        await communicator.receive_json_from()
 
-    message = await communicator.receive_json_from(timeout=15)
+    message = await communicator.receive_json_from()
 
     assert message["type"] == "list_orders"
     assert len(message["body"]["orders"]) == 1

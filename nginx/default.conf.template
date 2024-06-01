@@ -18,6 +18,11 @@ server {
     ssl_certificate /etc/letsencrypt/live/${BACKEND_DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${BACKEND_DOMAIN}/privkey.pem;
 
+    map $http_x_forwarded_proto $thescheme {
+        default $scheme;
+        https https;
+    } 
+
     root /nginx;
 
     location ^~ /.well-known/acme-challenge/ {
@@ -36,6 +41,7 @@ server {
     location /media/ {
         autoindex on;
     }
+
     location /docs/api/ {
         proxy_pass http://swagger-ui:${SWAGGER_PORT}/;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -62,7 +68,6 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "Upgrade";
-        proxy_set_header X-Forwarded-Proto https;
         proxy_redirect off;
     }
 
@@ -70,14 +75,15 @@ server {
         proxy_pass http://localhost;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Proto $thescheme;
         proxy_redirect off;
 
         if ($request_method = 'OPTIONS') {
             add_header 'Access-Control-Allow-Origin' '$http_origin' always;
             add_header 'Access-Control-Allow-Credentials' 'true' always;
             add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE, PUT, PATCH';
-            add_header 'Access-Control-Allow-Headers' 'Accept,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,Set-Cookie,User-Agent,X-Requested-With,X-Forwarded-Host';
+            add_header 'Access-Control-Allow-Headers' 'Accept,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,Set-Cookie,User-Agent,X-Requested-With,X-Forwarded-Host,X-Forwarded-Proto';
             add_header 'Access-Control-Max-Age' 1728000;
             add_header 'Content-Type' 'application/json charset=utf-8';
             add_header 'Content-Length' 0;
@@ -85,6 +91,6 @@ server {
         }
 
         add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE, PUT, PATCH';
-        add_header 'Access-Control-Allow-Headers' 'Accept,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,Set-Cookie,User-Agent,X-Requested-With,X-Forwarded-Host';
+        add_header 'Access-Control-Allow-Headers' 'Accept,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,Set-Cookie,User-Agent,X-Requested-With,X-Forwarded-Host,X-Forwarded-Proto';
     }
 }

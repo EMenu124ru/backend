@@ -1526,6 +1526,7 @@ components:
         current_reservation_id:
           type: number
           description: "Id текущей занятой брони"
+          nullable: true
 
     RestaurantBase:
       type: object
