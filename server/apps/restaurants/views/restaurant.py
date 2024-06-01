@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import (
     generics,
     permissions,
@@ -37,7 +40,12 @@ class RestaurantPlacesAPIView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         restaurant = self.get_object()
         tags = request.query_params.get('tags')
-        current_time = request.query_params.get('time')
+        got_time = request.query_params.get('time')
+
+        current_time = timezone.now()
+        if got_time:
+            current_time = datetime.fromisoformat(got_time)
+
         free, reserved, busy = restaurant.get_places(tags, current_time=current_time)
         data = {
             "free": PlaceSerializer(free, many=True).data,

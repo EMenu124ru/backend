@@ -29,7 +29,6 @@ class Restaurant(models.Model):
         places = self.places.all()
         if tags:
             places = places.filter(tags__in=tags.split(",")).order_by("id").distinct()
-        current_time = timezone.localtime(current_time, timezone=zoneinfo.ZoneInfo(self.time_zone))
 
         free, reserved, busy = [], [], []
         difference = timedelta(hours=2)
@@ -45,7 +44,10 @@ class Restaurant(models.Model):
                 continue
 
             reservation = reservations.first()
-            arrival_time = timezone.localtime(reservation.arrival_time, timezone=zoneinfo.ZoneInfo(self.time_zone))
+            arrival_time = timezone.localtime(
+                reservation.arrival_time,
+                timezone=zoneinfo.ZoneInfo(self.time_zone),
+            ).replace(tzinfo=None)
 
             arrival_time_left, arrival_time_right = arrival_time - difference, arrival_time + difference
             if arrival_time < current_time <= arrival_time_right or reservation.orders.exists():

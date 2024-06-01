@@ -26,12 +26,6 @@ ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.routing.application"
 
-if USE_TZ:
-    utc = timezone("UTC")
-    current = timezone(TIME_ZONE)
-    now = datetime.now()
-    DRF_API_LOGGER_TIMEDELTA = ceil((utc.localize(now) - current.localize(now).astimezone(utc)).seconds / 60)
-
 ALLOWED_HOSTS = ["*"]
 
 # DATABASES
@@ -57,8 +51,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
-DRF_API_LOGGER_DATABASE = True
 
 # AUTHENTICATION
 # ------------------------------------------------------------------------------
@@ -88,7 +80,6 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware",
 ]
@@ -177,3 +168,15 @@ if DEBUG:
     )
     ip = socket.gethostbyname(socket.gethostname())
     INTERNAL_IPS += (ip[:-1] + "1",)
+
+# drf-api-logger
+# ------------------------------------------------------------------------------
+DRF_API_LOGGER_EXCLUDE_KEYS = ["AUTHORIZATION"]
+DRF_LOGGER_INTERVAL = 1
+DRF_API_LOGGER_DATABASE = True
+
+if USE_TZ:
+    utc = timezone("UTC")
+    current = timezone(TIME_ZONE)
+    now = datetime.now()
+    DRF_API_LOGGER_TIMEDELTA = ceil((utc.localize(now) - current.localize(now).astimezone(utc)).seconds / 60)
