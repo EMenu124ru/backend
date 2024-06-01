@@ -95,7 +95,7 @@ class Employee(models.Model):
         if not self.restaurant:
             return dict(status=status, status_const=status_const)
 
-        current_time = timezone.localtime(timezone.now(), timezone=ZoneInfo(self.restaurant.timezone))
+        current_time = timezone.localtime(timezone.now(), timezone=ZoneInfo(self.restaurant.time_zone))
         schedule = Schedule.objects.filter(
             models.Q(employee=self) & models.Q(day=current_time.date())
         )

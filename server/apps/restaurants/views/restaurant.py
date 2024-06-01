@@ -37,7 +37,8 @@ class RestaurantPlacesAPIView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         restaurant = self.get_object()
         tags = request.query_params.get('tags')
-        free, reserved, busy = restaurant.get_places(tags)
+        current_time = request.query_params.get('time')
+        free, reserved, busy = restaurant.get_places(tags, current_time=current_time)
         data = {
             "free": PlaceSerializer(free, many=True).data,
             "reserved": PlaceSerializer(reserved, many=True).data,

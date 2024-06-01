@@ -8,6 +8,7 @@ from .orders import (
     update_order_list_in_group,
     update_order_list_in_layer,
 )
+from .reservation import change_reservation_status
 
 __all__ = (
     get_available_dishes,
@@ -19,4 +20,5 @@ __all__ = (
     STATUSES_BY_ROLE,
     order_change_status,
     order_change_price,
+    change_reservation_status,
 )

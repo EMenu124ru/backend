@@ -16,7 +16,7 @@ class RestaurantFactory(DjangoModelFactory):
     address = Faker(
         "address",
     )
-    timezone = fuzzy.FuzzyChoice(
+    time_zone = fuzzy.FuzzyChoice(
         [item[0] for item in AVAILABLE_TIMEZONES],
     )
 

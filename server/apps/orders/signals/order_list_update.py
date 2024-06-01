@@ -3,7 +3,11 @@ from django.dispatch import receiver
 
 from apps.core.tasks import send_notification
 from apps.orders.constants import NotificationText
-from apps.orders.functions import get_restaurant_id, update_order_list_in_group
+from apps.orders.functions import (
+    change_reservation_status,
+    get_restaurant_id,
+    update_order_list_in_group,
+)
 from apps.orders.models import Order
 from apps.users.models import Employee
 
@@ -14,6 +18,8 @@ def order_update_order_list(instance: Order, created: bool, update_fields: froze
     filter_params = {
         "user__employee__restaurant_id": restaurant_id,
     }
+
+    changed_reservation_statuses = [Order.Statuses.CANCELED, Order.Statuses.FINISHED]
 
     update_order_list_in_group(restaurant_id)
     if created:
@@ -27,3 +33,6 @@ def order_update_order_list(instance: Order, created: bool, update_fields: froze
             body = NotificationText.ORDER_UPDATED.body
             body = body.format(instance.id, instance.status)
             send_notification.delay(filter_params, NotificationText.ORDER_UPDATED.title, body)
+
+            if instance.status in changed_reservation_statuses:
+                change_reservation_status(instance.reservation)

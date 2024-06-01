@@ -889,6 +889,13 @@ paths:
             type: number
           required: false
           description: "Id ресторана для получения столов клиентом"
+        - name: time
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: "Время момента для получения информации о столах"
       responses:
         "200":
           $ref: "#/components/responses/PlaceState200"
@@ -1515,6 +1522,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TagToPlace"
+        current_reservation_id:
+          type: number
+          description: "Id текущей занятой брони"
 
     RestaurantBase:
       type: object

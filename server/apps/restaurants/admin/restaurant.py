@@ -10,7 +10,7 @@ class RestaurantAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "address",
-        "timezone",
+        "time_zone",
         "get_schedule",
         "get_places",
     )

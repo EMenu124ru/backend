@@ -1,7 +1,9 @@
 import zoneinfo
+from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 from apps.orders.models import Reservation
 
@@ -16,37 +18,46 @@ class Restaurant(models.Model):
     address = models.TextField(
         verbose_name="Адрес",
     )
-    timezone = models.CharField(
+    time_zone = models.CharField(
         choices=AVAILABLE_TIMEZONES,
         default=settings.TIME_ZONE,
         max_length=20,
         verbose_name="Временная зона"
     )
 
-    def get_places(self, tags: str) -> tuple[list, list, list]:
+    def get_places(self, tags: str, current_time: timezone = timezone.now()) -> tuple[list, list, list]:
         places = self.places.all()
         if tags:
             places = places.filter(tags__in=tags.split(",")).order_by("id").distinct()
-        free, reserved, busy = [], [], []
-        free_statuses = [
-            Reservation.Statuses.CANCELED,
-            Reservation.Statuses.FINISHED,
-        ]
-        for place in places:
-            reservations = place.reservations.all()
+        current_time = timezone.localtime(current_time, timezone=zoneinfo.ZoneInfo(self.time_zone))
 
-            opened = reservations.filter(status=Reservation.Statuses.OPENED)
-            if opened.filter(orders__isnull=True):
-                reserved.append(place)
+        free, reserved, busy = [], [], []
+        difference = timedelta(hours=2)
+
+        for place in places:
+            reservations = place.reservations.filter(
+                status=Reservation.Statuses.OPENED,
+                arrival_time__date=current_time.date(),
+            ).order_by("arrival_time")
+
+            if not reservations.exists():
+                free.append(place)
                 continue
 
-            if opened.filter(orders__isnull=False):
+            reservation = reservations.first()
+            arrival_time = timezone.localtime(reservation.arrival_time, timezone=zoneinfo.ZoneInfo(self.time_zone))
+
+            arrival_time_left, arrival_time_right = arrival_time - difference, arrival_time + difference
+            if arrival_time < current_time <= arrival_time_right or reservation.orders.exists():
+                place.current_reservation = reservation.pk
                 busy.append(place)
                 continue
 
-            if not reservations or reservations.filter(status__in=free_statuses):
-                free.append(place)
+            if arrival_time_left < current_time <= arrival_time and not reservation.orders.exists():
+                place.current_reservation = reservation.pk
+                reserved.append(place)
                 continue
+
         return free, reserved, busy
 
     class Meta:
@@ -57,6 +68,6 @@ class Restaurant(models.Model):
         return (
             "Restaurant"
             f"(id={self.pk},"
-            f"timezone={self.timezone},"
+            f"timezone={self.time_zone},"
             f"address={self.address})"
         )

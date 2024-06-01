@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 import os
 
-from celery import Celery
+from celery import Celery, schedules
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.development")
 app = Celery("emenu")
@@ -17,5 +17,9 @@ app.conf.beat_schedule = {
     'send_updated_orders': {
         'task': 'apps.orders.tasks.update_orders.send_updated_orders',
         'schedule': 10.0,
+    },
+    'close_inactive_reservation': {
+        'task': 'apps.orders.tasks.inactive_reservation.close_inactive_reservation',
+        'schedule': schedules.crontab(minute='*/5'),
     },
 }
