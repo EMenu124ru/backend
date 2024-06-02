@@ -36,7 +36,9 @@ class ReservationViewSet(CreateReadUpdateViewSet):
     def get_queryset(self):
         reservation = Reservation.objects.all()
         if self.request.user.is_client:
-            reservation = reservation.filter(client=self.request.user.client)
+            reservation = reservation.filter(
+                client=self.request.user.client,
+            )
         else:
             reservation = reservation.filter(
                 restaurant=self.request.user.employee.restaurant,

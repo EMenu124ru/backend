@@ -116,6 +116,11 @@ class ReservationSerializer(BaseModelSerializer):
 
     def validate(self, attrs: OrderedDict) -> OrderedDict:
         if self._user.is_client:
+            # restaurant = attrs.get("restaurant")
+            # tag_id = attrs.get("tag_to_place").pk if attrs.get("tag_to_place") else ""
+            # free, _, _ = restaurant.get_places(tag_id)
+            # if free:
+            #     attrs[]
             return attrs
         if self.instance:
             self.validate_place_instance(
