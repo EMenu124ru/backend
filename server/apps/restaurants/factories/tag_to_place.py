@@ -1,4 +1,4 @@
-from factory import Faker
+from factory import Faker, fuzzy
 from factory.django import DjangoModelFactory
 
 from apps.restaurants.models import TagToPlace
@@ -9,6 +9,9 @@ class TagToPlaceFactory(DjangoModelFactory):
 
     name = Faker(
         "first_name",
+    )
+    type = fuzzy.FuzzyChoice(
+        [item[0] for item in TagToPlace.Types.choices],
     )
 
     class Meta:

@@ -10,4 +10,5 @@ class TagToPlaceAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "name",
+        "type",
     )
