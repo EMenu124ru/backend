@@ -15,8 +15,8 @@ class User(AbstractUser):
         max_length=150,
         blank=True,
         null=True,
-        verbose_name='Отчество',
         default="",
+        verbose_name='Отчество',
     )
     phone_number = models.CharField(
         max_length=17,

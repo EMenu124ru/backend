@@ -1401,6 +1401,10 @@ components:
           type: string
           nullable: true
           description: "ФИО клиента"
+        client_phone_number:
+          type: string
+          nullable: true
+          description: "ФИО клиента"
         comment:
           type: string
           description: "Комментарий к бронированию"

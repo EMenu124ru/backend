@@ -35,6 +35,11 @@ class ReservationSerializer(BaseModelSerializer):
         allow_null=True,
         required=False,
     )
+    client_phone_number = serializers.CharField(
+        allow_null=True,
+        required=False,
+        write_only=True,
+    )
 
     class Errors:
         CLIENT_CANT_CHOOSE_PLACE = "Клиент не может выбрать или поменять место"
@@ -60,6 +65,7 @@ class ReservationSerializer(BaseModelSerializer):
             "restaurant",
             "client",
             "client_full_name",
+            "client_phone_number",
             "place",
             "comment",
             "count_guests",
@@ -76,6 +82,11 @@ class ReservationSerializer(BaseModelSerializer):
                 "count_guests",
             ],
         }
+
+    def validate_client_phone_number(self, client_phone_number):
+        if self.instance and client_phone_number:
+            return None
+        return client_phone_number
 
     def validate_place_instance(self, place, restaurant):
         if not restaurant.places.filter(pk=place.id).exists():
@@ -129,11 +140,41 @@ class ReservationSerializer(BaseModelSerializer):
         )
         return attrs
 
-    def create(self, validated_data: OrderedDict) -> Reservation:
-        client = None
+    def get_client(self, validated_data: OrderedDict):
+        client_phone_number = validated_data.pop("client_phone_number", None)
         if self._user.is_client:
-            client = self._user.client
-        validated_data["client"] = client
+            return self._user.client
+
+        validated_client = validated_data.get("client", None)
+        if validated_client:
+            return validated_client
+
+        if client_phone_number:
+            query = Client.objects.filter(user__phone_number__exact=client_phone_number)
+            if query.exists():
+                return query.first()
+
+            client_full_name = validated_data.get("client_full_name")
+            if client_full_name:
+                names = client_full_name.split(" ")
+                while len(names) < 3:
+                    names.append("")
+                first_name, last_name, surname = names
+                client_data = dict(
+                    first_name=first_name,
+                    last_name=last_name if last_name else first_name,
+                    surname=surname if surname else first_name,
+                    phone_number=client_phone_number,
+                )
+                serializer = ClientSerializer(data=client_data)
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                return serializer.instance
+
+        return None
+
+    def create(self, validated_data: OrderedDict) -> Reservation:
+        validated_data["client"] = self.get_client(validated_data)
         return super().create(validated_data)
 
     def to_representation(self, instance):
@@ -156,5 +197,5 @@ class ReservationSerializer(BaseModelSerializer):
             client = Client.objects.get(pk=client_id)
 
         data["orders"] = OrderSerializer(instance.orders.all(), many=True).data
-        data["client"] = ClientSerializer(client).data
+        data["client"] = ClientSerializer(client).data if client else client
         return data

@@ -44,9 +44,19 @@ class ClientAuthSerializer(serializers.Serializer):
 class ClientSerializer(BaseModelSerializer):
     first_name = serializers.CharField(source="user.first_name")
     last_name = serializers.CharField(source="user.last_name")
-    surname = serializers.CharField(source="user.surname", default="")
+    surname = serializers.CharField(
+        source="user.surname",
+        required=False,
+        allow_null=True,
+        default="",
+    )
     phone_number = serializers.CharField(source="user.phone_number")
-    password = serializers.CharField(source="user.password", write_only=True)
+    password = serializers.CharField(
+        source="user.password",
+        write_only=True,
+        required=False,
+        allow_null=True,
+    )
     bonuses = serializers.IntegerField(default=0)
 
     class Errors:
@@ -80,8 +90,13 @@ class ClientSerializer(BaseModelSerializer):
         )
         if not created:
             raise serializers.ValidationError(self.Errors.CLIENT_ALREADY_EXISTS)
-        user.set_password(user_fields['password'])
+
+        if 'password' not in user_fields:
+            user.set_password(username)
+        else:
+            user.set_password(user_fields['password'])
         user.save()
+
         client = Client.objects.create(
             user=user,
             bonuses=validated_data['bonuses'],
