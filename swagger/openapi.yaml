@@ -1397,6 +1397,10 @@ components:
           type: number
           nullable: true
           description: "Id клиента"
+        client_full_name:
+          type: string
+          nullable: true
+          description: "ФИО клиента"
         comment:
           type: string
           description: "Комментарий к бронированию"
@@ -1433,6 +1437,10 @@ components:
           type: number
           nullable: true
           description: "Id клиента"
+        client_full_name:
+          type: string
+          nullable: true
+          description: "ФИО клиента"
         comment:
           type: string
           description: "Комментарий к бронированию"
@@ -1474,6 +1482,10 @@ components:
           - $ref: "#/components/schemas/ClientBase"
           nullable: true
           description: "Клиент"
+        client_full_name:
+          type: string
+          nullable: true
+          description: "ФИО клиента"
         comment:
           type: string
           description: "Комментарий к бронированию"

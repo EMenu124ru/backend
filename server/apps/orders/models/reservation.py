@@ -39,6 +39,12 @@ class Reservation(models.Model):
         related_name="reservations",
         verbose_name="Клиент",
     )
+    client_full_name = models.CharField(
+        blank=True,
+        null=True,
+        max_length=256,
+        verbose_name="ФИО клиента",
+    )
     place = models.ForeignKey(
         "restaurants.Place",
         on_delete=models.SET_NULL,
