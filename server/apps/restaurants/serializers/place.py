@@ -8,6 +8,7 @@ class TagToPlaceSerializer(BaseModelSerializer):
         fields = (
             "id",
             "name",
+            "type",
         )
 
 

@@ -1684,7 +1684,11 @@ components:
         name:
           type: string
           description: "Имя тега"
-    
+        type:
+          type: string
+          description: "Тип тэга"
+          enum: ["LOCATION", "NUMBER_OF_SEATS"]
+
     EmployeeScheduleCreateBase:
       type: object
       properties:

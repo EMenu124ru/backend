@@ -7,6 +7,8 @@ from django.utils import timezone
 
 from apps.orders.models import Reservation
 
+from .tag_to_place import TagToPlace
+
 AVAILABLE_TIMEZONES = sorted([
     (zone, zone)
     for zone in zoneinfo.available_timezones()
@@ -28,7 +30,14 @@ class Restaurant(models.Model):
     def get_places(self, tags: str, current_time: timezone = timezone.now()) -> tuple[list, list, list]:
         places = self.places.all()
         if tags:
-            places = places.filter(tags__in=tags.split(",")).order_by("id").distinct()
+            tags_instances = TagToPlace.objects.filter(id__in=tags.split(","))
+            locations, number_of_seats = (
+                tags_instances.filter(type=TagToPlace.Types.LOCATION),
+                tags_instances.filter(type=TagToPlace.Types.NUMBER_OF_SEATS),
+            )
+            places = places.filter(
+                models.Q(tags__in=locations) | models.Q(tags__in=number_of_seats)
+            ).order_by("id").distinct()
 
         free, reserved, busy = [], [], []
         difference = timedelta(hours=2)
