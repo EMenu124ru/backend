@@ -26,6 +26,8 @@ ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.routing.application"
 
+PHONENUMBER_DEFAULT_REGION = "RU"
+
 ALLOWED_HOSTS = ["*"]
 
 # DATABASES

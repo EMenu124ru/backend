@@ -974,7 +974,8 @@ components:
           description: "Количество бонусов"
         phone_number:
           type: string
-          description: "Телефон клиента"
+          description: "Телефон клиента (по умолчанию +7)"
+          example: "+78005553535"
 
     EmployeeUpdateBase:
       type: object
@@ -1761,7 +1762,7 @@ components:
             properties:
               phone_number:
                 type: string
-                description: "Телефон клиента"
+                description: "Телефон клиента. Можно без кода страны"
               password:
                 type: string
                 description: "Пароль клиента"

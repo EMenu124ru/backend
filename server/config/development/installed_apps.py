@@ -16,8 +16,9 @@ THIRD_PARTY_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "rest_framework",
-    'rest_framework_simplejwt',
-    'fcm_django',
+    "rest_framework_simplejwt",
+    "fcm_django",
+    "phonenumber_field",
 ]
 
 LOCAL_APPS = [

@@ -37,8 +37,8 @@ class UserFactory(DjangoModelFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
+        kwargs["phone_number"] = kwargs["phone_number"].replace("-", "").replace(" ", "")[:17]
         obj = model_class(*args, **kwargs)
-        obj.phone_number = obj.phone_number[:17]
         obj.save()
         return obj
 

@@ -1,13 +1,8 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 from .client import Client
-
-phone_regex = RegexValidator(
-    regex=r'^\+?1?\d{9,15}$',
-    message="Телефонный номер должен быть введен в формате: '+999999999'",
-)
 
 
 class User(AbstractUser):
@@ -18,9 +13,8 @@ class User(AbstractUser):
         default="",
         verbose_name='Отчество',
     )
-    phone_number = models.CharField(
+    phone_number = PhoneNumberField(
         max_length=17,
-        validators=[phone_regex],
         unique=True,
         verbose_name="Телефонный номер",
     )
@@ -46,14 +40,14 @@ class User(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
-    def str(self) -> str:
+    def __str__(self) -> str:
         return (
             "User"
             f"(id={self.pk},"
-            f"user_id={self.user.pk},"
             f"username={self.username},"
             f"first_name={self.first_name},"
             f"last_name={self.last_name},"
             f"surname={self.surname},"
+            f"phone_number={self.phone_number},"
             f"is_client={self.is_client})"
         )
