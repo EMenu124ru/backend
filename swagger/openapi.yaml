@@ -2204,10 +2204,19 @@ components:
       description: "Получение тегов столов"
       content:
         application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/TagToPlace"
+          schema:      
+            type: object
+            properties:
+              location:
+                type: array
+                description: "Тэги обозначающие местоположение стола"
+                items:
+                  $ref: "#/components/schemas/TagToPlace"
+              number_of_seats:
+                type: array
+                description: "Тэги обозначающие количество мест стола"
+                items:
+                  $ref: "#/components/schemas/TagToPlace"
     
     EmployeeSchedule201:
       description: "Создание расписания сотрудника"

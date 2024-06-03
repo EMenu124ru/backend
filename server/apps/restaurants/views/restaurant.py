@@ -9,7 +9,7 @@ from rest_framework import (
     status,
 )
 
-from apps.restaurants.models import Restaurant
+from apps.restaurants.models import Restaurant, TagToPlace
 from apps.restaurants.permissions import RestaurantPermission
 from apps.restaurants.serializers import (
     PlaceSerializer,
@@ -70,10 +70,14 @@ class TagToPlaceAPIView(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         restaurant = self.get_object()
-        restaurant_tags = set()
-        for place in restaurant.places.all():
+        location, number_of_seats = [], []
+        for place in restaurant.places.prefetch_related("tags").all():
             tags = place.tags.all()
-            restaurant_tags |= set(tags)
+            location.extend(tags.filter(type=TagToPlace.Types.LOCATION))
+            number_of_seats.extend(tags.filter(type=TagToPlace.Types.NUMBER_OF_SEATS))
 
-        serializer = TagToPlaceSerializer(restaurant_tags, many=True)
-        return response.Response(data=serializer.data, status=status.HTTP_200_OK)
+        restaurant_tags = {
+            "location": TagToPlaceSerializer(set(location), many=True).data,
+            "number_of_seats": TagToPlaceSerializer(set(number_of_seats), many=True).data,
+        }
+        return response.Response(data=restaurant_tags, status=status.HTTP_200_OK)
