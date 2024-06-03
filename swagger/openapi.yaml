@@ -910,6 +910,13 @@ paths:
       tags:
         - restaurants
       summary: "Получение тегов к столам ресторана, к которому вы прикреплены."
+      parameters:
+        - name: restaurant_id
+          in: query
+          schema:
+            type: number
+          required: false
+          description: "Id ресторана для получения тэгов клиентом"
       responses:
         "200":
           $ref: "#/components/responses/TagToPlace200"

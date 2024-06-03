@@ -27,6 +27,7 @@ class RestaurantListAPIView(generics.ListAPIView):
 
 
 class RestaurantPlacesAPIView(generics.RetrieveAPIView):
+    queryset = Restaurant.objects.all()
     permission_classes = (
         permissions.IsAuthenticated & (IsClient | RestaurantPermission),
     )
@@ -58,10 +59,13 @@ class RestaurantPlacesAPIView(generics.RetrieveAPIView):
 class TagToPlaceAPIView(generics.ListAPIView):
     queryset = Restaurant.objects.all()
     permission_classes = (
-        permissions.IsAuthenticated & RestaurantPermission,
+        permissions.IsAuthenticated & (IsClient | RestaurantPermission),
     )
 
     def get_object(self):
+        if self.request.user.is_client:
+            restaurant_id = self.request.query_params.get('restaurant_id')
+            return get_object_or_404(Restaurant, pk=restaurant_id)
         return self.request.user.employee.restaurant
 
     def get(self, request, *args, **kwargs):
