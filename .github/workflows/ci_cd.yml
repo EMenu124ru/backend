@@ -199,5 +199,4 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           script: |
             cd ${{ secrets.WORK_DIR }}
-            sudo git pull --rebase origin main
             bash pull-run.sh
