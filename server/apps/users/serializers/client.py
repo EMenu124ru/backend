@@ -81,6 +81,7 @@ class ClientSerializer(BaseModelSerializer):
             f"{user_fields['first_name']}_{user_fields['last_name']}"
             f"_{user_fields['surname']}_{user_fields['phone_number']}"
         )
+
         user, created = User.objects.get_or_create(
             username=username,
             first_name=user_fields['first_name'],

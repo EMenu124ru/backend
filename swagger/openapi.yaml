@@ -310,6 +310,8 @@ paths:
           $ref: "#/components/responses/ClientCreate201"
         "400":
           $ref: "#/components/responses/BadRequest400"
+        "406":
+          $ref: "#/components/responses/NotAcceptable406"
   
   "/api/v1/clients/me":
     get:
@@ -2247,6 +2249,25 @@ components:
 
     BadRequest400:
       description: "BadRequest"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                    message:
+                      type: array
+                      items:
+                        type: string
+
+    NotAcceptable406:
+      description: "NotAcceptable"
       content:
         application/json:
           schema:

@@ -58,7 +58,7 @@ def test_create_client_with_same_info(
             "phone_number": client.user.phone_number,
         },
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
 
 
 def test_create_client_with_surname(
