@@ -1306,15 +1306,6 @@ components:
               comment:
                 type: string
                 description: "Комментарий к заказу"
-        tag_to_place:
-          type: number
-          description: "Id тэга стола"
-          nullable: true
-        count_guests:
-          type: number
-          default: 1
-          description: "Количество гостей"
-          nullable: true
 
     CategoryBase:
       type: object

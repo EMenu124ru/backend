@@ -1,7 +1,8 @@
+from django.conf import settings
 from django.urls import reverse
 
 
-class IgnoreCookieMiddleware:
+class ChangeCookieMiddleware:
     URLS_IGNORE_COOKIE = {
         "post": [
             reverse("api:clients-list"),
@@ -17,5 +18,8 @@ class IgnoreCookieMiddleware:
         urls = self.URLS_IGNORE_COOKIE.get(request.method.lower())
         if urls and request.path in urls:
             request.COOKIES = {}
-        response = self.get_response(request)
-        return response
+        else:
+            token = request.COOKIES.get(settings.CSRF_COOKIE_NAME)
+            if token:
+                request.META[settings.CSRF_HEADER_NAME] = token
+        return self.get_response(request)

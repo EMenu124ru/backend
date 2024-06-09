@@ -12,7 +12,10 @@ CSRF_COOKIE_NAME = "csrftoken"
 
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 
-USE_X_FORWARDED_HOST = True
+MIDDLEWARE = (
+    ["apps.core.middleware.change_cookie_middleware.ChangeCookieMiddleware"] +
+    MIDDLEWARE  # noqa F405
+)
 
 SIMPLE_JWT_PROD = {
     'AUTH_COOKIE_ACCESS': 'access',
