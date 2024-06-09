@@ -1402,6 +1402,7 @@ components:
           nullable: true
         place:
           type: number
+          nullable: true
           description: "Id стола"
         client:
           type: number

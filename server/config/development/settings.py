@@ -4,6 +4,7 @@ from math import ceil
 from pathlib import Path
 
 import dj_database_url
+from drf_api_logger import API_LOGGER_SIGNAL
 from pytz import timezone
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
@@ -175,9 +176,17 @@ if DEBUG:
 DRF_API_LOGGER_EXCLUDE_KEYS = ["COOKIE"]
 DRF_LOGGER_INTERVAL = 1
 DRF_API_LOGGER_DATABASE = True
+DRF_API_LOGGER_SIGNAL = True
 
 if USE_TZ:
     utc = timezone("UTC")
     current = timezone(TIME_ZONE)
     now = datetime.now()
     DRF_API_LOGGER_TIMEDELTA = ceil((utc.localize(now) - current.localize(now).astimezone(utc)).seconds / 60)
+
+
+def listener(**kwargs):
+    print(kwargs)
+
+
+API_LOGGER_SIGNAL.listen -= listener
