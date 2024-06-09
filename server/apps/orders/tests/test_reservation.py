@@ -12,8 +12,12 @@ from apps.orders.factories import (
 )
 from apps.orders.models import Order, Reservation
 from apps.orders.tasks import check_delayed_orders
-from apps.restaurants.factories import PlaceFactory, RestaurantFactory
-from apps.restaurants.models import Place
+from apps.restaurants.factories import (
+    PlaceFactory,
+    RestaurantFactory,
+    TagToPlaceFactory,
+)
+from apps.restaurants.models import Place, TagToPlace
 from apps.users.factories import ClientFactory
 
 pytestmark = pytest.mark.django_db
@@ -165,17 +169,27 @@ def test_create_reservation_by_client_success(
     api_client,
 ) -> None:
     restaurant = RestaurantFactory.create()
+    restaurant.places.all().delete()
     place = PlaceFactory.create(restaurant=restaurant)
-    reservation = ReservationFactory.build(
-        restaurant=restaurant,
-        place=place,
+    place.reservations.all().delete()
+    place.tags.clear()
+
+    location, number = (
+        TagToPlaceFactory.create(type=TagToPlace.Types.LOCATION),
+        TagToPlaceFactory.create(type=TagToPlace.Types.NUMBER_OF_SEATS),
     )
+    place.tags.add(location)
+    place.tags.add(number)
+
+    reservation = ReservationFactory.build(restaurant=restaurant)
     api_client.force_authenticate(user=client.user)
     response = api_client.post(
         reverse_lazy("api:reservations-list"),
         data={
             "restaurant": reservation.restaurant.pk,
             "arrival_time": reservation.arrival_time,
+            "tag_to_number": number.pk,
+            "tag_to_location": location.pk,
         },
         format='json',
     )
@@ -191,11 +205,19 @@ def test_create_reservation_by_client_success_with_order(
     api_client,
 ) -> None:
     restaurant = RestaurantFactory.create()
+    restaurant.places.all().delete()
     place = PlaceFactory.create(restaurant=restaurant)
-    reservation = ReservationFactory.build(
-        restaurant=restaurant,
-        place=place,
+    place.reservations.all().delete()
+    place.tags.clear()
+
+    location, number = (
+        TagToPlaceFactory.create(type=TagToPlace.Types.LOCATION),
+        TagToPlaceFactory.create(type=TagToPlace.Types.NUMBER_OF_SEATS),
     )
+    place.tags.add(location)
+    place.tags.add(number)
+
+    reservation = ReservationFactory.build(restaurant=restaurant)
     order = OrderFactory.build()
     dish = DishFactory.create()
     order_dict = {
@@ -209,6 +231,8 @@ def test_create_reservation_by_client_success_with_order(
         data={
             "restaurant": reservation.restaurant.pk,
             "arrival_time": reservation.arrival_time,
+            "tag_to_number": number.pk,
+            "tag_to_location": location.pk,
             "order": order_dict,
         },
         format='json',
@@ -707,6 +731,18 @@ def test_change_delayed_order_status(
     api_client,
 ) -> None:
     restaurant = RestaurantFactory.create()
+    restaurant.places.all().delete()
+    place = PlaceFactory.create(restaurant=restaurant)
+    place.reservations.all().delete()
+    place.tags.all().delete()
+
+    location, number = (
+        TagToPlaceFactory.create(type=TagToPlace.Types.LOCATION),
+        TagToPlaceFactory.create(type=TagToPlace.Types.NUMBER_OF_SEATS),
+    )
+    place.tags.add(location)
+    place.tags.add(number)
+
     reservation = ReservationFactory.build(
         arrival_time=timezone.now() + timedelta(hours=1),
         restaurant=restaurant,
@@ -723,6 +759,8 @@ def test_change_delayed_order_status(
         data={
             "restaurant": reservation.restaurant.pk,
             "arrival_time": reservation.arrival_time,
+            "tag_to_number": number.pk,
+            "tag_to_location": location.pk,
             "order": order_dict,
         },
         format='json',

@@ -18,4 +18,4 @@ class PlaceAdmin(admin.ModelAdmin):
     )
 
     def get_tags(self, obj):
-        return ", ".join(obj.tags.all().values_list("name", flat=True))
+        return obj.tags.all().values_list("name", "type")

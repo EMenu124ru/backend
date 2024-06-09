@@ -1,4 +1,4 @@
-from django.core import exceptions, validators
+from django.core import exceptions
 from django.db import models
 from django.utils import timezone
 
@@ -53,18 +53,6 @@ class Reservation(models.Model):
         related_name="reservations",
         verbose_name="Номер места",
     )
-    count_guests = models.PositiveIntegerField(
-        default=1,
-        validators=[validators.MinValueValidator(1)],
-        verbose_name="Количество гостей",
-    )
-    tag_to_place = models.ForeignKey(
-        "restaurants.TagToPlace",
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Тэг к месту",
-    )
     comment = models.TextField(
         default="",
         blank=True,
@@ -82,9 +70,7 @@ class Reservation(models.Model):
             f"arrival_time={self.arrival_time},"
             f"status={self.status},"
             f"comment={self.comment},"
-            f"count_guests={self.count_guests},"
             f"restaurant_id={self.restaurant.pk},"
             f"place={self.place},"
-            f"tag_to_place={self.tag_to_place},"
             f"client={self.client})"
         )

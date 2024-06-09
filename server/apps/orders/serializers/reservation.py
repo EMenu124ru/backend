@@ -7,11 +7,7 @@ from apps.restaurants.models import (
     Restaurant,
     TagToPlace,
 )
-from apps.restaurants.serializers import (
-    PlaceSerializer,
-    RestaurantSerializer,
-    TagToPlaceSerializer,
-)
+from apps.restaurants.serializers import PlaceSerializer, RestaurantSerializer
 from apps.users.models import Client, Employee
 from apps.users.serializers import ClientSerializer
 
@@ -30,10 +26,17 @@ class ReservationSerializer(BaseModelSerializer):
         allow_null=True,
         required=False,
     )
-    tag_to_place = serializers.PrimaryKeyRelatedField(
-        queryset=TagToPlace.objects.all(),
+    tag_to_location = serializers.PrimaryKeyRelatedField(
+        queryset=TagToPlace.objects.filter(type=TagToPlace.Types.LOCATION),
         allow_null=True,
         required=False,
+        write_only=True,
+    )
+    tag_to_number = serializers.PrimaryKeyRelatedField(
+        queryset=TagToPlace.objects.filter(type=TagToPlace.Types.NUMBER_OF_SEATS),
+        allow_null=True,
+        required=False,
+        write_only=True,
     )
     client_phone_number = serializers.CharField(
         allow_null=True,
@@ -43,8 +46,10 @@ class ReservationSerializer(BaseModelSerializer):
 
     class Errors:
         CLIENT_CANT_CHOOSE_PLACE = "Клиент не может выбрать или поменять место"
-        CANT_SET_THIS_FIELD = "Нельзя установить это поле во время создания брони"
         CANT_UPDATE_ORDER = "Нельзя данным методом обновить заказ"
+        CANT_SET_THIS_FIELD = "Нельзя установить это поле во время создания брони"
+        DONT_SELECT_PLACE_TAGS = "Выберите тэги к месту"
+        HASNT_FREE_PLACES = "Нет свободных мест"
         RESTORE_CLOSED_RESERVATION = (
             "Нельзя менять бронирование, когда оно уже завершено или отменено"
         )
@@ -68,8 +73,8 @@ class ReservationSerializer(BaseModelSerializer):
             "client_phone_number",
             "place",
             "comment",
-            "count_guests",
-            "tag_to_place",
+            "tag_to_location",
+            "tag_to_number",
         )
         editable_fields = {
             Employee.Roles.WAITER: ["place", "status"],
@@ -78,8 +83,6 @@ class ReservationSerializer(BaseModelSerializer):
                 "arrival_time",
                 "status",
                 "client_full_name",
-                "tag_to_place",
-                "count_guests",
             ],
         }
 
@@ -93,6 +96,7 @@ class ReservationSerializer(BaseModelSerializer):
             raise serializers.ValidationError(self.Errors.PLACE_DONT_EXISTS)
         if Reservation.objects.filter(place=place, status=Reservation.Statuses.OPENED).exists():
             raise serializers.ValidationError(self.Errors.PLACE_ALREADY_BUSY)
+        return place
 
     def validate_status(self, status: Reservation.Statuses) -> Reservation.Statuses:
         if not self.instance and status:
@@ -115,13 +119,26 @@ class ReservationSerializer(BaseModelSerializer):
         return place
 
     def validate(self, attrs: OrderedDict) -> OrderedDict:
+        restaurant = attrs.get("restaurant")
         if self._user.is_client:
-            # restaurant = attrs.get("restaurant")
-            # tag_id = attrs.get("tag_to_place").pk if attrs.get("tag_to_place") else ""
-            # free, _, _ = restaurant.get_places(tag_id)
-            # if free:
-            #     attrs[]
+            tag_to_number, tag_to_location = attrs.pop("tag_to_number", None), attrs.pop("tag_to_location", None)
+
+            if not (tag_to_number and tag_to_location):
+                raise serializers.ValidationError(self.Errors.DONT_SELECT_PLACE_TAGS)
+
+            free, _, _ = restaurant.get_places(",".join(map(str, [tag_to_number.pk, tag_to_location.pk])))
+            if not free:
+                raise serializers.ValidationError(self.Errors.HASNT_FREE_PLACES)
+
+            for place in free:
+                try:
+                    attrs["place"] = self.validate_place_instance(place, restaurant)
+                    print(attrs["place"])
+                except serializers.ValidationError as exception:
+                    print(exception)
+                    continue
             return attrs
+
         if self.instance:
             self.validate_place_instance(
                 attrs.get("place", self.instance.place),
@@ -141,7 +158,7 @@ class ReservationSerializer(BaseModelSerializer):
             return attrs
         self.validate_place_instance(
             attrs.get("place"),
-            attrs.get("restaurant"),
+            restaurant,
         )
         return attrs
 
@@ -192,10 +209,6 @@ class ReservationSerializer(BaseModelSerializer):
         if (place_id := data.pop("place", None)) is not None:
             place = Place.objects.get(pk=place_id)
             data["place"] = PlaceSerializer(place).data
-
-        if (tag_to_place_id := data.pop("tag_to_place", None)) is not None:
-            tag_to_place = TagToPlace.objects.get(pk=tag_to_place_id)
-            data["tag_to_place"] = TagToPlaceSerializer(tag_to_place).data
 
         client = None
         if (client_id := data.pop("client", None)) is not None:

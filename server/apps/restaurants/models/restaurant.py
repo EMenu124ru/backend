@@ -42,6 +42,12 @@ class Restaurant(models.Model):
         free, reserved, busy = [], [], []
         difference = timedelta(hours=2)
 
+        time_zone = zoneinfo.ZoneInfo(self.time_zone)
+        current_time = timezone.localtime(
+            current_time,
+            timezone=time_zone,
+        ).replace(tzinfo=None)
+
         for place in places:
             reservations = place.reservations.filter(
                 status=Reservation.Statuses.OPENED,
@@ -55,7 +61,7 @@ class Restaurant(models.Model):
             reservation = reservations.first()
             arrival_time = timezone.localtime(
                 reservation.arrival_time,
-                timezone=zoneinfo.ZoneInfo(self.time_zone),
+                timezone=time_zone,
             ).replace(tzinfo=None)
 
             arrival_time_left, arrival_time_right = arrival_time - difference, arrival_time + difference

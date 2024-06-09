@@ -188,4 +188,4 @@ def listener(**kwargs):
     print(kwargs)
 
 
-API_LOGGER_SIGNAL.listen -= listener
+API_LOGGER_SIGNAL.listen += listener
