@@ -172,7 +172,11 @@ if DEBUG:
 
 # drf-api-logger
 # ------------------------------------------------------------------------------
-DRF_API_LOGGER_EXCLUDE_KEYS = ["COOKIE"]
+DRF_API_LOGGER_EXCLUDE_KEYS = [
+    "COOKIE",
+    "X_CSRFTOKEN",
+    "AUTHORIZATION",
+]
 DRF_LOGGER_INTERVAL = 1
 DRF_API_LOGGER_DATABASE = True
 DRF_API_LOGGER_SIGNAL = True

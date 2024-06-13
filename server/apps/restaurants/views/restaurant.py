@@ -1,3 +1,4 @@
+import zoneinfo
 from datetime import datetime
 
 from django.shortcuts import get_object_or_404
@@ -43,9 +44,18 @@ class RestaurantPlacesAPIView(generics.RetrieveAPIView):
         tags = request.query_params.get('tags')
         got_time = request.query_params.get('time')
 
-        current_time = timezone.now()
+        current_time = timezone.localtime(
+            timezone.now(),
+            timezone=zoneinfo.ZoneInfo(restaurant.time_zone),
+        ).replace(tzinfo=None)
         if got_time:
-            current_time = datetime.fromisoformat(got_time)
+            got_time = datetime.fromisoformat(got_time)
+            if got_time < current_time:
+                return response.Response(
+                    data={"message": "Переданное время не может быть раньше текущего"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            current_time = got_time
 
         free, reserved, busy = restaurant.get_places(tags, current_time=current_time)
         data = {

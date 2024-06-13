@@ -43,10 +43,6 @@ class Restaurant(models.Model):
         difference = timedelta(hours=2)
 
         time_zone = zoneinfo.ZoneInfo(self.time_zone)
-        current_time = timezone.localtime(
-            current_time,
-            timezone=time_zone,
-        ).replace(tzinfo=None)
 
         for place in places:
             reservations = place.reservations.filter(
