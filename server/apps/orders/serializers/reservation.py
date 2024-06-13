@@ -77,7 +77,10 @@ class ReservationSerializer(BaseModelSerializer):
             "tag_to_number",
         )
         editable_fields = {
-            Employee.Roles.WAITER: ["place", "status"],
+            Employee.Roles.WAITER: [
+                "place",
+                "status",
+            ],
             Employee.Roles.HOSTESS: [
                 "place",
                 "arrival_time",

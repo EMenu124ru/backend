@@ -48,6 +48,28 @@ def test_create_reservation_by_waiter(
     assert response.status_code == status.HTTP_201_CREATED
 
 
+def test_create_reservation_by_waiter_without_restaurant(
+    waiter,
+    api_client,
+) -> None:
+    restaurant = waiter.restaurant
+    place = PlaceFactory.create(restaurant=restaurant)
+    reservation = ReservationFactory.build(
+        restaurant=restaurant,
+        place=place,
+    )
+    api_client.force_authenticate(user=waiter.user)
+    response = api_client.post(
+        reverse_lazy("api:reservations-list"),
+        data={
+            "arrival_time": reservation.arrival_time,
+            "place": reservation.place.pk,
+        },
+        format='json',
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+
 def test_read_reservations_by_waiter(
     waiter,
     api_client,

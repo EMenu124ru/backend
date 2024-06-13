@@ -19,6 +19,12 @@ class ReservationViewSet(CreateReadUpdateViewSet):
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
         order_dict = data.pop("order", None)
+
+        if self.request.user.is_client:
+            data["client"] = self.request.user.client.pk
+        else:
+            data["restaurant"] = self.request.user.employee.restaurant.pk
+
         reservation_serializer = self.get_serializer(data=data)
         reservation_serializer.is_valid(raise_exception=True)
         self.perform_create(reservation_serializer)
@@ -32,6 +38,12 @@ class ReservationViewSet(CreateReadUpdateViewSet):
             ReservationSerializer(reservation_serializer.instance).data,
             status=status.HTTP_201_CREATED,
         )
+
+    def perform_create(self, serializer):
+        if self.request.user.is_client:
+            serializer.save(client=self.request.user.client)
+        else:
+            serializer.save(restaurant=self.request.user.employee.restaurant)
 
     def get_queryset(self):
         reservation = Reservation.objects.all()
