@@ -55,6 +55,7 @@ class ReservationSerializer(BaseModelSerializer):
         )
         PLACE_DONT_EXISTS = "Данного места нет в ресторане"
         PLACE_ALREADY_BUSY = "Данное место занято"
+        HASNT_PLACE_BY_THIS_TAGS = "Не удалось найти свободного места по выбранным тэгам"
         HOSTESS_CHANGES = (
             "Редактируя бронь, хостес может менять только стол, "
             "время прибытия и статус"
@@ -140,6 +141,9 @@ class ReservationSerializer(BaseModelSerializer):
                 except serializers.ValidationError as exception:
                     print(exception)
                     continue
+
+            if "place" not in attrs:
+                raise serializers.ValidationError(self.Errors.HASNT_PLACE_BY_THIS_TAGS)
             return attrs
 
         if self.instance:

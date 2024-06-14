@@ -20,4 +20,5 @@ class BaseModelSerializer(serializers.ModelSerializer):
         return all([
             self.instance.__getattribute__(key) == value
             for key, value in data.items()
+            if hasattr(self.instance, key)
         ])

@@ -13,12 +13,6 @@ class ClientAuthSerializer(serializers.Serializer):
         IS_NOT_ACTIVE = 'Пользователь не активен'
         NOT_FOUND = 'Пользователь с такими данными не найден'
 
-    def to_representation(self, data):
-        client = Client.objects.filter(
-            user__phone_number=data['phone_number'],
-        ).first()
-        return get_jwt_tokens(client.user)
-
     def validate_phone_number(self, phone_number: str) -> str:
         if not Client.objects.filter(user__phone_number=phone_number).exists():
             raise serializers.ValidationError(self.Errors.CLIENT_ALREADY_EXISTS)
@@ -39,6 +33,12 @@ class ClientAuthSerializer(serializers.Serializer):
                 raise serializers.ValidationError(self.Errors.WRONG_PASSWORD)
 
         return attrs
+
+    def to_representation(self, data):
+        client = Client.objects.filter(
+            user__phone_number=data['phone_number'],
+        ).first()
+        return get_jwt_tokens(client.user)
 
 
 class ClientSerializer(BaseModelSerializer):

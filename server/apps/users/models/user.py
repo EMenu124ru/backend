@@ -36,6 +36,12 @@ class User(AbstractUser):
         except Client.DoesNotExist:
             return False
 
+    @property
+    def full_name(self):
+        last_name = f"{self.last_name} " if self.last_name else ""
+        first_name = self.first_name if self.first_name else ""
+        return f"{last_name}{first_name}"
+
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
