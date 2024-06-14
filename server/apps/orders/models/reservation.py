@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
+from apps.core.models import BaseModel
 from apps.orders.constants import OrderErrors
 
 
@@ -11,7 +12,7 @@ def validate_arrival_time(arrival_time) -> None:
         raise exceptions.ValidationError(OrderErrors.WRONG_ARRIVAL_TIME)
 
 
-class Reservation(models.Model):
+class Reservation(BaseModel):
     class Statuses(models.TextChoices):
         OPENED = "OPENED", "Открыт"
         FINISHED = "FINISHED", "Закрыт"
@@ -79,5 +80,7 @@ class Reservation(models.Model):
             f"comment={self.comment},"
             f"restaurant_id={self.restaurant.pk},"
             f"place={self.place},"
+            f"created={self.created},"
+            f"modified={self.modified},"
             f"client={self.client})"
         )

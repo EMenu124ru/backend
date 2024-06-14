@@ -1219,11 +1219,11 @@ components:
           description: "Обозначение стола"
           nullable: true
         created:
-          description: "Time created"
+          description: "Время создания"
           type: string
           format: date-time
         modified:
-          description: "Time modified"
+          description: "Время обновления"
           type: string
           format: date-time
 
@@ -1488,6 +1488,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/OrderBase"
+        created:
+          description: "Время создания"
+          type: string
+          format: date-time
+        modified:
+          description: "Время обновления"
+          type: string
+          format: date-time
 
     RestaurantScheduleBase:
       type: object
@@ -1617,11 +1625,11 @@ components:
           type: string
           description: "Комментарий к заказу"
         created:
-          description: "Time created"
+          description: "Время создания"
           type: string
           format: date-time
         modified:
-          description: "Time modified"
+          description: "Время обновления"
           type: string
           format: date-time
 

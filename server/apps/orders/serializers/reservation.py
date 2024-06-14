@@ -76,6 +76,8 @@ class ReservationSerializer(BaseModelSerializer):
             "comment",
             "tag_to_location",
             "tag_to_number",
+            "created",
+            "modified",
         )
         editable_fields = {
             Employee.Roles.WAITER: [
