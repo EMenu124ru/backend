@@ -1,6 +1,7 @@
 from django.core import exceptions
 from django.db import models
 from django.utils import timezone
+from phonenumber_field.modelfields import PhoneNumberField
 
 from apps.orders.constants import OrderErrors
 
@@ -44,6 +45,12 @@ class Reservation(models.Model):
         null=True,
         max_length=256,
         verbose_name="ФИО клиента",
+    )
+    client_phone_number = PhoneNumberField(
+        max_length=17,
+        blank=True,
+        null=True,
+        verbose_name="Телефонный номер клиента",
     )
     place = models.ForeignKey(
         "restaurants.Place",

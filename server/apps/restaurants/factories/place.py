@@ -7,7 +7,7 @@ from factory import (
 )
 from factory.django import DjangoModelFactory
 
-from apps.restaurants.models import Place
+from apps.restaurants.models import Place, TagToPlace
 
 from .restaurant import RestaurantFactory
 from .tag_to_place import TagToPlaceFactory
@@ -30,9 +30,14 @@ class PlaceFactory(DjangoModelFactory):
         """Create tags for place."""
         if not create:
             return
-        tags = extracted if extracted is not None else (
-            TagToPlaceFactory() for _ in range(TAGS_COUNT)
-        )
+
+        tags = []
+        if extracted is not None:
+            tags = extracted
+        else:
+            tags.append(TagToPlaceFactory(type=TagToPlace.Types.LOCATION))
+            tags.append(TagToPlaceFactory(type=TagToPlace.Types.NUMBER_OF_SEATS))
+
         self.tags.add(*tags)
 
     class Meta:

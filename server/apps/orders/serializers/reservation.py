@@ -87,6 +87,8 @@ class ReservationSerializer(BaseModelSerializer):
                 "arrival_time",
                 "status",
                 "client_full_name",
+                "client_phone_number",
+                "comment",
             ],
         }
 
