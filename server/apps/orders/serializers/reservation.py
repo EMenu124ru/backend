@@ -143,10 +143,11 @@ class ReservationSerializer(BaseModelSerializer):
             return attrs
 
         if self.instance:
-            self.validate_place_instance(
-                attrs.get("place", self.instance.place),
-                attrs.get("restaurant", self.instance.restaurant),
-            )
+            if "place" in attrs:
+                self.validate_place_instance(
+                    attrs.get("place", self.instance.place),
+                    attrs.get("restaurant", self.instance.restaurant),
+                )
             role = self._user.employee.role
             if (
                 role == Employee.Roles.HOSTESS and
