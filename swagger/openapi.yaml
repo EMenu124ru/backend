@@ -1524,6 +1524,10 @@ components:
           type: number
           description: "Id текущей занятой брони"
           nullable: true
+        client_full_name:
+          type: string
+          description: "Имя клиента"
+          nullable: true
 
     RestaurantBase:
       type: object

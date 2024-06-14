@@ -63,11 +63,13 @@ class Restaurant(models.Model):
             arrival_time_left, arrival_time_right = arrival_time - difference, arrival_time + difference
             if arrival_time < current_time <= arrival_time_right or reservation.orders.exists():
                 place.current_reservation = reservation.pk
+                place.client_name = reservation.client_full_name
                 busy.append(place)
                 continue
 
             if arrival_time_left < current_time <= arrival_time and not reservation.orders.exists():
                 place.current_reservation = reservation.pk
+                place.client_name = reservation.client_full_name
                 reserved.append(place)
                 continue
 
