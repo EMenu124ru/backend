@@ -57,10 +57,6 @@ class DishFactory(DjangoModelFactory):
         min_value=50,
         max_value=1000,
     )
-    compound = Faker(
-        "text",
-        max_nb_chars=20,
-    )
     weight = Faker(
         "pydecimal",
         left_digits=11,

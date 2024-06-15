@@ -31,7 +31,6 @@ class DishAdmin(admin.ModelAdmin):
         "description",
         "short_description",
         "price",
-        "compound",
         "weight",
     )
     filter_horizontal = (

@@ -46,9 +46,6 @@ class Dish(models.Model):
         validators=[MinValueValidator(0)],
         verbose_name="Цена",
     )
-    compound = models.TextField(
-        verbose_name="Состав",
-    )
     weight = models.DecimalField(
         max_digits=11,
         decimal_places=3,
@@ -69,7 +66,6 @@ class Dish(models.Model):
             f"price={self.price},"
             f"description={self.description},"
             f"short_description={self.short_description},"
-            f"compound={self.compound},"
             f"weight={self.weight})"
         )
 

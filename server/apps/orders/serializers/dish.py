@@ -61,14 +61,16 @@ class DishSerializer(BaseModelSerializer):
             "description",
             "short_description",
             "price",
-            "compound",
             "weight",
         )
 
     def to_representation(self, instance: Dish) -> OrderedDict:
         data = super().to_representation(instance)
         images = instance.images.order_by("id")
+        ingredients = instance.ingredients.order_by("id")
+        compound = ", ".join([ingredient.name for ingredient in ingredients]) if ingredients else ""
         new_info = {
+            "compound": compound,
             "images": DishImageSerializer(images, many=True).data,
             "category": CategorySerializer(instance=instance.category).data,
         }
