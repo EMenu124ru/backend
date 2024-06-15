@@ -34,6 +34,9 @@ class DishAdmin(admin.ModelAdmin):
         "compound",
         "weight",
     )
+    filter_horizontal = (
+        "ingredients",
+    )
 
 
 @admin.register(DishImage)
