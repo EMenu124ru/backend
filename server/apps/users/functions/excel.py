@@ -37,7 +37,7 @@ def import_schedule(request) -> list:
                 if cell.value:
                     dates.append(cell.value)
         else:
-            if row[ScheduleFile.FULL_NAME.value].value is not None:
+            if row and row[ScheduleFile.FULL_NAME.value].value is not None:
                 rows.append(row)
 
     if not dates:

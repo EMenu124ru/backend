@@ -1871,7 +1871,7 @@ components:
     
     
     XLSXFileCreateBody:
-      description: "Файлик формата .xlsx"
+      description: "Файл формата .xlsx, ключ Formdata - file"
       content:
         application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
           schema:

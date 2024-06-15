@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+
 from django.conf import settings
 from django.middleware import csrf
 from django.utils import timezone
@@ -132,10 +134,13 @@ class EmployeeScheduleRetrieveAPIView(RetrieveAPIView):
     permission_classes = (IsAuthenticated & FromSameRestaurantEmployee,)
 
     def retrieve(self, request, *args, **kwargs):
-        date = timezone.localdate(timezone.now())
         instance = self.get_object()
+        local_time = timezone.localtime(
+            timezone.now(),
+            timezone=ZoneInfo(instance.restaurant.time_zone),
+        ).replace(tzinfo=None)
         serializer = EmployeeScheduleSerializer(
-            instance.schedule.filter(day__month=date.month),
+            instance.schedule.filter(day__month=local_time.month),
             many=True,
         )
         return Response(serializer.data)
