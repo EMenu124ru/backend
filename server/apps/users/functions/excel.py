@@ -126,8 +126,7 @@ def import_schedule(request) -> list:
             query = Schedule.objects.filter(
                 day=date_from_file.date(),
                 employee=employee,
-                type=name,
-            )
+            ).order_by("day")
             if not query.exists():
                 serializer = EmployeeScheduleSerializer(data=item)
                 serializer.is_valid(raise_exception=True)
