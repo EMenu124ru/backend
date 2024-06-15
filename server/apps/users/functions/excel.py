@@ -116,24 +116,29 @@ def import_schedule(request) -> list:
                     "file": ScheduleErrors.WRONG_COLOR.value,
                 }
 
+            item = {
+                "day": date_from_file.date(),
+                "time_start": time_start,
+                "time_finish": time_finish,
+                "employee": employee.id,
+                "type": name,
+            }
             query = Schedule.objects.filter(
                 day=date_from_file.date(),
-                time_start=time_start,
-                time_finish=time_finish,
                 employee=employee,
                 type=name,
             )
             if not query.exists():
-                to_create_item = {
-                    "day": date_from_file.date(),
-                    "time_start": time_start,
-                    "time_finish": time_finish,
-                    "employee": employee.id,
-                    "type": name,
-                }
-                serializer = EmployeeScheduleSerializer(data=to_create_item)
+                serializer = EmployeeScheduleSerializer(data=item)
                 serializer.is_valid(raise_exception=True)
                 schedule_items.append(serializer)
+            else:
+                obj = query.first()
+                item["id"] = obj.pk
+                serializer = EmployeeScheduleSerializer(obj, data=item)
+                serializer.is_valid(raise_exception=True)
+                schedule_items.append(serializer)
+
             date_index += 1
     created_items = []
     for serializer in schedule_items:
