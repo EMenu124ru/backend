@@ -37,12 +37,12 @@ def test_change_order_price_by_changing_dish(
             status=OrderAndDish.Statuses.WAITING_FOR_COOKING,
             employee=None,
         ))
-        price += dish.price
+        price += (dish.price * order_and_dishes[-1].count)
 
     assert order.price == price
 
     dish = order_and_dishes[-1]
-    price -= dish.dish.price
+    price -= (dish.dish.price * dish.count)
     dish.status = OrderAndDish.Statuses.CANCELED
     dish.save()
 

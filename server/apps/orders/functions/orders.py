@@ -130,5 +130,5 @@ def order_change_price(order: Order):
     new_price = 0
     dishes = order.dishes.filter(~Q(status=OrderAndDish.Statuses.CANCELED))
     for dish in dishes:
-        new_price += dish.dish.price
+        new_price += (dish.dish.price * dish.count)
     return new_price
