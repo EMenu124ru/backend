@@ -35,9 +35,14 @@ class Restaurant(models.Model):
                 tags_instances.filter(type=TagToPlace.Types.LOCATION),
                 tags_instances.filter(type=TagToPlace.Types.NUMBER_OF_SEATS),
             )
-            places = places.filter(
-                models.Q(tags__in=locations) | models.Q(tags__in=number_of_seats)
-            ).order_by("id").distinct()
+
+            if locations:
+                places = places.filter(models.Q(tags__in=locations))
+
+            if number_of_seats:
+                places = places.filter(models.Q(tags__in=number_of_seats))
+
+            places = places.order_by("id").distinct()
 
         free, reserved, busy = [], [], []
         difference = timedelta(hours=2)

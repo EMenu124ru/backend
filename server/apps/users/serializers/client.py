@@ -8,14 +8,13 @@ class ClientAuthSerializer(serializers.Serializer):
     password = serializers.CharField()
 
     class Errors:
-        CLIENT_ALREADY_EXISTS = "Клиента с таким номером телефона не найдено"
+        CLIENT_DONT_EXISTS = "Клиента с таким номером телефона не найдено"
         WRONG_PASSWORD = 'Не верный пароль'
         IS_NOT_ACTIVE = 'Пользователь не активен'
-        NOT_FOUND = 'Пользователь с такими данными не найден'
 
     def validate_phone_number(self, phone_number: str) -> str:
         if not Client.objects.filter(user__phone_number=phone_number).exists():
-            raise serializers.ValidationError(self.Errors.CLIENT_ALREADY_EXISTS)
+            raise serializers.ValidationError(self.Errors.CLIENT_DONT_EXISTS)
         return phone_number
 
     def validate(self, attrs):
@@ -25,8 +24,6 @@ class ClientAuthSerializer(serializers.Serializer):
                 user__phone_number=attrs['phone_number'],
             ).first()
         ):
-            if not client:
-                raise serializers.ValidationError(self.Errors.NOT_FOUND)
             if not client.user.is_active:
                 raise serializers.ValidationError(self.Errors.IS_NOT_ACTIVE)
             if not client.user.check_password(attrs['password']):
