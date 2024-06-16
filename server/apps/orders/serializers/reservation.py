@@ -138,13 +138,7 @@ class ReservationSerializer(BaseModelSerializer):
             if not free:
                 raise serializers.ValidationError(self.Errors.HASNT_FREE_PLACES)
 
-            for place in free:
-                try:
-                    attrs["place"] = self.validate_place_instance(place, restaurant)
-                    print(attrs["place"])
-                except serializers.ValidationError as exception:
-                    print(exception)
-                    continue
+            attrs["place"] = free[0]
 
             if "place" not in attrs:
                 raise serializers.ValidationError(self.Errors.HASNT_PLACE_BY_THIS_TAGS)

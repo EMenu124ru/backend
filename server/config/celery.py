@@ -19,7 +19,11 @@ app.conf.beat_schedule = {
         'schedule': 10.0,
     },
     'close_inactive_reservation': {
-        'task': 'apps.orders.tasks.inactive_reservation.close_inactive_reservation',
+        'task': 'apps.orders.tasks.close_reservation.close_inactive_reservation',
         'schedule': schedules.crontab(minute='*/5'),
+    },
+    'close_reservation_after_close_restaurant': {
+        'task': 'apps.orders.tasks.close_reservation.close_reservation_after_close_restaurant',
+        'schedule': schedules.crontab(minute=55, hour=23),
     },
 }
