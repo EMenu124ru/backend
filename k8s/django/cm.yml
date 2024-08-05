@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: django-credentials
+  namespace: emenu
+  labels:
+    app: django-config
+data:
+  DATABASE_URL: postgres://zzarryadd:kkproject@postgres:5432/emenu
+  DJANGO_DEBUG: "True"
+  REDIS_URL: redis://redis:6379/0
+  FCM_SERVER_KEY: BPm8QLEFInWAmpZtqyLkesnwiVNExFXZ8wK-hItjwKlKF0A5CIEq2eM1tpNE4YkHq8iio7afKI51uHFyk3liSf0
+  FCM_PROJECT_ID: emenu-b19cf
