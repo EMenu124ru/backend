@@ -78,7 +78,7 @@ services:
     depends_on:
       - django
       - daphne
-      - swagger-ui
+      - swagger_ui
       - certbot
       - alexandria
     ports:
@@ -208,7 +208,7 @@ services:
     env_file:
       - ./.envs/postgres.env
 
-  swagger-ui:
+  swagger_ui:
     image: ghcr.io/emenu124ru/swagger:latest
     env_file:
       - ./.envs/swagger.env

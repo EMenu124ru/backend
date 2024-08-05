@@ -1,4 +1,4 @@
-FROM swaggerapi/swagger-ui
+FROM swaggerapi/swagger-swagger_ui
 
 ARG PORT
 
