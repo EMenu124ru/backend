@@ -27,25 +27,25 @@ help: ##@Help Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
 docker-up-build:  ##@Application Run and build application server
-	docker-compose up --build --remove-orphans
+	docker compose up --build --remove-orphans
 
 docker-up-buildd:  ##@Application Run and build application server in daemon
-	docker-compose up -d --build --remove-orphans
+	docker compose up -d --build --remove-orphans
 
 docker-up:  ##@Application Run application server
-	docker-compose up
+	docker compose up
 
 docker-upd:  ##@Application Run application server in daemon
-	docker-compose up -d
+	docker compose up -d
 
 docker-down:  ##@Application Stop application in docker
-	docker-compose down --remove-orphans
+	docker compose down --remove-orphans
 
 docker-downv:  ##@Application Stop application in docker and remove volumes
-	docker-compose down -v --remove-orphans
+	docker compose down -v --remove-orphans
 
 docker-django-run:  ##@Application Run django container with command
-	docker-compose run --rm django $(args)
+	docker compose -f docker-compose.yml run --rm django $(args)
 
 fill_sample_data:  ##@Application Run script for create sample data in db
 	make docker-django-run "make fill_sample_data"
